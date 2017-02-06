@@ -1,3 +1,9 @@
+WARNING! THIS IS A DEVELOPMENT REPOSITORY THAT MAY BE LARGELY NON-FUNCTIONAL
+
+LOOKING FOR THE ODML EDITOR? PLEASE VISIT (https://github.com/g-node/python-odml, select the 1.2.1 branch)
+
+
+
 odML libraries and editor
 =========================
 

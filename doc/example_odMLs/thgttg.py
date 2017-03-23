@@ -7,16 +7,17 @@ Script to generate intro-example.odml
 @author: zehl
 """
 
+import os
 import odml
 import datetime
 
-odmlrepo = 'http://portal.g-node.org/odml/terminologies/v1.0/terminologies.xml'
+
+
 
 # CREATE A DOCUMENT
 doc = odml.Document(author="D. N. Adams",
                     date=datetime.date(1979, 10, 12),
                     version=42)
-#                    repository=odmlrepo)
 
 # CREATE AND APPEND THE MAIN SECTIONs
 doc.append(odml.Section(name="TheCrew",
@@ -275,6 +276,5 @@ parent.append(odml.Property(name="NoOfCybernetics",
                             definition="Number of cybernetic robots on the "
                                        "ship"))
 
-homedir = "/home/zehl/Projects/toolbox/"
-save_to = homedir + "/python-odml/doc/example_odMLs/THGTTG.odml"
+save_to =os.path.join(os.getcwd(),"THGTTG.odml")
 odml.tools.xmlparser.XMLWriter(doc).write_file(save_to)

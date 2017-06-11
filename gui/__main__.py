@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+from gi import pygtkcompat
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 import gtk
 
 import Editor

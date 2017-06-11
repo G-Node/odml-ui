@@ -1,3 +1,8 @@
+from gi import pygtkcompat
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 import gtk
 
 class ChooserDialog(gtk.FileChooserDialog):
@@ -13,8 +18,6 @@ class ChooserDialog(gtk.FileChooserDialog):
         self.save = save
         self.connect('response', self.response)
 
-
-
     def response(self, widget, response_id):
         if response_id == gtk.RESPONSE_OK:
             self.on_accept(self.get_uri())
@@ -22,6 +25,7 @@ class ChooserDialog(gtk.FileChooserDialog):
 
     def on_accept(self, uri):
         raise NotImplementedError
+
 
 class odMLChooserDialog(ChooserDialog):
     def __init__(self, title, save):

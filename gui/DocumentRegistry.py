@@ -1,5 +1,6 @@
 import weakref
 
+
 class DocumentRegistry(object):
     """
     A registry keeping track of all documents in the current

@@ -5,7 +5,7 @@ Document, Section, Property and Value
 additionally implements change notifications up to the corresponding section
 """
 import odml.property
-import event
+from . import event
 
 def identity_index(obj, val):
     """
@@ -61,7 +61,7 @@ class ParentedNode(RootNode):
     def successor(self):
         return self.parent.children[self.position + 1]
 
-    def next(self):
+    def __next__(self):
         """
         returns the next section following in this section's parent's list of sections
         returns None if there is no further element available

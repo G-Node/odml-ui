@@ -112,7 +112,7 @@ def set(value, dtype=None, encoding=None):
         return tuple_set(value)
     if dtype == "binary":
         return binary_set(value, encoding)
-    if type(value) in (str, unicode):
+    if type(value) in (str, str):
         return str_set(value)
     return self.get(dtype + "_set", str_set)(value)
 
@@ -132,12 +132,12 @@ def float_get(string):
 
 
 def str_get(string):
-    return unicode(string)
+    return str(string)
 
 
 def str_set(value):
     try:
-        return unicode(value)
+        return str(value)
     except Exception as ex:
         fail = ex
         raise fail

@@ -6,5 +6,5 @@ It provides a PropertyModel class for a list-based view showing Properties and V
 and a SectionModel class for a tree-view showing Sections and Subsections
 """
 import odml.tools.nodes
-import PropertyModel
-import SectionModel
+from . import PropertyModel
+from . import SectionModel

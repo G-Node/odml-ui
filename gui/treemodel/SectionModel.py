@@ -7,8 +7,8 @@ import gtk, gobject
 import odml.doc
 import odml.base
 
-from TreeIters import SectionIter
-from TreeModel import TreeModel, ColumnMapper
+from .TreeIters import SectionIter
+from .TreeModel import TreeModel, ColumnMapper
 debug = lambda x: 0
 # to enable tree debugging:
 #import sys
@@ -91,7 +91,7 @@ class SectionModel(TreeModel):
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh the corresponding cells
         """
-        print "change event(section): ", context
+        print("change event(section): ", context)
 
         # we are only interested in changes on sections
         if not isinstance(context.obj, odml.base.sectionable): return

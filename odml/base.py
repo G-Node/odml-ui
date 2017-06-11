@@ -2,11 +2,11 @@
 """
 collects common base functionality
 """
-import doc
+
 import posixpath
-import terminology
-import mapping
-from tools.doc_inherit import *
+from . import terminology
+from . import mapping
+from .tools.doc_inherit import *
 
 class _baseobj(object):
     pass
@@ -149,6 +149,7 @@ class sectionable(baseobject, mapping.mapped):
         """
         returns the parent-most node (if its a document instance) or None
         """
+        from . import doc
         p = self
         while p.parent:
             p = p.parent

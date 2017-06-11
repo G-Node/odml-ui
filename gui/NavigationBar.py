@@ -93,7 +93,7 @@ class NavigationBar(gtk.Label):
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh correspondingly
         """
-        print "change event(document): ", context
+        print("change event(document): ", context)
 
         # we are only interested in changes on sections
         if context.cur is not self._document: return

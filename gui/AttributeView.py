@@ -6,8 +6,8 @@ pygtkcompat.enable_gtk(version='3.0')
 import gtk
 import cgi
 import odml.format as format
-import commands
-from TreeView import TreeView
+from . import commands
+from .TreeView import TreeView
 COL_KEY = 0
 COL_VALUE = 1
 class AttributeView(TreeView):

@@ -1,8 +1,13 @@
+from gi import pygtkcompat
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 import gtk
 
-import odmldrop
-import tree
-from targets import *
+from . import odmldrop
+from . import tree
+from .targets import *
 
 import odml
 import odml.tools.xmlparser as xmlparser
@@ -91,7 +96,7 @@ class TextDrag(odmldrop.OdmlDrag):
     using the DeleteObject-command
     """
     def odml_get_data(self, action, obj):
-        return unicode(xmlparser.XMLWriter(obj))
+        return str(xmlparser.XMLWriter(obj))
 
     def odml_delete_data(self, obj):
         return commands.DeleteObject(obj=obj)

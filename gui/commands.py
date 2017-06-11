@@ -1,7 +1,7 @@
 class Command(object):
     def __init__(self, *args, **kwargs):
         self.args = args
-        for k, v in kwargs.iteritems():
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
     def __call__(self):
@@ -22,7 +22,7 @@ class Command(object):
         pass
 
     def __repr__(self):
-        return "<%s %s>" % (self.__class__.__name__, ', '.join(["%s=%s" % (k,v) for k,v in self.__dict__.iteritems()]))
+        return "<%s %s>" % (self.__class__.__name__, ', '.join(["%s=%s" % (k,v) for k,v in self.__dict__.items()]))
 
 class Multiple(Command):
     """

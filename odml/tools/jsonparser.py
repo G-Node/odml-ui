@@ -34,7 +34,7 @@ class OdmlSerializer(object):
                     ele = OdmlSerializer.save_element(v)
                     cur.setdefault(k, []).append(ele)
             else:
-                cur[k] = unicode(val)
+                cur[k] = str(val)
 
         return cur
 
@@ -47,7 +47,7 @@ class JSONWriter(OdmlSerializer):
         return json.dumps(doc)
 
     def write_file(self, filename):
-        data = unicode(self)
+        data = str(self)
         f = open(filename, "w")
         f.write(data)
         f.close()
@@ -94,5 +94,5 @@ class JSONReader(OdmlReader):
 if __name__=="__main__":
     import sys
     y = JSONReader().fromFile(sys.stdin)
-    import dumper
+    from . import dumper
     dumper.dumpDoc(y)

@@ -1,11 +1,11 @@
 #-*- coding: utf-8
 
-import base
-import format
-import mapping
-import value as odml_value
+from . import base
+from . import format
+from . import mapping
+from . import value as odml_value
 import odml
-from tools.doc_inherit import *
+from .tools.doc_inherit import *
 
 
 class Property(base._baseobj):

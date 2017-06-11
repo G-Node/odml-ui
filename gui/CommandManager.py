@@ -4,7 +4,7 @@ class CommandManager(object):
         self.redo_stack = []
 
     def execute(self, cmd, redo=False):
-        print "run", cmd
+        print("run", cmd)
         if not redo:
             self.redo_stack = []
             self.enable_redo(enable=False)
@@ -12,7 +12,7 @@ class CommandManager(object):
         e = None
         try:
             cmd()
-        except Exception, e:
+        except Exception as e:
             self.error_func(cmd, e)
 
         self.undo_stack.append(cmd)
@@ -30,7 +30,7 @@ class CommandManager(object):
         e = None
         try:
             cmd.undo()
-        except Exception, e:
+        except Exception as e:
             self.error_func(cmd, e)
 
         if e:

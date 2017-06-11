@@ -5,8 +5,8 @@ pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
 
-import drag
-import drop
+from . import drag
+from . import drop
 
 class Action(object):
     """

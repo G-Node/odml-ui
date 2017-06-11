@@ -9,19 +9,19 @@ import gio
 import odml
 import odml.terminology as terminology
 import odml.format as format
-import commands
-from TreeView import TerminologyPopupTreeView
-from treemodel import PropertyModel
-from DragProvider import DragProvider
-from ChooserDialog import ChooserDialog
-import TextEditor
+from . import commands
+from .TreeView import TerminologyPopupTreeView
+from .treemodel import PropertyModel
+from .DragProvider import DragProvider
+from .ChooserDialog import ChooserDialog
+from . import TextEditor
 
 COL_KEY = 0
 COL_VALUE = 1
 
-from dnd.targets import ValueDrop, PropertyDrop, SectionDrop
-from dnd.odmldrop import OdmlDrag, OdmlDrop
-from dnd.text import TextDrag, TextDrop, TextGenericDropForPropertyTV
+from .dnd.targets import ValueDrop, PropertyDrop, SectionDrop
+from .dnd.odmldrop import OdmlDrag, OdmlDrop
+from .dnd.text import TextDrag, TextDrop, TextGenericDropForPropertyTV
 
 class PropertyView(TerminologyPopupTreeView):
     """
@@ -162,10 +162,11 @@ class PropertyView(TerminologyPopupTreeView):
         if cmd:
             self.execute(cmd)
 
-    def on_set_mapping(self, menu, (prop, mapping_obj)):
+    def on_set_mapping(self, menu, xxx_todo_changeme):
         """
         popup menu action: set mapping for a property
         """
+        (prop, mapping_obj) = xxx_todo_changeme
         mapstr = "%s#%s:%s" % (prop.parent.get_repository(), mapping_obj.parent.type, mapping_obj.name)
 
         cmd = commands.ChangeValue(
@@ -295,12 +296,13 @@ class PropertyView(TerminologyPopupTreeView):
         cmd = commands.ReplaceObject(obj=prop, repl=dst)
         self.execute(cmd)
 
-    def set_value(self, widget, (prop, val)):
+    def set_value(self, widget, xxx_todo_changeme1):
         """
         popup menu action: set value
 
         set the curr
         """
+        (prop, val) = xxx_todo_changeme1
         model, path, obj = self.popup_data
         if val is None:
             val = odml.Value("")
@@ -320,12 +322,13 @@ class PropertyView(TerminologyPopupTreeView):
                 ])
         self.execute(cmd)
 
-    def add_value(self, widget, (obj, val)):
+    def add_value(self, widget, xxx_todo_changeme2):
         """
         popup menu action: add value
 
         add a value to the selected property
         """
+        (obj, val) = xxx_todo_changeme2
         if val is None:
             val = odml.Value("")
         else:
@@ -334,12 +337,13 @@ class PropertyView(TerminologyPopupTreeView):
         cmd = commands.AppendValue(obj=obj, val=val)
         self.execute(cmd)
 
-    def add_property(self, widget, (obj, val)):
+    def add_property(self, widget, xxx_todo_changeme3):
         """
         popup menu action: add property
 
         add a property to the active section
         """
+        (obj, val) = xxx_todo_changeme3
         if val is None:
             val = odml.Property(name="unnamed property", value="")
         else:

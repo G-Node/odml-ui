@@ -1,9 +1,14 @@
+from gi import pygtkcompat
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 import gtk
 
-import tree
+from . import tree
 from ..DocumentRegistry import DocumentRegistry
 from .. import commands
-from targets import ActionDrop
+from .targets import ActionDrop
 
 class OdmlTreeDropTarget(tree.TreeDropTarget):
     """
@@ -85,14 +90,14 @@ class OdmlDrop(ActionDrop, OdmlTreeDropTarget):
         """
         return the object indicated by *path*, starting from *doc*
         """
-        return doc.from_path(map(int, path.split(",")))
+        return doc.from_path(list(map(int, path.split(","))))
 
     def odml_tree_can_drop(self, action, dst, position, data):
         src = None
         if data is not None:
             doc, src = self.get_source(data)
             if src is dst and not action.copy: # allow to copy
-                print "can't drop to myself"
+                print("can't drop to myself")
                 return False
         return self.odml_can_drop(action, dst, position, src)
 

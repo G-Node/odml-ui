@@ -1,11 +1,11 @@
 #-*- coding: utf-8
-import base
-import format
-import terminology
-import mapping
-from property import Property # this is supposedly ok, as we only use it for an isinstance check
+from . import base
+from . import format
+from . import terminology
+from . import mapping
+from .property import Property # this is supposedly ok, as we only use it for an isinstance check
                               # it MUST however not be used to create any Property objects
-from tools.doc_inherit import *
+from .tools.doc_inherit import *
 
 class Section(base._baseobj):
     pass
@@ -143,12 +143,12 @@ class BaseSection(base.sectionable, mapping.mapableSection, Section):
     @property
     def properties(self):
         """the list of all properties contained in this section"""
-    	return self._props
+        return self._props
 
     @property
     def sections(self):
         """the list of all child-sections of this section"""
-    	return self._sections
+        return self._sections
 
     @property
     def parent(self):
@@ -219,7 +219,7 @@ class BaseSection(base.sectionable, mapping.mapableSection, Section):
             obj._section = None
             # also: TODO unmap the property
         else:
-            raise ValueError, "Can only remove sections and properties"
+            raise ValueError("Can only remove sections and properties")
 
     def __iter__(self):
         """iterate over each section and property contained in this section"""

@@ -11,21 +11,21 @@ import gobject
 
 import odml
 import gui.treemodel.mixin
-import commands
+from . import commands
 
 from gui.treemodel import PropertyModel, SectionModel
 
-from InfoBar import EditorInfoBar
-from ScrolledWindow import ScrolledWindow
-import TreeView
-from SectionView import SectionView
-from AttributeView import AttributeView
-from PropertyView import PropertyView
-from NavigationBar import NavigationBar
-from ChooserDialog import odMLChooserDialog
-from EditorTab import EditorTab
-from DocumentRegistry import DocumentRegistry
-from Wizard import DocumentWizard
+from .InfoBar import EditorInfoBar
+from .ScrolledWindow import ScrolledWindow
+from . import TreeView
+from .SectionView import SectionView
+from .AttributeView import AttributeView
+from .PropertyView import PropertyView
+from .NavigationBar import NavigationBar
+from .ChooserDialog import odMLChooserDialog
+from .EditorTab import EditorTab
+from .DocumentRegistry import DocumentRegistry
+from .Wizard import DocumentWizard
 
 gtk.gdk.threads_init()
 
@@ -127,7 +127,7 @@ class EditorWindow(gtk.Window):
         self.set_default_size(800, 600)
 
         icons = load_icon_pixbufs("odml-logo")
-        self.set_icon_list(*icons)
+        self.set_icon_list(icons)
 
         merge = gtk.UIManager()
         merge.connect('connect-proxy', self.on_uimanager__connect_proxy)
@@ -138,8 +138,8 @@ class EditorWindow(gtk.Window):
 
         try:
             mergeid = merge.add_ui_from_string(ui_info)
-        except gobject.GError, msg:
-            print "building menus failed: %s" % msg
+        except gobject.GError as msg:
+            print("building menus failed: %s" % msg)
         bar = merge.get_widget("/MenuBar")
         bar.show()
 
@@ -310,7 +310,7 @@ class EditorWindow(gtk.Window):
               ( "AddMenu",  gtk.STOCK_ADD),                # name, stock id, label */
               ( "HelpMenu", gtk.STOCK_HELP),               # name, stock id, label */
               ]
-        for (k, v) in self.__class__.__dict__.iteritems():
+        for (k, v) in self.__class__.__dict__.items():
             if hasattr(v, "stock_id"):
                 entries.append(
                     (v.name, v.stock_id, v.label, v.accelerator,
@@ -348,15 +348,14 @@ class EditorWindow(gtk.Window):
         # display recently used files
         recent_filter = gtk.RecentFilter()
         odMLChooserDialog._setup_file_filter(recent_filter)
-        files = filter(lambda i: recent_filter.filter(
+        files = [i for i in gtk.recent_manager_get_default().get_items() if recent_filter.filter(
             {'display_name': i.get_display_name(),
              'uri': i.get_uri(),
-             'mime_type': i.get_mime_type()}),
-            gtk.recent_manager_get_default().get_items())
+             'mime_type': i.get_mime_type()})]
 
         if files:
             text += """\n\nOr open a <b>recently used file</b>:\n"""
-            text += "\n".join([u"""\u2022 <a href="%s">%s</a>""" % (i.get_uri(), i.get_display_name()) for i in files])
+            text += "\n".join(["""\u2022 <a href="%s">%s</a>""" % (i.get_uri(), i.get_display_name()) for i in files])
             
         page.set_markup(text)
         page.connect("activate-link", self.welcome_action)
@@ -887,8 +886,8 @@ def register_stock_icons():
 
             factory.add(icon_name, icon_set)
 
-        except gobject.GError, error:
-            print 'failed to load icon', icon_name, error
+        except gobject.GError as error:
+            print('failed to load icon', icon_name, error)
 
 def load_pixbuf(path):
     try:

@@ -41,7 +41,7 @@ class GenericIter(object):
         returns a new Iter object for the next element in this multivalue list
         or None
         """
-        obj = self._obj.next()
+        obj = next(self._obj)
         if obj is not None:
             return obj.IterClass(obj)
 

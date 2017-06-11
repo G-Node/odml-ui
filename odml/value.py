@@ -1,10 +1,10 @@
 #-*- coding: utf8
-import types
-import base
-import format
+from . import types
+from . import base
+from . import format
 
 import string
-from tools.doc_inherit import *
+from .tools.doc_inherit import *
 
 
 class Value(base._baseobj):
@@ -278,7 +278,7 @@ class BaseValue(base.baseobject, Value):
             return False
 
         if self._dtype == "binary":
-            unprintable = filter(lambda x: x not in string.printable, text)
+            unprintable = [x for x in text if x not in string.printable]
             if self._encoder is None and len(unprintable) > 0:
                 return False
 
@@ -301,7 +301,7 @@ class BaseValue(base.baseobject, Value):
         if max_length != -1:
             text = text[:max_length]
         if self.can_display(text, max_length):
-            return text + u'…'
+            return text + '…'
 
         return "(%d bytes)" % len(self._value)
 

@@ -4,14 +4,14 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
-import commands
+from . import commands
 import odml
-from TreeView import TerminologyPopupTreeView
-from DragProvider import DragProvider
+from .TreeView import TerminologyPopupTreeView
+from .DragProvider import DragProvider
 
-from dnd.targets import ValueDrop, PropertyDrop, SectionDrop
-from dnd.odmldrop import OdmlDrag, OdmlDrop
-from dnd.text import TextDrag, TextDrop, TextGenericDropForSectionTV
+from .dnd.targets import ValueDrop, PropertyDrop, SectionDrop
+from .dnd.odmldrop import OdmlDrag, OdmlDrop
+from .dnd.text import TextDrag, TextDrop, TextGenericDropForSectionTV
 
 class SectionView(TerminologyPopupTreeView):
     """
@@ -78,12 +78,13 @@ class SectionView(TerminologyPopupTreeView):
         else:
             obj.merge()
 
-    def add_section(self, widget, (obj, section)):
+    def add_section(self, widget, xxx_todo_changeme):
         """
         popup menu action: add section
 
         add a section to the selected section (or document if None selected)
         """
+        (obj, section) = xxx_todo_changeme
         if section is None:
             section = odml.Section(name="unnamed section")
         else:

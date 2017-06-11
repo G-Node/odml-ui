@@ -11,8 +11,8 @@ import odml
 import odml.validation
 from odml.tools.xmlparser import XMLWriter, XMLReader
 
-from CommandManager import CommandManager
-from ValidationWindow import ValidationWindow
+from .CommandManager import CommandManager
+from .ValidationWindow import ValidationWindow
 
 class EditorTab(object):
     """
@@ -93,8 +93,8 @@ class EditorTab(object):
         doc = XMLWriter(self.document)
         gf = gio.File(uri)
         try:
-            data = unicode(doc)
-        except Exception, e:
+            data = str(doc)
+        except Exception as e:
             self._info_bar.show_info("Save failed: %s" % e.message)
             return
         xml_file = gf.replace(etag='', make_backup=False) # TODO make backup?
@@ -199,7 +199,7 @@ class EditorTab(object):
 class MappingEditorTab(EditorTab):
     def close(self):
         super(MappingEditorTab, self).close()
-        if not filter(lambda x: isinstance(x, MappingEditorTab), self._clones):
+        if not [x for x in self._clones if isinstance(x, MappingEditorTab)]:
             # no more mappings present, go unmap
             odml.mapping.unmap_document(self.document._proxy_obj)
 

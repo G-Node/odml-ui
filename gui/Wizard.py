@@ -6,9 +6,9 @@ pygtkcompat.enable_gtk(version='3.0')
 
 
 import gtk
-from treemodel.SectionModel import SectionModel
-from SectionView import SectionView
-from ScrolledWindow import ScrolledWindow
+from .treemodel.SectionModel import SectionModel
+from .SectionView import SectionView
+from .ScrolledWindow import ScrolledWindow
 import odml
 import odml.terminology as terminology
 
@@ -94,7 +94,7 @@ class DataPage(Page):
             'Repository': 'http://portal.g-node.org/odml/terminologies/v1.0/terminologies.xml',
             }
         # add a label and an entry box for each field
-        for k, v in fields.iteritems():
+        for k, v in fields.items():
             label = gtk.Label("%s: " % k)
             label.set_alignment(1, 0.5)
             entry = gtk.Entry()
@@ -228,7 +228,7 @@ class DocumentWizard:
         the process is finished, create the desired document
         """
         doc = odml.Document()
-        for k, v in self.data_page.data.iteritems():
+        for k, v in self.data_page.data.items():
             setattr(doc, k, v)
 
         # copy all selected sections from the terminology

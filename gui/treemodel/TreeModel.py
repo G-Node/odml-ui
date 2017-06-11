@@ -14,7 +14,7 @@ class ColumnMapper(object):
         """
         self._col_map = mapping_dictionary
         rev_map = {}
-        for k, v in self._col_map.iteritems():
+        for k, v in self._col_map.items():
             rev_map[v[0]] = k
 
         self.rev_map = rev_map
@@ -23,10 +23,10 @@ class ColumnMapper(object):
         return self._col_map[key]
 
     def iteritems(self):
-        return self._col_map.iteritems()
+        return iter(self._col_map.items())
 
     def sort_iteritems(self):
-        for i in xrange(len(self.rev_map)):
+        for i in range(len(self.rev_map)):
             yield self.rev_map[i], self._col_map[self.rev_map[i]]
 
     def name_by_column(self, column):
@@ -81,7 +81,7 @@ class TreeModel(gtk.GenericTreeModel):
 
             if warning >= 0:
                 colors = ['orange', 'red']
-                value = value + u" <span foreground='%s'>\u26A0</span>" % colors[warning]
+                value = value + " <span foreground='%s'>\u26A0</span>" % colors[warning]
 
         if color is None: return value
         return "<span foreground='%s'>%s</span>" % (color, value)

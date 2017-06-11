@@ -1,4 +1,4 @@
-import GenericIter
+from . import GenericIter
 
 class PropIter(GenericIter.GenericIter):
     """

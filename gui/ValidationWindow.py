@@ -5,9 +5,9 @@ pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
 
-import commands
-from ScrolledWindow import ScrolledWindow
-from TreeView import TreeView
+from . import commands
+from .ScrolledWindow import ScrolledWindow
+from .TreeView import TreeView
 COL_PATH = 0
 COL_INDEX = 1
 COL_DESC = 2
@@ -38,7 +38,7 @@ class ValidationView(TreeView):
         for (path, idx, msg, is_error) in elements:
             if not is_error:
                 path = "<span foreground='darkgrey'>%s</span>" % path
-            msg = u"<span foreground='%s'>\u26A0</span> " % ("red" if is_error else "orange") + msg
+            msg = "<span foreground='%s'>\u26A0</span> " % ("red" if is_error else "orange") + msg
             self._store.append((path, idx, msg))
 
     def on_selection_change(self, tree_selection):
@@ -106,6 +106,6 @@ if __name__=="__main__":
     tab = Tab()
     tab.document.validation_result = Validation(tab.document)
     for err in tab.document.validation_result.errors:
-        print err.path, err.msg
+        print(err.path, err.msg)
     x = ValidationWindow(tab)
     gtk.mainloop()

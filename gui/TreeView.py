@@ -4,7 +4,7 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
-import commands
+from . import commands
 
 class TreeView(object):
     """

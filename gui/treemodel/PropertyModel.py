@@ -4,8 +4,8 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk, gobject
-from TreeIters import PropIter, ValueIter, SectionPropertyIter
-from TreeModel import TreeModel, ColumnMapper
+from .TreeIters import PropIter, ValueIter, SectionPropertyIter
+from .TreeModel import TreeModel, ColumnMapper
 import sys
 import odml
 import odml.property
@@ -108,7 +108,7 @@ class PropertyModel(TreeModel):
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh the corresponding cells
         """
-        print "change event(property): ", context
+        print("change event(property): ", context)
 
         # we are only interested in changes going up to the section level,
         # but not those dealing with subsections of ours
@@ -122,9 +122,9 @@ class PropertyModel(TreeModel):
             try:
                 iter = self.get_iter(path)
                 self.row_changed(path, iter)
-            except ValueError, e: # an invalid tree path, that should never have reached us
-                print repr(e)
-                print context.dump()
+            except ValueError as e: # an invalid tree path, that should never have reached us
+                print(repr(e))
+                print(context.dump())
 
         # there was some reason we did this, however context.obj can
         # also be a property of the current section

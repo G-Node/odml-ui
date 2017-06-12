@@ -25,6 +25,8 @@ class SectionView(TerminologyPopupTreeView):
         self.add_column(name="Name", edit_func=self.on_edited)
         self._treeview.show()
 
+        '''
+        ##### Disable Drang-and-Drop for now
         # set up our drag provider
         dp = DragProvider(self._treeview)
         _exec = lambda cmd: self.execute(cmd)
@@ -42,6 +44,7 @@ class SectionView(TerminologyPopupTreeView):
             ]:
             dp.append(target)
         dp.execute = _exec
+        '''
 
     def set_model(self, model):
         self._treeview.set_model(model)

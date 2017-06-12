@@ -1,6 +1,6 @@
 from gi import pygtkcompat
 
-pygtkcompat.enable() 
+pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
@@ -48,8 +48,14 @@ class EditorTab(object):
 
     def load(self, uri):
         self.file_uri = uri
-        xml_file = gio.File(uri)
-        self.document = XMLReader(ignore_errors=True).fromFile(xml_file.read())
+        xml_file = gio.File.new_for_uri(uri)
+        # TODO :-
+        # Some issues with file handling in Gio. Will be fixed later.
+        # For now, just passing the file path to read the file.
+        # self.document = XMLReader(ignore_errors=True).fromFile(xml_file.read())
+
+        # Remove the starting 'file://' in a URI
+        self.document = XMLReader(ignore_errors=True).fromFile(uri[7:])
         self.document.finalize()
         self.window.registry.add(self.document)
         self.window._info_bar.show_info("Loading of %s done!" % (xml_file.get_basename()))
@@ -195,6 +201,7 @@ class EditorTab(object):
         any cleanup?
         """
         self._clones.remove(self)
+
 
 class MappingEditorTab(EditorTab):
     def close(self):

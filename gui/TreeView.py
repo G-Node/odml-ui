@@ -99,8 +99,10 @@ class TreeView(object):
 
     def on_query_tooltip(self, widget, x, y, keyboard_tip, tooltip):
         if widget.get_tooltip_context(x, y, keyboard_tip):
-            model, path, iter = widget.get_tooltip_context(x, y, keyboard_tip)
-
+            # Now, it returns a 5-tuple value. We require first 3 only.
+            model, path, iter = widget.get_tooltip_context(x, y, keyboard_tip)[3:]
+            if model is None:
+                return
             value = model.get(iter, 0)
             if self.on_get_tooltip(model, path, iter, tooltip) is not None:
                 widget.set_tooltip_row(tooltip, path)

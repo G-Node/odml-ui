@@ -215,6 +215,11 @@ class sectionable(baseobject, mapping.mapped):
         :type filter_func: function
         """
         stack = []
+        
+        # Different handling of (None > 0) in Py2 and Py3
+        if max_depth is None:
+            max_depth = 0
+
         # below: never yield self if self is a Document
         if self == self.document and (max_depth > 0 or max_depth is None):
             for sec in self.sections:

@@ -132,7 +132,7 @@ class EditorWindow(gtk.Window):
         merge = gtk.UIManager()
         merge.connect('connect-proxy', self.on_uimanager__connect_proxy)
         merge.connect('disconnect-proxy', self.on_uimanager__disconnect_proxy)
-        self.set_data("ui-manager", merge)
+        self.ui_manager = merge
         merge.insert_action_group(self.__create_action_group(), 0)
         self.add_accel_group(merge.get_accel_group())
 
@@ -153,7 +153,7 @@ class EditorWindow(gtk.Window):
                      0,                         0);
 
         bar = merge.get_widget("/ToolBar")
-        bar.set_tooltips(True)
+        # bar.set_tooltips(True) -->  Not needed
         bar.show()
         table.attach(bar,
                      # X direction #       # Y direction
@@ -199,7 +199,7 @@ class EditorWindow(gtk.Window):
         section_tv.execute = self.execute
         section_tv.on_section_change = self.on_section_change
         section_view = gtk.VBox(homogeneous=False, spacing=0)
-        tmp = gtk.Frame("Sections")
+        tmp = gtk.Frame.new("Sections")
         tmp.add(ScrolledWindow(section_tv._treeview))
         tmp.show()
         section_view.pack_start(tmp, True, True, 1)
@@ -214,7 +214,7 @@ class EditorWindow(gtk.Window):
         info_bar = EditorInfoBar ()
         self._info_bar = info_bar
         property_view.pack_start(info_bar, False, False, 1)
-        tmp = gtk.Frame("Properties")
+        tmp = gtk.Frame.new("Properties")
         tmp.add(ScrolledWindow(property_tv._treeview))
         tmp.show()
         property_view.pack_start(tmp, True, True, 1)
@@ -296,12 +296,15 @@ class EditorWindow(gtk.Window):
              'select', self.on_menu_item__select, tooltip)
             cid2 = widget.connect(
              'deselect', self.on_menu_item__deselect)
-            widget.set_data('app::connect-ids', (cid, cid2))
+            widget.connect_ids = (cid, cid2)
 
     def on_uimanager__disconnect_proxy(self, uimgr, action, widget):
-        cids = widget.get_data('app::connect-ids') or ()
-        for cid in cids:
-            widget.disconnect(cid)
+        try:
+            cids = widget.connect_ids or ()
+            for cid in cids:
+                widget.disconnect(cid)
+        except AttributeError:
+            pass
 
     def __create_action_group(self):
         entries = [
@@ -345,6 +348,10 @@ class EditorWindow(gtk.Window):
         for action in self.welcome_disabled_actions:
             self.enable_action(action, False)
         
+        files = []
+
+        '''
+        #### Disable recent files suggestions
         # display recently used files
         recent_filter = gtk.RecentFilter()
         odMLChooserDialog._setup_file_filter(recent_filter)
@@ -352,6 +359,7 @@ class EditorWindow(gtk.Window):
             {'display_name': i.get_display_name(),
              'uri': i.get_uri(),
              'mime_type': i.get_mime_type()})]
+        '''
 
         if files:
             text += """\n\nOr open a <b>recently used file</b>:\n"""
@@ -528,11 +536,15 @@ class EditorWindow(gtk.Window):
         btn.add(close_image)
         hbox.pack_start(btn, False, False)
 
+        '''
+        ### Such modification is not explicitly available in Gtk3+
+        ### Need to find some workaround
         #this reduces the size of the button
         style = gtk.RcStyle()
         style.xthickness = 0
         style.ythickness = 0
         btn.modify_style(style)
+        '''
 
         hbox.show_all()
         return hbox
@@ -892,7 +904,7 @@ def register_stock_icons():
 def load_pixbuf(path):
     try:
         pixbuf = gtk.gdk.pixbuf_new_from_file(path)
-        transparent = pixbuf.add_alpha(False, chr(255), chr(255),chr(255))
+        transparent = pixbuf.add_alpha(False, 255, 255, 255)
         return transparent
     except:
         return None
@@ -900,7 +912,7 @@ def load_pixbuf(path):
 def load_icon_pixbufs(prefix):
     icons = []
     img_dir = get_image_path()
-    files = os.listdir (img_dir)
+    files = os.listdir(img_dir)
     for f in files:
         if f.startswith(prefix):
             abs_path = os.path.join(img_dir, f)

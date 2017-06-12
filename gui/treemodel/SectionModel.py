@@ -45,7 +45,7 @@ class SectionModel(TreeModel):
 
     def on_get_iter(self, path):
         debug("+on_get_iter: %s" % repr(path))
-        if path == (0,) and len(self._section.sections) == 0: return None
+        if path == gtk.TreePath.new_first() and len(self._section.sections) == 0: return None
         # we get the path from the treemodel which does not show the properties
         # therefore adjust the path to always select the sections
         rpath = (path[0],) # document -> section

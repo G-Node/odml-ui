@@ -35,7 +35,7 @@ class PropertyModel(TreeModel):
         # (n, ...) -> (1, ...)
         # this can only go wrong sometimes because properties
         # with only one value share a common path
-        return (1,) + path # we consider properties only
+        return (1,) + tuple(path.get_indices()) # we consider properties only
 
     def odml_path_to_model_path(self, path):
         if len(path) == 3: # 1, prop, val

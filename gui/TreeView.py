@@ -82,9 +82,13 @@ class TreeView(object):
                 obj = model.on_get_iter(path)._obj
 
             self.popup_data = (model, path, obj)
-            popup = self.get_popup_menu()
-            if popup is not None:
-                popup.popup(None, None, None, event.button, event.time)
+
+            # Seems that the Popup menu should be persistent, hence declared it
+            # as a member of *self*.
+            # From this -->  https://stackoverflow.com/a/15716681
+            self.popup = self.get_popup_menu()
+            if self.popup is not None:
+                self.popup.popup(None, None, None, None, event.button, event.time)
 
     def on_edited(self, widget, path, new_value, data):
         """
@@ -165,20 +169,21 @@ class TerminologyPopupTreeView(TreeView):
     def create_popup_menu_del_item(self, obj):
         return self.create_menu_item("Delete %s" % repr(obj), self.on_delete, obj)
 
-    def create_menu_item(self, name, func=None, data=None, stock=False):
+    def create_menu_item(self, name, func=None, data=None, stock=None):
         """
         Creates a single menu item
         """
         if stock:
-            item = gtk.ImageMenuItem(name)
+            item = gtk.ImageMenuItem.new_from_stock(stock, None)
+            item.set_label(name)
         else:
-            item = gtk.MenuItem(name)
+            item = gtk.MenuItem.new_with_label(name)
         if func is not None:
             item.connect('activate', func, data)
         item.show()
         return item
 
-    def create_popup_menu_items(self, add_name, empty_name, obj, func, terminology_func, name_func, stock=False):
+    def create_popup_menu_items(self, add_name, empty_name, obj, func, terminology_func, name_func, stock=None):
         """
         create menu items for a popup menu
 
@@ -190,6 +195,7 @@ class TerminologyPopupTreeView(TreeView):
         * *terminology_func* is passed to *get_terminology_suggestions* and used to extract the relevant
           suggestions of a terminology object (e.g. lambda section: section.properties)
         * *name_func* is a function the create a menu-item label from an object (e.g. lambda prop: prop.name)
+        * *stock* is the stock-id of the resource to use
 
         returns an array of gtk.MenuItem
         """

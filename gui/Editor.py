@@ -389,7 +389,7 @@ class EditorWindow(gtk.Window):
             self.load_document(path)
         return True
 
-    @gui_action("About", stock_id=gtk.STOCK_ABOUT)
+    @gui_action("About", label="About", stock_id=gtk.STOCK_ABOUT)
     def about(self, action):
         logo = self.render_icon("odml-logo", gtk.ICON_SIZE_DIALOG)
 
@@ -735,18 +735,18 @@ class EditorWindow(gtk.Window):
                                                    # won't be passed to the window
         gtk.main_quit()
 
-    @gui_action("NewSection", tooltip="Add a section to the current selected one", stock_id="odml-add-Section")
+    @gui_action("NewSection", label="Add Section", tooltip="Add a section to the current selected one", stock_id="odml-add-Section")
     def new_section(self, action):
         obj = self._section_tv.get_selected_object()
         if obj is None: obj = self.current_tab.document
         self._section_tv.add_section(None, (obj, None))
 
-    @gui_action("NewProperty", tooltip="Add a property to the current section", stock_id="odml-add-Property")
+    @gui_action("NewProperty", label="Add Property", tooltip="Add a property to the current section", stock_id="odml-add-Property")
     def new_property(self, action):
         obj = self._property_tv.section
         self._property_tv.add_property(None, (obj, None))
 
-    @gui_action("NewValue", tooltip="Add a value to the current selected property", stock_id="odml-add-Value")
+    @gui_action("NewValue", label="Add Value", tooltip="Add a value to the current selected property", stock_id="odml-add-Value")
     def new_value(self, action):
         obj = self._property_tv.get_selected_object()
         if obj is None: return
@@ -876,8 +876,14 @@ def register_stock_icons():
              ('odml-add-Property', 'Add _Property', ctrlshift, ord("P"), ''),
              ('odml-add-Value',    'Add _Value',    ctrlshift, ord("V"), ''),
              ]
+
+    # This method is failing (silently) in registering the stock icons.
+    # Passing a list of Gtk.StockItem also has no effects.
+    # To circumvent this, the *stock* and *label* properties of items
+    # have been separated, wherever necessary.
     gtk.stock_add(icons)
 
+    # The icons are being registered by the following steps.
     # Add our custom icon factory to the list of defaults
     factory = gtk.IconFactory()
     factory.add_default()
@@ -899,7 +905,7 @@ def register_stock_icons():
             factory.add(icon_name, icon_set)
 
         except gobject.GError as error:
-            print('failed to load icon', icon_name, error)
+            print('Failed to load icon', icon_name, error)
 
 def load_pixbuf(path):
     try:
@@ -920,4 +926,3 @@ def load_icon_pixbufs(prefix):
             if icon:
                 icons.append(icon)
     return icons
-

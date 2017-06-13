@@ -426,7 +426,6 @@ class EditorWindow(gtk.Window):
         self.append_tab(tab)
         return tab
 
-    @gui_action("FileOpen", stock_id=gtk.STOCK_OPEN)
     def load_document(self, uri):
         """open a new tab, load the document into it"""
         tab = EditorTab(self)
@@ -633,6 +632,7 @@ class EditorWindow(gtk.Window):
         chooser.on_accept = callback
         chooser.show()
 
+    @gui_action("FileOpen", stock_id=gtk.STOCK_OPEN)
     def open_file(self, action):
         """called to show the open file dialog"""
         self.chooser_dialog(title="Open Document", callback=self.load_document)

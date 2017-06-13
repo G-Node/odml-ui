@@ -1,6 +1,6 @@
 from gi import pygtkcompat
 
-pygtkcompat.enable() 
+pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import os
@@ -10,10 +10,10 @@ import gtk
 import gobject
 
 import odml
-import gui.treemodel.mixin
+import odmlui.treemodel.mixin
 from . import commands
 
-from gui.treemodel import PropertyModel, SectionModel
+from odmlui.treemodel import PropertyModel, SectionModel
 
 from .InfoBar import EditorInfoBar
 from .ScrolledWindow import ScrolledWindow

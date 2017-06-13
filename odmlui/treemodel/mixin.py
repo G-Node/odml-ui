@@ -4,7 +4,7 @@ gtk.GenericTreeModels using MixIns
 
 to use it just import this module::
 
-    >>> import gui.treemodel.mixin
+    >>> import odmlui.treemodel.mixin
 
 Alternatively you can import the modified Value/Property/Section/Document
 classes manually::

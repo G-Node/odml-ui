@@ -97,15 +97,15 @@ class EditorTab(object):
     def save(self, uri):
         self.document.clean()
         doc = XMLWriter(self.document)
-        gf = gio.File(uri)
+        gf = gio.File.new_for_uri(uri)
         try:
             data = str(doc)
         except Exception as e:
             self._info_bar.show_info("Save failed: %s" % e.message)
             return
-        xml_file = gf.replace(etag='', make_backup=False) # TODO make backup?
-        xml_file.write(doc.header)
-        xml_file.write(data)
+        xml_file = gf.replace(etag='', make_backup=False, cancellable=None, flags=0) # TODO make backup?
+        xml_file.write(doc.header.encode())
+        xml_file.write(doc.__unicode__().encode())
         xml_file.close()
         self.document.finalize() # undo the clean
         self.window._info_bar.show_info("%s was saved" % (gf.get_basename()))

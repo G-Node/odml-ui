@@ -2,7 +2,7 @@
 Handles (deferred) loading of terminology data and access to it
 for odML documents
 """
-from .tools import xmlparser
+from . import tools
 
 try:
     from urllib.request import urlopen
@@ -22,7 +22,7 @@ def cache_load(url):
     load the url and store it in a temporary cache directory
     subsequent requests for this url will use the cached version
     """
-    filename = md5.new(url).hexdigest() + '.' + os.path.basename(url)
+    filename = md5(url.encode('utf-8')).hexdigest() + '.' + os.path.basename(url)
     cache_dir = os.path.join(tempfile.gettempdir(), "odml.cache")
     if not os.path.exists(cache_dir):
         try:

@@ -208,7 +208,9 @@ class TerminologyPopupTreeView(TreeView):
 
         menu = gtk.Menu()
         terms = [(name_func(sec), sec) for sec in terms]
-        for name, val in [(empty_name, None), (None, None)] + terms:
+
+        # DOUBT :- Why was there a (None, None) part in the below list ??
+        for name, val in [(empty_name, None)] + terms:
             menu.append(self.create_menu_item(name, func, (obj, val)))
 
         menu.show()

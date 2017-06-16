@@ -91,7 +91,6 @@ class SectionNode(ParentedNode):
     """
     def from_path(self, path):
         assert len(path) > 1
-
         if path[0] == 0: # sections
             return super(SectionNode, self).from_path(path[1:])
 

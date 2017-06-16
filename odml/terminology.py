@@ -39,7 +39,7 @@ def cache_load(url):
                 print("failed loading '%s': %s" % (url, e.message))
                 return
             fp = open(cache_file, "w")
-            fp.write(data)
+            fp.write(data.decode('utf-8'))
             fp.close()
     return open(cache_file)
 

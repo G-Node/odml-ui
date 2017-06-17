@@ -475,8 +475,11 @@ class EditorWindow(gtk.Window):
         ctab = self.current_tab
         if not force_reset and ctab is tab: return
 
-        if ctab is not None:
-            ctab.state = self.get_tab_state()
+        # Disabling Tab state save-and-restore methods, as first, we need to
+        # handle the TreePath conversions properly
+
+        # if ctab is not None:
+        #     ctab.state = self.get_tab_state()
 
         if not force_reset:
             self.current_tab = tab
@@ -486,8 +489,8 @@ class EditorWindow(gtk.Window):
         self.enable_undo(tab.command_manager.can_undo)
         self.enable_redo(tab.command_manager.can_redo)
 
-        if hasattr(tab, "state"):
-            self.set_tab_state(tab.state)
+        # if hasattr(tab, "state"):
+        #     self.set_tab_state(tab.state)
 
     @property
     def current_tab(self):
@@ -613,13 +616,16 @@ class EditorWindow(gtk.Window):
         the notebook widget selected a tab
         """
         hbox = notebook.get_nth_page(pagenum)
-        if isinstance(hbox, gtk.Label): 
+        if isinstance(hbox, gtk.Label):
             return # quick exit for the Welcome screen
         if hbox.child.get_parent() is None:
             hbox.child.show()
             hbox.add(hbox.child)
         else:
-            hbox.child.reparent(hbox)
+            # hbox.child.reparent(hbox)
+            prev_parent = hbox.child.get_parent()
+            prev_parent.remove(hbox.child)
+            hbox.add(hbox.child)
         self.select_tab(hbox.tab, force_reset=True)
 
     def on_tab_close_click(self, button, tab):

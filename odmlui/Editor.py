@@ -132,6 +132,10 @@ class EditorWindow(gtk.Window):
         merge = gtk.UIManager()
         merge.connect('connect-proxy', self.on_uimanager__connect_proxy)
         merge.connect('disconnect-proxy', self.on_uimanager__disconnect_proxy)
+
+        # ### CHANGE :-
+        # The 'set-data' method in PyGTK is no longer available.
+        # Now, we have to set it just as a data member of the object.
         self.ui_manager = merge
         merge.insert_action_group(self.__create_action_group(), 0)
         self.add_accel_group(merge.get_accel_group())

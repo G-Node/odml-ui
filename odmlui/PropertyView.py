@@ -165,11 +165,13 @@ class PropertyView(TerminologyPopupTreeView):
         if cmd:
             self.execute(cmd)
 
-    def on_set_mapping(self, menu, xxx_todo_changeme):
+    def on_set_mapping(self, menu, obj_prop_pair):
         """
         popup menu action: set mapping for a property
         """
-        (prop, mapping_obj) = xxx_todo_changeme
+        # Shouldn't the below left hand side be (mapping_obj, prop) ?
+        # ( From line 197 ? )
+        (prop, mapping_obj) = obj_prop_pair
         mapstr = "%s#%s:%s" % (prop.parent.get_repository(), mapping_obj.parent.type, mapping_obj.name)
 
         cmd = commands.ChangeValue(
@@ -299,13 +301,13 @@ class PropertyView(TerminologyPopupTreeView):
         cmd = commands.ReplaceObject(obj=prop, repl=dst)
         self.execute(cmd)
 
-    def set_value(self, widget, xxx_todo_changeme1):
+    def set_value(self, widget, prop_value_pair):
         """
         popup menu action: set value
 
         set the curr
         """
-        (prop, val) = xxx_todo_changeme1
+        (prop, val) = prop_value_pair
         model, path, obj = self.popup_data
         if val is None:
             val = odml.Value("")
@@ -325,13 +327,13 @@ class PropertyView(TerminologyPopupTreeView):
                 ])
         self.execute(cmd)
 
-    def add_value(self, widget, xxx_todo_changeme2):
+    def add_value(self, widget, obj_value_pair):
         """
         popup menu action: add value
 
         add a value to the selected property
         """
-        (obj, val) = xxx_todo_changeme2
+        (obj, val) = obj_value_pair
         if val is None:
             val = odml.Value("")
         else:
@@ -340,13 +342,13 @@ class PropertyView(TerminologyPopupTreeView):
         cmd = commands.AppendValue(obj=obj, val=val)
         self.execute(cmd)
 
-    def add_property(self, widget, xxx_todo_changeme3):
+    def add_property(self, widget, obj_val_pair):
         """
         popup menu action: add property
 
         add a property to the active section
         """
-        (obj, val) = xxx_todo_changeme3
+        (obj, val) = obj_val_pair
         if val is None:
             val = odml.Property(name="unnamed property", value="")
         else:

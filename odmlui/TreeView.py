@@ -173,6 +173,11 @@ class TerminologyPopupTreeView(TreeView):
         """
         Creates a single menu item
         """
+        # Now *stock* refers to the stock-id, and not whether to use a
+        # Stock Item or not. This issue is due to the failing in registering
+        # stock items, as they were being done in PyGTK. The label is not
+        # automatically derived from the stock item now, hence the *name*
+        # becomes the Label of the menu item.
         if stock:
             item = gtk.ImageMenuItem.new_from_stock(stock, None)
             item.set_label(name)

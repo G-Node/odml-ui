@@ -26,7 +26,7 @@ class SectionView(TerminologyPopupTreeView):
         self._treeview.show()
 
         '''
-        ##### Disable Drang-and-Drop for now
+        ##### Disable Drag-and-Drop for now
         # set up our drag provider
         dp = DragProvider(self._treeview)
         _exec = lambda cmd: self.execute(cmd)
@@ -81,13 +81,13 @@ class SectionView(TerminologyPopupTreeView):
         else:
             obj.merge()
 
-    def add_section(self, widget, xxx_todo_changeme):
+    def add_section(self, widget, obj_section_pair):
         """
         popup menu action: add section
 
         add a section to the selected section (or document if None selected)
         """
-        (obj, section) = xxx_todo_changeme
+        (obj, section) = obj_section_pair
         if section is None:
             section = odml.Section(name="unnamed section")
         else:

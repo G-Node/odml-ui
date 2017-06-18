@@ -351,24 +351,31 @@ class EditorWindow(gtk.Window):
         text = """<span size="x-large" weight="bold">Welcome to odML-Editor</span>\n\nNow go ahead and <a href="#new">create a new document</a>."""
         for action in self.welcome_disabled_actions:
             self.enable_action(action, False)
-        
-        files = []
 
-        '''
-        #### Disable recent files suggestions
         # display recently used files
         recent_filter = gtk.RecentFilter()
         odMLChooserDialog._setup_file_filter(recent_filter)
-        files = [i for i in gtk.recent_manager_get_default().get_items() if recent_filter.filter(
-            {'display_name': i.get_display_name(),
-             'uri': i.get_uri(),
-             'mime_type': i.get_mime_type()})]
-        '''
 
-        if files:
+        # Now, we need to pass in a separate struct 'gtk.RecentFilterInfo',
+        # for each recently used file, for the filtering process by the
+        # recent_filter.filter() method. If the 'filter' return True,
+        # the file is included, else not included.
+        odml_files = []
+        all_recent_files = gtk.RecentManager.get_default().get_items()
+        filter_info = gtk.RecentFilterInfo()
+        filter_info.contains = recent_filter.get_needed()
+
+        for i in all_recent_files:
+            filter_info.display_name = i.get_display_name()
+            filter_info.uri = i.get_uri()
+            filter_info.mime_type = i.get_mime_type()
+            if recent_filter.filter(filter_info):
+                odml_files.append(i)
+
+        if odml_files:
             text += """\n\nOr open a <b>recently used file</b>:\n"""
-            text += "\n".join(["""\u2022 <a href="%s">%s</a>""" % (i.get_uri(), i.get_display_name()) for i in files])
-            
+            text += "\n".join(["""\u2022 <a href="%s">%s</a>""" % (i.get_uri(), i.get_display_name()) for i in odml_files])
+
         page.set_markup(text)
         page.connect("activate-link", self.welcome_action)
         page.show()

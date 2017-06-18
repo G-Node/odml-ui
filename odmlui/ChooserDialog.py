@@ -35,6 +35,13 @@ class odMLChooserDialog(ChooserDialog):
     @staticmethod
     def _setup_file_filter(filter):
         filter.set_name("odML documents (*.xml, *.odml)")
+
+        # A lot of files which have mime type 'application/xml' also appear in
+        # the recently used files, but are not odML files.
+        # So, I was thinking of doing away with application/xml and text/xml,
+        # and if something of this sort is really needed, we can register
+        # something like appliacation/odml.
+
         filter.add_mime_type("application/xml")
         filter.add_mime_type("text/xml")
         filter.add_pattern('*.xml')

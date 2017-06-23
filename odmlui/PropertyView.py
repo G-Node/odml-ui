@@ -46,8 +46,6 @@ class PropertyView(TerminologyPopupTreeView):
         tv.set_rules_hint(True)
         tv.show()
 
-        '''
-        ##### Disable Drang-and-Drop for now
         # set up our drag provider
         dp = DragProvider(self._treeview)
         _exec = lambda cmd: self.execute(cmd)
@@ -70,7 +68,6 @@ class PropertyView(TerminologyPopupTreeView):
             ]:
             dp.append(target)
         dp.execute = _exec
-        '''
 
     @property
     def section(self):

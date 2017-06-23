@@ -40,7 +40,7 @@ class TreeDropTarget(drop.DropTarget):
     """
     def can_drop(self, treeview, context, x, y, data=None):
         model = treeview.get_model()
-        action = Action(context.suggested_action)
+        action = Action(context.get_suggested_action())
         drop_info = treeview.get_dest_row_at_pos(x, y)
         if not drop_info:
             return self.tree_can_drop(action, model, None, -1, data)
@@ -54,7 +54,7 @@ class TreeDropTarget(drop.DropTarget):
 
     def receive_data(self, treeview, context, x, y, data, etime):
         model = treeview.get_model()
-        action = Action(context.action)
+        action = Action(context.get_actions())
         drop_info = treeview.get_dest_row_at_pos(x, y)
 
         if not drop_info:
@@ -75,7 +75,7 @@ class TreeDragTarget(drag.DragTarget):
     DragProvider to account for widget-changes while dragging)
     """
     def tree_get_source(self, treeview, context):
-        treeselection = context.get_data("org-selection") if context else None
+        treeselection = context.org_selection if context else None
         if treeselection is None:
             treeselection = treeview.get_selection()
             model, iter = treeselection.get_selected()
@@ -85,7 +85,7 @@ class TreeDragTarget(drag.DragTarget):
 
     def get_data(self, treeview, context):
         model, iter = self.tree_get_source(treeview, context)
-        action = Action(context.action if context is not None else 0)
+        action = Action(context.get_actions() if context is not None else 0)
         return self.tree_get_data(action, model, iter)
 
     def tree_get_data(self, action, model, iter):

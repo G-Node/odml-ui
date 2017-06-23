@@ -1,9 +1,9 @@
 #-*- coding: utf-8
-import types
-import base
-import format
-import terminology
-from tools.doc_inherit import *
+from . import types
+from . import base
+from . import format
+from . import terminology
+from .tools.doc_inherit import *
 
 class Document(base._baseobj):
     pass

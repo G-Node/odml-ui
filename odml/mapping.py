@@ -1,5 +1,5 @@
 import odml
-import terminology
+from . import terminology
 import weakref
 from functools import wraps
 
@@ -229,8 +229,8 @@ def create_mapping(doc):
     1. recursively map all sections
     2. afterwards map all their properties
     """
-    global proxy # we install the proxy only late time
-    import tools.proxy as proxy
+    global proxy  # we install the proxy only late time
+    from .tools import proxy
     mdoc = proxy.DocumentProxy(doc)
     # TODO copy attributes, but also make this generic
     mdoc._proxy_obj = doc
@@ -365,7 +365,7 @@ def unmap_property(prop=None, mprop=None):
             # as it is a non-existant section)
             # for now all properties that are no proxies (they are installed using
             # clone()-call) are just copies
-            l = len(filter(lambda x: isinstance(x, proxy.Proxy), msec.properties))
+            l = len([x for x in msec.properties if isinstance(x, proxy.Proxy)])
         else:
             l = len(msec.properties)
 

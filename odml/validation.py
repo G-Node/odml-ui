@@ -2,9 +2,9 @@
 """
 generic odml validation framework
 """
-import format
-import mapping
-import tools.event
+from . import format
+from . import mapping
+from .tools import event
 import odml
 
 # event capabilities are needed for mappings
@@ -118,7 +118,7 @@ def section_repository_should_be_present(sec):
 
     try:
         tsec = sec.get_terminology_equivalent()
-    except Exception, e:
+    except Exception as e:
         yield ValidationError(sec, 'Could not load terminology: ' + e.message, 'warning')
         return
 
@@ -192,7 +192,7 @@ def odML_mapped_document_be_valid(doc):
     try:
         if mdoc is None:
             mdoc = mapping.create_mapping(doc)
-    except mapping.MappingError, e:
+    except mapping.MappingError as e:
         yield ValidationError(doc, 'mapping: %s' % str(e), 'error')
         return
 
@@ -206,7 +206,7 @@ def odML_mapped_document_be_valid(doc):
 Validation.register_handler('odML', odML_mapped_document_be_valid)
 
 def property_values_same_unit(prop, tprop=None):
-    units = set(map(lambda x: x.unit, prop.values))
+    units = set([x.unit for x in prop.values])
     if len(units) > 1:
         yield ValidationError(prop, 'Values of a property should be of the same unit', 'warning')
     if tprop is not None and tprop.values[0].unit != prop.values[0].unit:

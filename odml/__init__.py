@@ -1,9 +1,10 @@
-import doc, section, property, value
+from . import section, property, value
+from . import doc
 from odml.types import DType
 
 # the original property-function is overwritten
 # so get it back!
-from __builtin__ import property as _property
+from builtins import property as _property
 
 
 class odml_implementation(object):

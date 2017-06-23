@@ -2,11 +2,11 @@
 """
 collects common base functionality
 """
-import doc
+
 import posixpath
-import terminology
-import mapping
-from tools.doc_inherit import *
+from . import terminology
+from . import mapping
+from .tools.doc_inherit import *
 
 class _baseobj(object):
     pass
@@ -149,6 +149,7 @@ class sectionable(baseobject, mapping.mapped):
         """
         returns the parent-most node (if its a document instance) or None
         """
+        from . import doc
         p = self
         while p.parent:
             p = p.parent
@@ -214,6 +215,11 @@ class sectionable(baseobject, mapping.mapped):
         :type filter_func: function
         """
         stack = []
+        
+        # Different handling of (None > 0) in Py2 and Py3
+        if max_depth is None:
+            max_depth = 0
+
         # below: never yield self if self is a Document
         if self == self.document and (max_depth > 0 or max_depth is None):
             for sec in self.sections:

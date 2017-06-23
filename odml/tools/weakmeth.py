@@ -17,7 +17,7 @@ class _weak_callable:
             return self._obj
         if attr == 'im_func':
             return self._meth
-        raise AttributeError, attr
+        raise AttributeError(attr)
 
 class WeakMethod:
     """ Wraps a function or, more importantly, a bound method, in
@@ -26,8 +26,8 @@ class WeakMethod:
 
     def __init__(self,fn):
         try:
-            self._obj = ref(fn.im_self)
-            self._meth = fn.im_func
+            self._obj = ref(fn.__self__)
+            self._meth = fn.__func__
         except AttributeError:
             # It's not a bound method.
             self._obj = None

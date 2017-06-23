@@ -1,7 +1,7 @@
 import odml
-import event
+from . import event
 import weakmeth, weakref
-import nodes
+from . import nodes
 
 # events are required for proxy objects 
 odml.setMinimumImplementation('event')
@@ -208,7 +208,7 @@ class PropertyProxy(EqualityBaseProxy, ChangeAbleProxy, odml.property.Property, 
                 return self._p_values
 
         # transparently create proxy objects
-        self._p_values = map(ValueProxy, self._proxy_obj.values)
+        self._p_values = list(map(ValueProxy, self._proxy_obj.values))
         for i in self._p_values: # and make them remember to which property they belong
             i._property = self
         return self._p_values
@@ -466,7 +466,7 @@ class MappedSection(EqualityBaseProxy, HookProxy, ReadOnlySection):
     def remove(self, obj):
         # we should only contain proxy objects (unless a link is present TODO)
         if not isinstance(obj, Proxy):
-            print "%s should only contain proxy objects, but then look at this" % repr(self), obj
+            print("%s should only contain proxy objects, but then look at this" % repr(self), obj)
             obj = self.contains(obj)
         assert isinstance(obj, Proxy)
 

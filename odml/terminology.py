@@ -2,12 +2,19 @@
 Handles (deferred) loading of terminology data and access to it
 for odML documents
 """
-import tools.xmlparser
+from . import tools
 
-import urllib2
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib import urlopen
+
 import threading
 
-import os, tempfile, md5, datetime
+import os
+import tempfile
+import datetime
+from hashlib import md5
 
 CACHE_AGE = datetime.timedelta(days=1)
 def cache_load(url):
@@ -15,7 +22,7 @@ def cache_load(url):
     load the url and store it in a temporary cache directory
     subsequent requests for this url will use the cached version
     """
-    filename = md5.new(url).hexdigest() + '.' + os.path.basename(url)
+    filename = md5(url.encode('utf-8')).hexdigest() + '.' + os.path.basename(url)
     cache_dir = os.path.join(tempfile.gettempdir(), "odml.cache")
     if not os.path.exists(cache_dir):
         try:
@@ -27,12 +34,12 @@ def cache_load(url):
     if not os.path.exists(cache_file) \
         or datetime.datetime.fromtimestamp(os.path.getmtime(cache_file)) < datetime.datetime.now() - CACHE_AGE:
             try:
-                data = urllib2.urlopen(url).read() # read data first, so we don't have empty files on error
-            except Exception, e:
-                print "failed loading '%s': %s" % (url, e.message)
+                data = urlopen(url).read() # read data first, so we don't have empty files on error
+            except Exception as e:
+                print("failed loading '%s': %s" % (url, e.message))
                 return
             fp = open(cache_file, "w")
-            fp.write(data)
+            fp.write(data.decode('utf-8'))
             fp.close()
     return open(cache_file)
 
@@ -60,14 +67,14 @@ class Terminologies(dict):
         # if url.startswith("http"): return None
         fp = cache_load(url)
         if fp is None:
-            print "did not successfully load '%s'" % url
+            print("did not successfully load '%s'" % url)
             return
         try:
             term = tools.xmlparser.XMLReader(filename=url, ignore_errors=True).fromFile(fp)
             term.finalize()
-        except tools.xmlparser.ParserException, e:
-            print "Failed to load %s due to parser errors" % url
-            print ' "%s"' % e.message
+        except tools.xmlparser.ParserException as e:
+            print("Failed to load %s due to parser errors" % url)
+            print(' "%s"' % e.message)
             term = None
         self[url] = term
         return term

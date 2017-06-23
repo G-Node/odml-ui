@@ -10,7 +10,7 @@ Parses odML files. Can be invoked standalone:
 
 import odml
 from .. import format
-from dumper import dumpSection
+from .dumper import dumpSection
 from lxml import etree as ET
 from lxml.builder import E
 
@@ -19,7 +19,7 @@ from lxml import _elementpath as _dummy
 
 import sys
 
-from StringIO import StringIO
+from io import StringIO
 
 format.Document._xml_name = "odML"
 format.Section._xml_name = "section"
@@ -63,12 +63,12 @@ class XMLWriter:
         if isinstance(fmt, format.Document.__class__):
             cur.attrib['version'] = XML_VERSION
 
-        for k,v in fmt._xml_attributes.iteritems():
+        for k,v in fmt._xml_attributes.items():
             if not v or not hasattr(e, fmt.map(v)): continue
 
             val = getattr(e, fmt.map(v))
             if val is None: continue # no need to save this
-            cur.attrib[k] = unicode(val)
+            cur.attrib[k] = str(val)
 
         # generate elements
         for k in fmt._args:
@@ -86,7 +86,7 @@ class XMLWriter:
                     ele = XMLWriter.save_element(v)
                     cur.append(ele)
             else:
-                ele = E(k, unicode(val))
+                ele = E(k, str(val))
                 cur.append(ele)
 
         return cur
@@ -97,7 +97,7 @@ class XMLWriter:
     def write_file(self, filename):
         # calculate the data before opening the file in case we get any
         # exception
-        data = unicode(self).encode('utf-8')
+        data = str(self).encode('utf-8')
         f = open(filename, "w")
         f.write(self.header)
         f.write(data)
@@ -132,19 +132,19 @@ class XMLReader(object):
         """
         try:
             root = ET.parse(xml_file, self.parser).getroot()
-        except ET.XMLSyntaxError, e:
+        except ET.XMLSyntaxError as e:
             raise ParserException(e.message)
         return self.parse_element(root)
 
     def fromString(self, string):
         try:
             root = ET.XML(string, self.parser)
-        except ET.XMLSyntaxError, e:
+        except ET.XMLSyntaxError as e:
             raise ParserException(e.message)
         return self.parse_element(root)
 
     def check_mandatory_arguments(self, data, ArgClass, tag_name, node):
-        for k, v in ArgClass._args.iteritems():
+        for k, v in ArgClass._args.items():
             if v != 0 and not ArgClass.map(k) in data:
                 self.error("missing element <%s> within <%s> tag" % (k, tag_name) + repr(data), node)
 
@@ -184,7 +184,7 @@ class XMLReader(object):
 
         if root.text: text.append(root.text.strip())
 
-        for k, v in root.attrib.iteritems():
+        for k, v in root.attrib.items():
             k = k.lower()
             self.is_valid_argument(k, fmt, root)
             if k == 'version' and root.tag == 'odML': continue  # special case for XML version
@@ -219,14 +219,14 @@ class XMLReader(object):
         else:
             obj = create(args=arguments, text=''.join(text), children=children)
 
-        self.check_mandatory_arguments(dict(arguments.items() + extra_args.items()),
+        self.check_mandatory_arguments(dict(list(arguments.items()) + list(extra_args.items())),
             fmt, root.tag, root)
 
-        for k, v in arguments.iteritems():
+        for k, v in arguments.items():
             if hasattr(obj, k):
                 try:
                     setattr(obj, k, v)
-                except Exception, e:
+                except Exception as e:
                     self.warn("cannot set '%s' property on <%s>: %s" % (k, root.tag, repr(e)), root)
                     if not self.ignore_errors:
                         raise
@@ -266,7 +266,7 @@ class XMLReader(object):
 
 if __name__ == '__main__':
     from optparse import OptionParser
-    import dumper
+    from . import dumper
 
     parser = OptionParser()
     (options, args) = parser.parse_args()

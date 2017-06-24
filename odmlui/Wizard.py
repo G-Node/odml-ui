@@ -130,7 +130,7 @@ class CheckableSectionView(SectionView):
         self._treeview.set_expander_column(self._treeview.get_column(1))
         self.sections = {}
 
-    def celldatamethod(self, column, cell, model, iter):
+    def celldatamethod(self, column, cell, model, iter, data=None):
         """
         custom method to set the active state for the CellRenderer
         """

@@ -333,3 +333,6 @@ class BaseSection(base.sectionable, mapping.mapableSection, Section):
     def can_be_merged(self):
         """returns True if either a *link* or an *include* attribute is specified"""
         return self._link is not None or self._include is not None
+
+    def __hash__(self):
+        return id(self)

@@ -49,13 +49,9 @@ class EditorTab(object):
     def load(self, uri):
         self.file_uri = uri
         xml_file = gio.File.new_for_uri(uri)
-        # TODO :-
-        # Some issues with file handling in Gio. Will be fixed later.
-        # For now, just passing the file path to read the file.
-        # self.document = XMLReader(ignore_errors=True).fromFile(xml_file.read())
+        xml_file_path = xml_file.get_path()
 
-        # Remove the starting 'file://' in a URI
-        self.document = XMLReader(ignore_errors=True).fromFile(uri[7:])
+        self.document = XMLReader(ignore_errors=True).fromFile(xml_file_path)
         self.document.finalize()
         self.window.registry.add(self.document)
         self.window._info_bar.show_info("Loading of %s done!" % (xml_file.get_basename()))

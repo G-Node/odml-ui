@@ -485,8 +485,8 @@ class EditorWindow(gtk.Window):
         # Disabling Tab state save-and-restore methods, as first, we need to
         # handle the TreePath conversions properly
 
-        # if ctab is not None:
-        #     ctab.state = self.get_tab_state()
+        if ctab is not None:
+            ctab.state = self.get_tab_state()
 
         if not force_reset:
             self.current_tab = tab
@@ -496,8 +496,8 @@ class EditorWindow(gtk.Window):
         self.enable_undo(tab.command_manager.can_undo)
         self.enable_redo(tab.command_manager.can_redo)
 
-        # if hasattr(tab, "state"):
-        #     self.set_tab_state(tab.state)
+        if hasattr(tab, "state"):
+            self.set_tab_state(tab.state)
 
     @property
     def current_tab(self):
@@ -522,7 +522,7 @@ class EditorWindow(gtk.Window):
     def set_tab_state(self, state):
         self._section_tv.restore_state(state[0])
         self._property_tv.restore_state(state[1])
-        #self._property_view.restore_state(state[2])
+        # self._property_view.restore_state(state[2])
 
     def get_notebook_page(self, tab):
         """

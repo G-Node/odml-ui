@@ -229,45 +229,49 @@ class TerminologyPopupTreeView(TreeView):
         """
 
         model = self._treeview.get_model()
-        if model is None: return
-        exp_lines = []
-        model.foreach(lambda model, path, iter: exp_lines.append(path) if self._treeview.row_expanded(path) else 0)
+        if model is None:
+            return
+        exp_rows = []
+
+        def get_expanded_rows(model, path, iter, data=None):
+            if self._treeview.row_expanded(path):
+                exp_rows.append(path.copy())
+            return False
+
+        model.foreach(get_expanded_rows)
         model, selected_rows = self._treeview.get_selection().get_selected_rows()
-        return exp_lines, selected_rows
+        return exp_rows, selected_rows
 
     def restore_state(self, state):
         """
-        restore a state saved by
-        save_state
+        restore a state saved by save_state
         """
-        if state is None: return
-        exp_lines, selected_rows = state
-        model = self._treeview.get_model()
+        if state is None:
+            return
+        exp_rows, selected_rows = state
         selection = self._treeview.get_selection()
 
-        def exp(model, path, iter):
-            if path in exp_lines:
-                self._treeview.expand_row(path, False)
-            if path in selected_rows:
-                selection.select_path(path)
+        for row in exp_rows:
+            self._treeview.expand_row(row, False)
 
-        model.foreach(exp)
+        for row in selected_rows:
+            selection.select_path(row)
 
     def select_object(self, obj, expand=True):
         """
         change current the selection to *obj*, i.e. navigate there
 
-        if expand is set, the selection 
+        if expand is set, the selection
         """
         model = self._treeview.get_model()
         path = model.get_node_path(obj)
-        if not path: return
+        if not path:
+            return
 
         if expand:
             self._treeview.expand_to_path(path)
-    
+
         selection = self._treeview.get_selection()
         if path in selection.get_selected_rows():
             return
         selection.select_path(path)
-        

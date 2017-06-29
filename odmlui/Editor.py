@@ -287,10 +287,12 @@ class EditorWindow(gtk.Window):
         return t
 
     def on_menu_item__select(self, menuitem, tooltip):
-        self._statusbar.push(-1, tooltip)
+        context_id = self._statusbar.get_context_id('menu_tooltip')
+        self._statusbar.push(context_id, tooltip)
 
     def on_menu_item__deselect(self, menuitem):
-        self._statusbar.pop(-1)
+        context_id = self._statusbar.get_context_id('menu_tooltip')
+        self._statusbar.pop(context_id)
 
     def on_uimanager__connect_proxy(self, uimgr, action, widget):
         # TODO this does not work on unity at least
@@ -400,7 +402,7 @@ class EditorWindow(gtk.Window):
             self.load_document(path)
         return True
 
-    @gui_action("About", label="About", stock_id=gtk.STOCK_ABOUT)
+    @gui_action("About", tooltip="About odML editor", stock_id=gtk.STOCK_ABOUT)
     def about(self, action):
         logo = self.render_icon("odml-logo", gtk.ICON_SIZE_DIALOG)
 
@@ -436,6 +438,11 @@ class EditorWindow(gtk.Window):
         tab.new(doc)
         self.append_tab(tab)
         return tab
+
+    @gui_action("FileOpen", tooltip="Open an odML File", stock_id=gtk.STOCK_OPEN)
+    def open_file(self, action):
+        """called to show the open file dialog"""
+        self.chooser_dialog(title="Open Document", callback=self.load_document)
 
     def load_document(self, uri):
         """open a new tab, load the document into it"""
@@ -478,8 +485,8 @@ class EditorWindow(gtk.Window):
         # Disabling Tab state save-and-restore methods, as first, we need to
         # handle the TreePath conversions properly
 
-        # if ctab is not None:
-        #     ctab.state = self.get_tab_state()
+        if ctab is not None:
+            ctab.state = self.get_tab_state()
 
         if not force_reset:
             self.current_tab = tab
@@ -489,8 +496,8 @@ class EditorWindow(gtk.Window):
         self.enable_undo(tab.command_manager.can_undo)
         self.enable_redo(tab.command_manager.can_redo)
 
-        # if hasattr(tab, "state"):
-        #     self.set_tab_state(tab.state)
+        if hasattr(tab, "state"):
+            self.set_tab_state(tab.state)
 
     @property
     def current_tab(self):
@@ -515,7 +522,7 @@ class EditorWindow(gtk.Window):
     def set_tab_state(self, state):
         self._section_tv.restore_state(state[0])
         self._property_tv.restore_state(state[1])
-        #self._property_view.restore_state(state[2])
+        # self._property_view.restore_state(state[2])
 
     def get_notebook_page(self, tab):
         """
@@ -649,11 +656,6 @@ class EditorWindow(gtk.Window):
         chooser.on_accept = callback
         chooser.show()
 
-    @gui_action("FileOpen", stock_id=gtk.STOCK_OPEN)
-    def open_file(self, action):
-        """called to show the open file dialog"""
-        self.chooser_dialog(title="Open Document", callback=self.load_document)
-
     # TODO gui action?
     def open_recent(self, recent_action):
         uri = recent_action.get_current_uri ()
@@ -680,7 +682,7 @@ class EditorWindow(gtk.Window):
         # self._property_tv.set_model()
         # TODO restore selection/expansion if known in tab
 
-    @gui_action("SaveAs", stock_id=gtk.STOCK_SAVE_AS)
+    @gui_action("SaveAs", tooltip="Save changes to another file", stock_id=gtk.STOCK_SAVE_AS)
     def save_as(self, action):
         """
         called upon save_file action
@@ -694,7 +696,7 @@ class EditorWindow(gtk.Window):
                      #      repeat the action, once the document was saved and the
                      #      edited flag was cleared
 
-    @gui_action("Save", stock_id=gtk.STOCK_SAVE)
+    @gui_action("Save", tooltip="Save changes", stock_id=gtk.STOCK_SAVE)
     def save(self, action):
         """
         called upon save_file action
@@ -745,7 +747,7 @@ class EditorWindow(gtk.Window):
         if len(self.editors) == 0:
             gtk.main_quit()
 
-    @gui_action("Quit", stock_id=gtk.STOCK_QUIT)
+    @gui_action("Quit", tooltip="Quit", stock_id=gtk.STOCK_QUIT)
     def quit(self, action, extra=None):
         for win in self.editors:
             if not win.save_if_changed(): return True # the event is handled and

@@ -91,3 +91,6 @@ class BaseDocument(base.sectionable, Document):
         if self.repository is None: return None
         term = terminology.load(self.repository)
         return term
+
+    def __hash__(self):
+        return id(self)

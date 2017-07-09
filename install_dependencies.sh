@@ -2,10 +2,9 @@
 
 # This script executes outside of the virtual environment,
 # hence the packages installed will be system-wide, and not 
-# specifically in the virtual environment.
+# specific to the virtual environment.
 
-python --version
-python3 --version
+set -e
 
 sudo apt-get -qq update
 sudo apt-get install libffi-dev libglib2.0-0 libglib2.0-dev

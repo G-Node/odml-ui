@@ -8,4 +8,4 @@ try:
 
 except Exception as e:
     print(e)
-    exit(0)
+    exit(1)

@@ -86,8 +86,24 @@ class SectionView(TerminologyPopupTreeView):
         add a section to the selected section (or document if None selected)
         """
         (obj, section) = obj_section_pair
+        
         if section is None:
-            section = odml.Section(name="unnamed section")
+            new_section_num = 0
+            for i in obj.sections:
+                if i.name.startswith('Unnamed Section'):
+                    try:
+                        num = int(i.name[15:])
+                        if num >= new_section_num:
+                            new_section_num = num+1
+                    except ValueError:
+                        if new_section_num == 0:
+                            new_section_num = 1
+
+            if new_section_num > 0:
+                section = odml.Section(name="Unnamed Section %d" % new_section_num)
+            else:
+                section = odml.Section(name="Unnamed Section")
+
         else:
             section = section.clone()
         cmd = commands.AppendValue(obj=obj, val=section)

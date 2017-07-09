@@ -7,7 +7,7 @@ dist
 build
 eggs
 parts
-__pycache__
+__pycache__/*
 
 # odml files
 *.odml

@@ -1,21 +1,46 @@
 #!/bin/bash
 
-# This script executes outside of the virtual environment,
+# This script executes outside of the Python virtual environment,
 # hence the packages installed will be system-wide, and not 
 # specific to the virtual environment.
 
 set -e
+echo $TRAVIS_PYTHON_VERSION
 
-sudo apt-get -qq update
-sudo apt-get install libffi-dev libglib2.0-0 libglib2.0-dev
-sudo apt-get install gobject-introspection
-sudo apt-get install python-gi python3-gi 
-sudo apt-get install libgtk-3-dev gir1.2-glib-2.0 
+##########   Linux Build   ##########
+if [[ $TRAVIS_OS_NAME == 'linux' ]]
+then
+    
+    if [ ${TRAVIS_PYTHON_VERSION%.*} -eq 3 ]
+    then
+        packages='python3-gi'
+    else
+        packages='python-gi'
+    fi
+    
+    sudo apt-get -qq update
+    sudo apt-get install libffi-dev libglib2.0-dev
+    sudo apt-get install gobject-introspection libgtk-3-dev
+    sudo apt-get install ${packages}
 
-python test/gi_imports.py
-python3 test/gi_imports.py
+    if [ ${TRAVIS_PYTHON_VERSION%.*} -eq 3 ]
+    then
+        python3 test/gi_imports.py
+    else
+        python test/gi_imports.py
+    fi
+    
+####### OS X Build (Incomplete and not tested completely) #######
+else 
+    
+    brew install libffi
+    brew install glib
+    brew install gobject-introspection --with-python3
+    brew install pygobject3 --with-python3
 
-echo -e "\n\n #########################################"
-echo -e " Installed all dependencies successfully !!"
-echo -e "\n #########################################"
+fi
+
+echo -e "\n ###########################################"
+echo -e "  Installed all dependencies successfully !!"
+echo -e " ###########################################"
 

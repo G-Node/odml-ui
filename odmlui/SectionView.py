@@ -4,6 +4,8 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
+import heapq
+
 from . import commands
 import odml
 from .TreeView import TerminologyPopupTreeView
@@ -84,20 +86,31 @@ class SectionView(TerminologyPopupTreeView):
         popup menu action: add section
 
         add a section to the selected section (or document if None selected)
+
+        Defines the names of new uninitialized sections being created, 
+        in a sequential manner, selecting the lowest index available.
         """
         (obj, section) = obj_section_pair
         
         if section is None:
             new_section_num = 0
+            used_section_num = []
             for i in obj.sections:
                 if i.name.startswith('Unnamed Section'):
                     try:
                         num = int(i.name[15:])
-                        if num >= new_section_num:
-                            new_section_num = num+1
+                        heapq.heappush(used_section_num, num)
                     except ValueError:
-                        if new_section_num == 0:
-                            new_section_num = 1
+                        # If any section has a name prefixed with 'Unnamed Section',
+                        # then the new section should have a count of atleast '1'.
+                        heapq.heappush(used_section_num, 0)
+
+            while(len(used_section_num)>0):
+                popped_ele = heapq.heappop(used_section_num)
+                if new_section_num < popped_ele:
+                    break
+                else:
+                    new_section_num += 1
 
             if new_section_num > 0:
                 section = odml.Section(name="Unnamed Section %d" % new_section_num)

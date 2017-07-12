@@ -68,6 +68,8 @@ class PropertyView(TerminologyPopupTreeView):
             ]:
             dp.append(target)
         dp.execute = _exec
+        dp.connect()
+
 
     @property
     def section(self):

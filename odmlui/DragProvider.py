@@ -7,6 +7,22 @@ import gtk
 from .dnd.drag import DragTarget
 from .dnd.drop import DropTarget
 
+
+class DragDataHandler(object):
+
+    def __init__(self):
+        self.drag_target = None
+        self.drag_data = None
+
+    def set_data(self, target, data):
+        self.drag_target = target
+        self.drag_data = data
+
+    def get_data(self):
+        return self.drag_data
+
+drag_data_handler = DragDataHandler()
+
 #TODO build a GenericDragProvider and a TreeDragProvider
 class DragProvider(object):
     """
@@ -74,7 +90,6 @@ class DragProvider(object):
             self.drag_targets.append(obj)
         if isinstance(obj, DropTarget):
             self.drop_targets.append(obj)
-        self.connect()
 
     def _on_drag_begin(self, widget, context):
         """
@@ -132,25 +147,15 @@ class DragProvider(object):
         context.target = target.mime
 
         data = target.get_data(widget, context)
-        # print(target)
-        # print(target.mime)
-        # print(data)
+
         if target.mime == "TEXT":  # so type will be COMPOUND_TEXT whatever foo?
             selection.set_text(data, -1)
         else:
             target_atom = selection.get_target()
-            # print(target_atom)
-            # print(type(target_atom))
-            # print(dir(target_atom))
-            # print(len(data))
-            # print(type(data))
 
             # The following is the 'hacky' way to set the Drag-and-Drop data, by
-            # attaching it to Gdk.DragContext object.
-            self.dnd_data = str(data)
-
-            # print(selection.set_text(str(data), len(data)))
-            # print("\n\t SelectionText contains :- %s " % selection.get_text())
+            # attaching it to a global drag data handler.
+            drag_data_handler.set_data(target_atom, data)
 
             # This is the recommended method, which fails.
             # selection.set(target_atom, 8, data)
@@ -240,7 +245,7 @@ class DragProvider(object):
         # data = selection.get_data()
 
         # The following is the 'hacky' way to get the Drag-and-Drop data
-        data = self.dnd_data
+        data = drag_data_handler.get_data()
         widget.emit_stop_by_name('drag-data-received')
 
         # if we want to preview the data in the drag-motion handler

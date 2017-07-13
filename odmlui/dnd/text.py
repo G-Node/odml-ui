@@ -46,7 +46,7 @@ class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
     """
     Can drop objects if they parse to an class contained in self.targets
     """
-    mime = "TEXT"
+    atom = gtk.gdk.Atom.intern("TEXT", True)
     preview_required = True
 
     def drop_object(self, action, dst, position, obj):

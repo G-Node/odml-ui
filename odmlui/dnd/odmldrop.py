@@ -21,7 +21,8 @@ class OdmlTreeDropTarget(tree.TreeDropTarget):
     def __init__(self, mime=None, target=None, preview_required=None, *args, **kwargs):
         super(OdmlTreeDropTarget, self).__init__(*args, **kwargs)
         if mime is not None:
-            self.mime = mime
+            atom = gtk.gdk.Atom.intern(mime, True)
+            self.atom = atom
         if preview_required is not None:
             self.preview_required = preview_required
         self.target = target
@@ -137,7 +138,8 @@ class OdmlDrag(tree.TreeDragTarget):
     def __init__(self, mime=None, inst=None, *args, **kwargs):
         super(OdmlDrag, self).__init__(*args, **kwargs)
         if mime is not None:
-            self.mime = mime
+            atom = gtk.gdk.Atom.intern(mime, True)
+            self.atom = atom
         if inst is not None:
             self.inst = inst
 

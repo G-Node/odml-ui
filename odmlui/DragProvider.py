@@ -15,6 +15,7 @@ class DragDataHandler(object):
         self.drag_data = None
 
     def set_data(self, target, data):
+        print("Setting new data as :- %s " % data)
         self.drag_target = target
         self.drag_data = data
 
@@ -65,7 +66,7 @@ class DragProvider(object):
 
         drag_targets = []
         for i, target in enumerate(self.drag_targets):
-            t = gtk.TargetEntry.new(target.mime, target.app | target.widget, 1500 + i)        
+            t = gtk.TargetEntry.new(target.atom.name(), target.app | target.widget, 1500 + i)        
             drag_targets.append(t)
 
         # first enable tree model drag/drop (to get the actual row as drag_icon)
@@ -112,7 +113,7 @@ class DragProvider(object):
 
         drag_targets = []
         for i, target in enumerate(self.drag_targets):
-            t = gtk.TargetEntry.new(target.mime, target.app | target.widget, 1600 + i)        
+            t = gtk.TargetEntry.new(target.atom.name(), target.app | target.widget, 1600 + i)        
             drag_targets.append(t)
         
         # first enable tree model drag/drop (to get the actual row as drag_icon)
@@ -126,10 +127,10 @@ class DragProvider(object):
                            drag_targets,
                            self.SOURCE_ACTIONS)
 
-    def get_source_target(self, context, mime):
-        mime = mime.name()
+    def get_source_target(self, context, atom):
+        # mime = mime.name()
         for target in self.drag_targets:
-            if target.mime == mime:
+            if target.atom == atom:
                 return target
         return None
 
@@ -144,21 +145,22 @@ class DragProvider(object):
         if not target:
             return False
         # save the selected target, so we can use it in the drag-delete event
-        context.target = target.mime
+        context.target = target.atom.name()
 
         data = target.get_data(widget, context)
 
-        if target.mime == "TEXT":  # so type will be COMPOUND_TEXT whatever foo?
+        if target.atom.name() == "TEXT":  # so type will be COMPOUND_TEXT whatever foo?
             selection.set_text(data, -1)
         else:
             target_atom = selection.get_target()
-
+            print(target_atom)
+            print(type(target_atom))
             # The following is the 'hacky' way to set the Drag-and-Drop data, by
             # attaching it to a global drag data handler.
             drag_data_handler.set_data(target_atom, data)
 
             # This is the recommended method, which fails.
-            # selection.set(target_atom, 8, data)
+            selection.set(target_atom, 8, data)
 
         return True
 
@@ -170,7 +172,7 @@ class DragProvider(object):
         target_mime_list = [i.name() for i in context.list_targets()]
 
         for target in self.drop_targets:
-            if target.mime in target_mime_list:
+            if target.atom in context.list_targets():
                 same_app = gtk.drag_get_source_widget(context) is not None
                 if target.app & gtk.TARGET_SAME_APP != 0 and not same_app:
                     continue
@@ -279,7 +281,8 @@ class DragProvider(object):
             return False
 
         # Get the Gdk.Atom type from target MIME type
-        target_atom = gtk.gdk.Atom.intern(target.mime, True)
+        # target_atom = gtk.gdk.Atom.intern(target.mime, True)
+        target_atom = target.atom
         widget.drag_get_data(context, target_atom, time)
         return True
 
@@ -310,5 +313,8 @@ class DragProvider(object):
             path, pos = widget.get_dest_row_at_pos(x, y)
             widget.set_drag_dest_row(path, pos)
         except TypeError:
-            widget.set_drag_dest_row(len(widget.get_model()) - 1, gtk.TREE_VIEW_DROP_AFTER)
+            try:
+                widget.set_drag_dest_row(len(widget.get_model()) - 1, gtk.TREE_VIEW_DROP_AFTER)
+            except:
+                pass
         return True

@@ -42,7 +42,7 @@ class SectionView(TerminologyPopupTreeView):
             ]:
             dp.append(target)
         dp.execute = _exec
-
+        dp.connect()
 
     def set_model(self, model):
         self._treeview.set_model(model)

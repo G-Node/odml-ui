@@ -21,11 +21,11 @@ class Action(object):
 
     @property
     def copy(self):
-        return (self.action == gtk.gdk.ACTION_COPY) != 0
+        return (self.action & gtk.gdk.ACTION_COPY) != 0
 
     @property
     def link(self):
-        return (self.action == gtk.gdk.ACTION_LINK) != 0
+        return (self.action & gtk.gdk.ACTION_LINK) != 0
 
 
 class TreeDropTarget(drop.DropTarget):

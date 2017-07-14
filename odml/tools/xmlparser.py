@@ -91,6 +91,9 @@ class XMLWriter:
 
         return cur
 
+    def __str__(self):
+        return ET.tounicode(self.save_element(self.doc), pretty_print=True)
+
     def __unicode__(self):
         return ET.tounicode(self.save_element(self.doc), pretty_print=True)
 
@@ -133,14 +136,15 @@ class XMLReader(object):
         try:
             root = ET.parse(xml_file, self.parser).getroot()
         except ET.XMLSyntaxError as e:
-            raise ParserException(e.message)
+            raise ParserException(e)
         return self.parse_element(root)
 
     def fromString(self, string):
         try:
             root = ET.XML(string, self.parser)
         except ET.XMLSyntaxError as e:
-            raise ParserException(e.message)
+            raise ParserException(e)
+
         return self.parse_element(root)
 
     def check_mandatory_arguments(self, data, ArgClass, tag_name, node):

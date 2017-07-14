@@ -7,6 +7,7 @@ import gtk
 from .dnd.drag import DragTarget
 from .dnd.drop import DropTarget
 
+
 #TODO build a GenericDragProvider and a TreeDragProvider
 class DragProvider(object):
     """
@@ -49,7 +50,7 @@ class DragProvider(object):
 
         drag_targets = []
         for i, target in enumerate(self.drag_targets):
-            t = gtk.TargetEntry.new(target.mime, target.app | target.widget, 1500 + i)        
+            t = gtk.TargetEntry.new(target.atom.name(), target.app | target.widget, 1500 + i)        
             drag_targets.append(t)
 
         # first enable tree model drag/drop (to get the actual row as drag_icon)
@@ -74,7 +75,6 @@ class DragProvider(object):
             self.drag_targets.append(obj)
         if isinstance(obj, DropTarget):
             self.drop_targets.append(obj)
-        self.connect()
 
     def _on_drag_begin(self, widget, context):
         """
@@ -97,7 +97,7 @@ class DragProvider(object):
 
         drag_targets = []
         for i, target in enumerate(self.drag_targets):
-            t = gtk.TargetEntry.new(target.mime, target.app | target.widget, 1600 + i)        
+            t = gtk.TargetEntry.new(target.atom.name(), target.app | target.widget, 1600 + i)        
             drag_targets.append(t)
         
         # first enable tree model drag/drop (to get the actual row as drag_icon)
@@ -111,10 +111,9 @@ class DragProvider(object):
                            drag_targets,
                            self.SOURCE_ACTIONS)
 
-    def get_source_target(self, context, mime):
-        mime = mime.name()
+    def get_source_target(self, context, atom):
         for target in self.drag_targets:
-            if target.mime == mime:
+            if target.atom == atom:
                 return target
         return None
 
@@ -129,31 +128,15 @@ class DragProvider(object):
         if not target:
             return False
         # save the selected target, so we can use it in the drag-delete event
-        context.target = target.mime
+        context.target = target.atom.name()
 
         data = target.get_data(widget, context)
-        # print(target)
-        # print(target.mime)
-        # print(data)
-        if target.mime == "TEXT":  # so type will be COMPOUND_TEXT whatever foo?
+
+        if target.atom.name() == "TEXT":  # so type will be COMPOUND_TEXT whatever foo?
             selection.set_text(data, -1)
         else:
             target_atom = selection.get_target()
-            # print(target_atom)
-            # print(type(target_atom))
-            # print(dir(target_atom))
-            # print(len(data))
-            # print(type(data))
-
-            # The following is the 'hacky' way to set the Drag-and-Drop data, by
-            # attaching it to Gdk.DragContext object.
-            self.dnd_data = str(data)
-
-            # print(selection.set_text(str(data), len(data)))
-            # print("\n\t SelectionText contains :- %s " % selection.get_text())
-
-            # This is the recommended method, which fails.
-            # selection.set(target_atom, 8, data)
+            selection.set(target_atom, 8, data.encode())
 
         return True
 
@@ -162,10 +145,9 @@ class DragProvider(object):
         find a suiting target within the registered drop_targets
         that allows to drop
         """
-        target_mime_list = [i.name() for i in context.list_targets()]
 
         for target in self.drop_targets:
-            if target.mime in target_mime_list:
+            if target.atom in context.list_targets():
                 same_app = gtk.drag_get_source_widget(context) is not None
                 if target.app & gtk.TARGET_SAME_APP != 0 and not same_app:
                     continue
@@ -235,12 +217,7 @@ class DragProvider(object):
                                 target_id, etime):
         """callback function for received data upon dnd-completion"""
 
-        # If the selection.set() method had worked, we could have used the
-        # method below to get the data.
-        # data = selection.get_data()
-
-        # The following is the 'hacky' way to get the Drag-and-Drop data
-        data = self.dnd_data
+        data = selection.get_data().decode()
         widget.emit_stop_by_name('drag-data-received')
 
         # if we want to preview the data in the drag-motion handler
@@ -273,8 +250,7 @@ class DragProvider(object):
         if target is None:
             return False
 
-        # Get the Gdk.Atom type from target MIME type
-        target_atom = gtk.gdk.Atom.intern(target.mime, True)
+        target_atom = target.atom
         widget.drag_get_data(context, target_atom, time)
         return True
 
@@ -305,5 +281,6 @@ class DragProvider(object):
             path, pos = widget.get_dest_row_at_pos(x, y)
             widget.set_drag_dest_row(path, pos)
         except TypeError:
-            widget.set_drag_dest_row(len(widget.get_model()) - 1, gtk.TREE_VIEW_DROP_AFTER)
+                widget.set_drag_dest_row(len(widget.get_model()) - 1, gtk.TREE_VIEW_DROP_AFTER)
+
         return True

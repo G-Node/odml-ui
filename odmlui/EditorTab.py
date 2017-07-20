@@ -97,7 +97,7 @@ class EditorTab(object):
         try:
             data = str(doc)
         except Exception as e:
-            self._info_bar.show_info("Save failed: %s" % e.message)
+            self._info_bar.show_info("Save failed: %s" % e)
             return
         xml_file = gf.replace(etag='', make_backup=False, cancellable=None, flags=0) # TODO make backup?
         xml_file.write(doc.header.encode())

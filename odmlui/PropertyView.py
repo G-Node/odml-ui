@@ -5,7 +5,6 @@ pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
 import gio
-import heapq
 
 import odml
 import odml.terminology as terminology
@@ -345,38 +344,16 @@ class PropertyView(TerminologyPopupTreeView):
         popup menu action: add property
 
         add a property to the active section
-
-        Defines the names of new uninitialized properties being created, 
-        in a sequential manner, selecting the lowest index available.
         """
         (obj, prop) = obj_prop_pair
         if prop is None:
-            new_prop_num = 0
-            used_prop_num = []
-            for i in obj.properties:
-                if i.name.startswith('Unnamed Property'):
-                    try:
-                        num = int(i.name[17:])
-                        heapq.heappush(used_prop_num, num)
-                    except ValueError:
-                        # If any property has a name prefixed with 'Unnamed Property',
-                        # then the new property should have a count of atleast '1'.
-                        heapq.heappush(used_prop_num, 0)
-
-            while(len(used_prop_num)>0):
-                popped_ele = heapq.heappop(used_prop_num)
-                if new_prop_num < popped_ele:
-                    break
-                else:
-                    new_prop_num += 1
-
-            if new_prop_num == 0:
-                prop = odml.Property(name="Unnamed Property", value="")
-            else:
-                prop = odml.Property(name="Unnamed Property %d" % new_prop_num, value="")
-
+            name = self.get_new_obj_name(obj.properties, prefix='Unnamed Property')
+            prop = odml.Property(name=name, value="")
         else:
+            prefix = prop.name
+            name = self.get_new_obj_name(obj.properties, prefix=prefix)
             prop = prop.clone()
+            prop.name = name
 
         cmd = commands.AppendValue(obj=obj, val=prop)
         self.execute(cmd)

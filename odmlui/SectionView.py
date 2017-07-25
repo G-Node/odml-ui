@@ -4,6 +4,7 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
+
 from . import commands
 import odml
 from .TreeView import TerminologyPopupTreeView
@@ -86,10 +87,16 @@ class SectionView(TerminologyPopupTreeView):
         add a section to the selected section (or document if None selected)
         """
         (obj, section) = obj_section_pair
+        
         if section is None:
-            section = odml.Section(name="unnamed section")
+            name = self.get_new_obj_name(obj.sections, prefix='Unnamed Section')
+            section = odml.Section(name=name)
         else:
+            prefix = section.name
+            name = self.get_new_obj_name(obj.sections, prefix=prefix)
             section = section.clone()
+            section.name = name
+
         cmd = commands.AppendValue(obj=obj, val=section)
 
         self.execute(cmd)

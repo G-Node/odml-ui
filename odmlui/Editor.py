@@ -757,7 +757,8 @@ class EditorWindow(gtk.Window):
     @gui_action("NewSection", label="Add Section", tooltip="Add a section to the current selected one", stock_id="odml-add-Section")
     def new_section(self, action):
         obj = self._section_tv.get_selected_object()
-        if obj is None: obj = self.current_tab.document
+        if obj is None:
+        	obj = self.current_tab.document
         self._section_tv.add_section(None, (obj, None))
 
     @gui_action("NewProperty", label="Add Property", tooltip="Add a property to the current section", stock_id="odml-add-Property")

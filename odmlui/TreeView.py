@@ -4,7 +4,9 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
+import heapq
 from . import commands
+
 
 class TreeView(object):
     """
@@ -119,6 +121,40 @@ class TreeView(object):
         cmd()
 
     on_selection_change = None
+
+    def get_new_obj_name(self, siblings, prefix):
+        '''
+            Get a uniquely indexed name of an object.
+            Derives the names of new objects, like Sections and Properties,
+            being created based on a common prefix. An index is appended to 
+            the prefix (if necessary) in a sequential manner, selecting the
+            lowest index available.
+        '''
+        new_obj_index = 0
+        used_obj_num = []
+
+        for i in siblings:
+            if i.name.startswith(prefix):
+                try:
+                    num = int(i.name[len(prefix):])
+                    heapq.heappush(used_obj_num, num)
+                except ValueError:
+                    # If any sibling has a name prefixed with `prefix`
+                    # then the new object should have a count of atleast '1'.
+                    heapq.heappush(used_obj_num, 0)
+
+        while(len(used_obj_num)>0):
+            popped_ele = heapq.heappop(used_obj_num)
+            if new_obj_index < popped_ele:
+                break
+            else:
+                new_obj_index += 1
+
+        if new_obj_index == 0:
+            return prefix
+        else:
+            return prefix + ' ' + str(new_obj_index)
+
 
 class TerminologyPopupTreeView(TreeView):
     def get_terminology_suggestions(self, obj, func):

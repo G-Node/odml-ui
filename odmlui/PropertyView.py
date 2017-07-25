@@ -356,19 +356,23 @@ class PropertyView(TerminologyPopupTreeView):
         cmd = commands.AppendValue(obj=obj, val=val)
         self.execute(cmd)
 
-    def add_property(self, widget, obj_val_pair):
+    def add_property(self, widget, obj_prop_pair):
         """
         popup menu action: add property
 
         add a property to the active section
         """
-        (obj, val) = obj_val_pair
-        if val is None:
-            val = odml.Property(name="unnamed property", value="")
+        (obj, prop) = obj_prop_pair
+        if prop is None:
+            name = self.get_new_obj_name(obj.properties, prefix='Unnamed Property')
+            prop = odml.Property(name=name, value="")
         else:
-            val = val.clone()
+            prefix = prop.name
+            name = self.get_new_obj_name(obj.properties, prefix=prefix)
+            prop = prop.clone()
+            prop.name = name
 
-        cmd = commands.AppendValue(obj=obj, val=val)
+        cmd = commands.AppendValue(obj=obj, val=prop)
         self.execute(cmd)
 
     # Maybe define a generic Combo Box column creator ?

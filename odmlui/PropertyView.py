@@ -9,6 +9,7 @@ import gio
 import odml
 import odml.terminology as terminology
 import odml.format as format
+from odml.types import DType
 from . import commands
 from .TreeView import TerminologyPopupTreeView
 from .treemodel import PropertyModel
@@ -35,12 +36,16 @@ class PropertyView(TerminologyPopupTreeView):
         tv = self._treeview
 
         for name, (id, propname) in PropertyModel.ColMapper.sort_iteritems():
-            column = self.add_column(
-                name=name,
-                edit_func=self.on_edited,
-                id=id, data=propname)
-            if name == "Value":
-                tv.set_expander_column(column)
+            if name == "Type":
+                combo_col = self.create_odml_types_col(id, name, propname)
+                tv.append_column(combo_col)
+            else:
+                column = self.add_column(
+                    name=name,
+                    edit_func=self.on_edited,
+                    id=id, data=propname)
+                if name == "Value":
+                    tv.set_expander_column(column)
 
         tv.set_headers_visible(True)
         tv.set_rules_hint(True)
@@ -70,6 +75,16 @@ class PropertyView(TerminologyPopupTreeView):
         dp.execute = _exec
         dp.connect()
 
+    def dtype_renderer_function(self, tv_column, cell_combo, tree_model, tree_iter, data):
+        '''
+            Defines a custom cell renderer function, which is executed for
+            every cell of the column, and sets the DType value from the underlying model.
+
+            Argument 'Data': Here, it defines the column number in the Tree View.
+        '''
+
+        dtype = tree_model.get(tree_iter, data)[0]
+        cell_combo.set_property("text", dtype)
 
     @property
     def section(self):
@@ -355,3 +370,24 @@ class PropertyView(TerminologyPopupTreeView):
 
         cmd = commands.AppendValue(obj=obj, val=val)
         self.execute(cmd)
+
+    # Maybe define a generic Combo Box column creator ?
+    def create_odml_types_col(self, id, name, propname):
+        
+        # Get all the members of odml.DType, which are not callable and are not `private`.
+        dtypes_list = [x for x in dir(DType) if not callable(getattr(DType, x)) and not x.startswith('__')]
+        dtypes_combo_list = gtk.ListStore(str)
+        for i in dtypes_list:
+            dtypes_combo_list.append([i])
+
+        combo_renderer = gtk.CellRendererCombo.new()
+        combo_renderer.set_property("has-entry", False)
+        combo_renderer.set_property("text-column", 0)
+        combo_renderer.set_property("model", dtypes_combo_list)
+        combo_renderer.set_property("editable", True)
+        combo_renderer.connect("edited", self.on_edited, propname)
+
+        combo_col = gtk.TreeViewColumn(name, combo_renderer)
+        combo_col.set_cell_data_func(combo_renderer, self.dtype_renderer_function, id)
+
+        return combo_col

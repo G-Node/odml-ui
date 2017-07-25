@@ -871,7 +871,7 @@ class EditorWindow(gtk.Window):
         self.current_tab.command_manager.redo()
 
     def command_error(self, cmd, error):
-        self._info_bar.show_info("Editing failed: %s" % error.message)
+        self._info_bar.show_info("Editing failed: %s" % error)
 
     def execute(self, cmd):
         return self.current_tab.command_manager.execute(cmd)

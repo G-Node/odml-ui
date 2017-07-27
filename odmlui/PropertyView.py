@@ -16,7 +16,11 @@ from .treemodel import PropertyModel
 from .DragProvider import DragProvider
 from .ChooserDialog import ChooserDialog
 from . import TextEditor
-from html.parser import HTMLParser
+
+try:
+    from html.parser import HTMLParser
+except ImportError:
+    from HTMLParser import HTMLParser
 
 
 COL_KEY = 0
@@ -406,7 +410,7 @@ class PropertyView(TerminologyPopupTreeView):
 
 
 
-class DTypeParser(HTMLParser):
+class DTypeParser(HTMLParser, object):
     '''
         Used to style cells in the Combo Box of the DTypes column.
     '''

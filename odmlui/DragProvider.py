@@ -281,6 +281,7 @@ class DragProvider(object):
             path, pos = widget.get_dest_row_at_pos(x, y)
             widget.set_drag_dest_row(path, pos)
         except TypeError:
-                widget.set_drag_dest_row(len(widget.get_model()) - 1, gtk.TREE_VIEW_DROP_AFTER)
+                last_row = gtk.TreePath.new_from_indices([len(widget.get_model()) - 1])
+                widget.set_drag_dest_row(last_row, gtk.TREE_VIEW_DROP_AFTER)
 
         return True

@@ -6,6 +6,8 @@ pygtkcompat.enable_gtk(version='3.0')
 import gtk
 import gobject
 
+from .Editor import DEBUG
+
 class NavigationBar(gtk.Label):
     def __init__(self, *args, **kargs):
         super(NavigationBar, self).__init__(*args, **kargs)
@@ -93,7 +95,9 @@ class NavigationBar(gtk.Label):
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh correspondingly
         """
-        print("change event(document): ", context)
+
+        if DEBUG:
+            print("change event(document): ", context)
 
         # we are only interested in changes on sections
         if context.cur is not self._document: return

@@ -9,6 +9,8 @@ import sys
 import gtk
 import gobject
 
+DEBUG = False
+
 import odml
 import odmlui.treemodel.mixin
 from . import commands
@@ -28,6 +30,8 @@ from .DocumentRegistry import DocumentRegistry
 from .Wizard import DocumentWizard
 
 gtk.gdk.threads_init()
+
+
 
 ui_info = \
 '''<ui>

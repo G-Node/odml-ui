@@ -4,6 +4,7 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk, gobject
+from odmlui.Editor import DEBUG
 from .TreeIters import PropIter, ValueIter, SectionPropertyIter
 from .TreeModel import TreeModel, ColumnMapper
 import sys
@@ -108,7 +109,8 @@ class PropertyModel(TreeModel):
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh the corresponding cells
         """
-        print("change event(property): ", context)
+        if DEBUG:
+            print("change event(property): ", context)
 
         # we are only interested in changes going up to the section level,
         # but not those dealing with subsections of ours

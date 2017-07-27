@@ -97,6 +97,9 @@ class SectionView(TerminologyPopupTreeView):
             section = section.clone()
             section.name = name
 
+            # It is a terminology section. By default, pull in all its properties.
+            section.merge()
+
         cmd = commands.AppendValue(obj=obj, val=section)
 
         self.execute(cmd)

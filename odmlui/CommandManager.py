@@ -23,7 +23,8 @@ class CommandManager(object):
         self.undo_stack.append(cmd)
         self.enable_undo()
         if failed:
-            raise
+            return False
+
         return True
 
     def undo(self):

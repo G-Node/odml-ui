@@ -9,7 +9,7 @@ import gio
 import odml
 import odml.terminology as terminology
 import odml.format as format
-from odml.types import DType
+from odml import DType
 from . import commands
 from .TreeView import TerminologyPopupTreeView
 from .treemodel import PropertyModel

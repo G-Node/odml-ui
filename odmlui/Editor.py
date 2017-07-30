@@ -657,6 +657,7 @@ class EditorWindow(gtk.Window):
 
     def chooser_dialog(self, title, callback, save=False):
         chooser = odMLChooserDialog(title=title, save=save)
+        chooser.set_transient_for(self)
         chooser.on_accept = callback
         chooser.show()
 

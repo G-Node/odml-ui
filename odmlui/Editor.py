@@ -379,8 +379,8 @@ class EditorWindow(gtk.Window):
                 odml_files.append(i)
 
         if odml_files:
-            text += """\n\nOr open a <b>recently used file</b>:\n"""
-            text += "\n".join(["""\u2022 <a href="%s">%s</a>""" % (i.get_uri(), i.get_display_name()) for i in odml_files])
+            text += "\n\nOr open a <b>recently used file</b>:\n"
+            text += "\n".join([u"\u2022 <a href='%s'>%s</a>" % (i.get_uri(), i.get_display_name()) for i in odml_files])
 
         page.set_markup(text)
         page.connect("activate-link", self.welcome_action)

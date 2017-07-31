@@ -17,15 +17,15 @@ class Action(object):
 
     @property
     def move(self):
-        return (self.action & gtk.gdk.ACTION_MOVE) != 0
+        return (self.action & gtk.gdk.ACTION_MOVE)
 
     @property
     def copy(self):
-        return (self.action == gtk.gdk.ACTION_COPY) != 0
+        return (self.action == gtk.gdk.ACTION_COPY)
 
     @property
     def link(self):
-        return (self.action == gtk.gdk.ACTION_LINK) != 0
+        return (self.action == gtk.gdk.ACTION_LINK)
 
 
 class TreeDropTarget(drop.DropTarget):

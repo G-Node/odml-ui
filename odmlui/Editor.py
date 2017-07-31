@@ -9,8 +9,6 @@ import sys
 import gtk
 import gobject
 
-DEBUG = False
-
 import odml
 import odmlui.treemodel.mixin
 from . import commands

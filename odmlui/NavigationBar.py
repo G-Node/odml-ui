@@ -6,7 +6,7 @@ pygtkcompat.enable_gtk(version='3.0')
 import gtk
 import gobject
 
-from .Editor import DEBUG
+import odmlui
 
 class NavigationBar(gtk.Label):
     def __init__(self, *args, **kargs):
@@ -96,7 +96,7 @@ class NavigationBar(gtk.Label):
         and causes the GUI to refresh correspondingly
         """
 
-        if DEBUG:
+        if odmlui.DEBUG:
             print("change event(document): ", context)
 
         # we are only interested in changes on sections

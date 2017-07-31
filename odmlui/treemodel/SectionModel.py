@@ -4,9 +4,9 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk, gobject
+import odmlui
 import odml.doc
 import odml.base
-from odmlui.Editor import DEBUG
 from .TreeIters import SectionIter
 from .TreeModel import TreeModel, ColumnMapper
 debug = lambda x: 0
@@ -91,7 +91,7 @@ class SectionModel(TreeModel):
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh the corresponding cells
         """
-        if DEBUG:
+        if odmlui.DEBUG:
             print("change event(section): ", context)
 
         # we are only interested in changes on sections

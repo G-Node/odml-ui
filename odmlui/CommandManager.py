@@ -1,5 +1,5 @@
 
-from .Editor import DEBUG
+import odmlui
 
 class CommandManager(object):
     def __init__(self):
@@ -7,7 +7,7 @@ class CommandManager(object):
         self.redo_stack = []
 
     def execute(self, cmd, redo=False):
-        if DEBUG:
+        if odmlui.DEBUG:
             print("run", cmd)
         if not redo:
             self.redo_stack = []

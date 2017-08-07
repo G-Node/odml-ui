@@ -5,6 +5,7 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
+import os
 
 import odmlui
 from . import Editor
@@ -20,6 +21,12 @@ def main(filenames=[], debug=False):
     odmlui.DEBUG = debug
     Editor.register_stock_icons()
     editor = Editor.EditorWindow()
+
+    # Convert relative path to absolute path, if any
+    for i, file in enumerate(filenames):
+        if not os.path.isabs(file):
+            filenames[i] = os.path.abspath(file)
+
     file_uris = list(map(Helpers.path_to_uri, filenames))
     tabs = list(map(editor.load_document, file_uris))
 

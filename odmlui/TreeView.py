@@ -51,7 +51,7 @@ class TreeView(object):
         column.set_resizable(True)
         column.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
         self._treeview.append_column(column)
-        return column
+        return (renderer, column)
 
 
     def get_selected_object(self):

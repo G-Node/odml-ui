@@ -46,11 +46,13 @@ class PropertyView(TerminologyPopupTreeView):
                 combo_col = self.create_odml_types_col(id, name, propname)
                 tv.append_column(combo_col)
             else:
-                column = self.add_column(
+                renderer, column = self.add_column(
                     name=name,
                     edit_func=self.on_edited,
                     id=id, data=propname)
-                if name == "Value":
+                if name == "Unit":
+                    column.set_cell_data_func(renderer, self.unit_renderer_function, id)
+                elif name == "Value":
                     tv.set_expander_column(column)
 
         tv.set_headers_visible(True)
@@ -80,6 +82,13 @@ class PropertyView(TerminologyPopupTreeView):
             dp.append(target)
         dp.execute = _exec
         dp.connect()
+
+    def unit_renderer_function(self, tv_column, column_cell, tree_model, tree_iter, data):
+        try:
+            cell_data = tree_model.get(tree_iter, 4)[0]
+            column_cell.set_property('markup', cell_data)
+        except TypeError:
+            column_cell.set_property('markup', '')
 
     def dtype_renderer_function(self, tv_column, cell_combobox, tree_model, tree_iter, data):
         '''

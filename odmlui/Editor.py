@@ -26,8 +26,12 @@ from .ChooserDialog import odMLChooserDialog
 from .EditorTab import EditorTab
 from .DocumentRegistry import DocumentRegistry
 from .Wizard import DocumentWizard
+from .Helpers import uri_exists, uri_to_path
+from .MessageDialog import ErrorDialog
 
 gtk.gdk.threads_init()
+
+
 
 ui_info = \
 '''<ui>
@@ -362,7 +366,7 @@ class EditorWindow(gtk.Window):
         # for each recently used file, for the filtering process by the
         # recent_filter.filter() method. If the 'filter' return True,
         # the file is included, else not included.
-        odml_files = []
+        recent_odml_files = []
         all_recent_files = gtk.RecentManager.get_default().get_items()
         filter_info = gtk.RecentFilterInfo()
         filter_info.contains = recent_filter.get_needed()
@@ -371,12 +375,12 @@ class EditorWindow(gtk.Window):
             filter_info.display_name = i.get_display_name()
             filter_info.uri = i.get_uri()
             filter_info.mime_type = i.get_mime_type()
-            if recent_filter.filter(filter_info):
-                odml_files.append(i)
+            if recent_filter.filter(filter_info) and uri_exists(i.get_uri()):
+                recent_odml_files.append(i)
 
-        if odml_files:
-            text += """\n\nOr open a <b>recently used file</b>:\n"""
-            text += "\n".join(["""\u2022 <a href="%s">%s</a>""" % (i.get_uri(), i.get_display_name()) for i in odml_files])
+        if recent_odml_files:
+            text += "\n\nOr open a <b>recently used file</b>:\n"
+            text += "\n".join([u"\u2022 <a href='%s'>%s</a>" % (i.get_uri(), i.get_display_name()) for i in recent_odml_files])
 
         page.set_markup(text)
         page.connect("activate-link", self.welcome_action)
@@ -399,8 +403,14 @@ class EditorWindow(gtk.Window):
         if path == "#new":
             self.new_file()
         elif path is not None:
-            self.load_document(path)
+            try:
+                self.load_document(path)
+            except Exception as e:
+                ErrorDialog(self, "Error while parsing '%s'" % uri_to_path(path), str(e))
+                self.welcome()
+
         return True
+
 
     @gui_action("About", tooltip="About odML editor", stock_id=gtk.STOCK_ABOUT)
     def about(self, action):
@@ -653,6 +663,7 @@ class EditorWindow(gtk.Window):
 
     def chooser_dialog(self, title, callback, save=False):
         chooser = odMLChooserDialog(title=title, save=save)
+        chooser.set_transient_for(self)
         chooser.on_accept = callback
         chooser.show()
 

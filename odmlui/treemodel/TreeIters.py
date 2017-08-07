@@ -1,3 +1,4 @@
+import sys
 from . import GenericIter
 
 class PropIter(GenericIter.GenericIter):
@@ -50,11 +51,20 @@ class ValueIter(GenericIter.GenericIter):
     """
     An iterator for a Value object
     """
+    python2 = (sys.version_info < (3,0))
+
     def get_value(self, attr):
         if attr == "name":
             return
         if attr == "value":
-            return self._obj.get_display()
+            value = self._obj.get_display()
+
+            # Some issues with the rendering of `unicode` in Python 2 directly
+            # to Tree Column cell renderer. Hence, first encode it here.
+            if self.python2:
+                value = value.encode('utf-8')
+            return value
+
         return super(ValueIter, self).get_value(attr)
 
 class SectionIter(GenericIter.GenericIter):

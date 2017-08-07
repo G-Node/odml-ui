@@ -9,7 +9,7 @@ import gio
 import odml
 import odml.terminology as terminology
 import odml.format as format
-from odml.types import DType
+from odml import DType
 from . import commands
 from .TreeView import TerminologyPopupTreeView
 from .treemodel import PropertyModel
@@ -40,11 +40,13 @@ class PropertyView(TerminologyPopupTreeView):
                 combo_col = self.create_odml_types_col(id, name, propname)
                 tv.append_column(combo_col)
             else:
-                column = self.add_column(
+                renderer, column = self.add_column(
                     name=name,
                     edit_func=self.on_edited,
                     id=id, data=propname)
-                if name == "Value":
+                if name == "Unit":
+                    column.set_cell_data_func(renderer, self.unit_renderer_function, id)
+                elif name == "Value":
                     tv.set_expander_column(column)
 
         tv.set_headers_visible(True)
@@ -75,7 +77,14 @@ class PropertyView(TerminologyPopupTreeView):
         dp.execute = _exec
         dp.connect()
 
-    def dtype_renderer_function(self, tv_column, cell_combo, tree_model, tree_iter, data):
+    def unit_renderer_function(self, tv_column, column_cell, tree_model, tree_iter, data):
+        try:
+            cell_data = tree_model.get(tree_iter, data)[0]
+            column_cell.set_property('markup', cell_data)
+        except TypeError:
+            column_cell.set_property('markup', '')
+
+    def dtype_renderer_function(self, tv_column, cell_combobox, tree_model, tree_iter, data):
         '''
             Defines a custom cell renderer function, which is executed for
             every cell of the column, and sets the DType value from the underlying model.
@@ -83,8 +92,9 @@ class PropertyView(TerminologyPopupTreeView):
             Argument 'Data': Here, it defines the column number in the Tree View.
         '''
 
-        dtype = tree_model.get(tree_iter, data)[0]
-        cell_combo.set_property("text", dtype)
+        cell_data = tree_model.get(tree_iter, data)[0]
+        cell_combobox.set_property('markup', cell_data)
+
 
     @property
     def section(self):

@@ -26,9 +26,12 @@ class TreeView(object):
         if self.on_button_press is not None:
             tv.connect("button_press_event", self.on_button_press)
 
-        if self.on_get_tooltip is not None:
-            tv.connect('query-tooltip', self.on_query_tooltip)
-            tv.props.has_tooltip = True
+        # The tooltip doesn't provide any new info in the current implementation,
+        # and also, it messes up with the display of properties in the "Property
+        # View". Hence, disabling this temporarily.
+        # if self.on_get_tooltip is not None:
+        #     tv.connect('query-tooltip', self.on_query_tooltip)
+        #     tv.props.has_tooltip = True
 
         tv.set_headers_visible(True)
         tv.set_rules_hint(True)
@@ -48,7 +51,7 @@ class TreeView(object):
         column.set_resizable(True)
         column.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
         self._treeview.append_column(column)
-        return column
+        return (renderer, column)
 
 
     def get_selected_object(self):

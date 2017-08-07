@@ -1,24 +1,30 @@
+
+import odmlui
+
 class CommandManager(object):
     def __init__(self):
         self.undo_stack = []
         self.redo_stack = []
 
     def execute(self, cmd, redo=False):
-        print("run", cmd)
+        if odmlui.DEBUG:
+            print("run", cmd)
         if not redo:
             self.redo_stack = []
             self.enable_redo(enable=False)
 
-        e = None
+        failed = False
         try:
             cmd()
         except Exception as e:
+            failed = True
             self.error_func(cmd, e)
 
         self.undo_stack.append(cmd)
         self.enable_undo()
-        if e:
-            raise
+        if failed:
+            return False
+
         return True
 
     def undo(self):

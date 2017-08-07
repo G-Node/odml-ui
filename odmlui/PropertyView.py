@@ -17,12 +17,6 @@ from .DragProvider import DragProvider
 from .ChooserDialog import ChooserDialog
 from . import TextEditor
 
-try:
-    from html.parser import HTMLParser
-except ImportError:
-    from HTMLParser import HTMLParser
-
-
 COL_KEY = 0
 COL_VALUE = 1
 
@@ -85,7 +79,7 @@ class PropertyView(TerminologyPopupTreeView):
 
     def unit_renderer_function(self, tv_column, column_cell, tree_model, tree_iter, data):
         try:
-            cell_data = tree_model.get(tree_iter, 4)[0]
+            cell_data = tree_model.get(tree_iter, data)[0]
             column_cell.set_property('markup', cell_data)
         except TypeError:
             column_cell.set_property('markup', '')
@@ -94,17 +88,12 @@ class PropertyView(TerminologyPopupTreeView):
         '''
             Defines a custom cell renderer function, which is executed for
             every cell of the column, and sets the DType value from the underlying model.
-            The cell data can either be just an odML Type, like 'int', 'string', etc.
-            or it can also be a valid markup text with bits of stylings, like
-            <span foreground='grey'> string </span>. As of now, it is used to 
-            grey out cells when a section links to another section.
 
             Argument 'Data': Here, it defines the column number in the Tree View.
         '''
 
-        parser = DTypeParser(cell_combobox)
         cell_data = tree_model.get(tree_iter, data)[0]
-        parser.feed(cell_data)
+        cell_combobox.set_property('markup', cell_data)
 
 
     @property
@@ -416,26 +405,3 @@ class PropertyView(TerminologyPopupTreeView):
         combo_col.set_cell_data_func(combo_renderer, self.dtype_renderer_function, id)
 
         return combo_col
-
-
-
-class DTypeParser(HTMLParser, object):
-    '''
-        Used to style cells in the Combo Box of the DTypes column.
-    '''
-
-    def __init__(self, cell_comboBox, *args, **kwargs):
-        super(DTypeParser, self).__init__(*args, **kwargs)
-        self.cell_comboBox = cell_comboBox
-        self.greyed = False
-
-    def handle_starttag(self, tag, attrs):
-        for i in attrs:
-            if i[0] == 'foreground':
-                self.greyed = True
-                self.cell_comboBox.set_property('foreground', i[1])
-        
-    def handle_data(self, data):
-        self.cell_comboBox.set_property('text', data)
-        if not self.greyed:
-            self.cell_comboBox.set_property('foreground', 'black')

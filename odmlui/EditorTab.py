@@ -9,10 +9,12 @@ import os.path
 
 import odml
 import odml.validation
-from odml.tools.xmlparser import XMLWriter, XMLReader
+from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
 
 from .CommandManager import CommandManager
 from .ValidationWindow import ValidationWindow
+from .Helpers import uri_to_path, get_parser_for_uri, get_extension
+
 
 class EditorTab(object):
     """
@@ -48,13 +50,14 @@ class EditorTab(object):
 
     def load(self, uri):
         self.file_uri = uri
-        xml_file = gio.File.new_for_uri(uri)
-        xml_file_path = xml_file.get_path()
+        file_path = uri_to_path(uri)
+        parser = get_parser_for_uri(file_path)
+        odml_reader = ODMLReader(parser=parser)
+        self.document = odml_reader.fromFile(open(file_path))
 
-        self.document = XMLReader(ignore_errors=True).fromFile(xml_file_path)
         self.document.finalize()
         self.window.registry.add(self.document)
-        self.window._info_bar.show_info("Loading of %s done!" % (xml_file.get_basename()))
+        self.window._info_bar.show_info("Loading of %s done!" % (os.path.basename(file_path)))
         # TODO select default section
 
     def reset(self):
@@ -92,19 +95,21 @@ class EditorTab(object):
 
     def save(self, uri):
         self.document.clean()
-        doc = XMLWriter(self.document)
-        gf = gio.File.new_for_uri(uri)
+        parser = get_parser_for_uri(uri)
+        odml_writer = ODMLWriter(parser=parser)
+        file_path = uri_to_path(uri)
+        ext = get_extension(file_path)
+        if ext.upper() not in allowed_parsers:
+            file_path += '.xml'
+
         try:
-            data = str(doc)
+            odml_writer.write_file(self.document, file_path)
         except Exception as e:
             self._info_bar.show_info("Save failed: %s" % e)
             return
-        xml_file = gf.replace(etag='', make_backup=False, cancellable=None, flags=0) # TODO make backup?
-        xml_file.write(doc.header.encode())
-        xml_file.write(doc.__unicode__().encode())
-        xml_file.close()
+
         self.document.finalize() # undo the clean
-        self.window._info_bar.show_info("%s was saved" % (gf.get_basename()))
+        self.window._info_bar.show_info("%s was saved" % (os.path.basename(file_path)))
         self.edited = len(self.command_manager)
         return True # TODO return false on any error and notify the user
 

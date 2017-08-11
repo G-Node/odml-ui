@@ -31,8 +31,6 @@ from .MessageDialog import ErrorDialog
 
 gtk.gdk.threads_init()
 
-
-
 ui_info = \
 '''<ui>
   <menubar name='MenuBar'>
@@ -719,9 +717,7 @@ class EditorWindow(gtk.Window):
         return self.save_as(action)
 
     def on_file_save(self, uri):
-        if not uri.lower().endswith('.odml') and \
-            not uri.lower().endswith('.xml'):
-                uri += ".xml"
+
         self.current_tab.file_uri = uri
         self.current_tab.update_label()
         self.current_tab.save(uri)

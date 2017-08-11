@@ -51,7 +51,6 @@ class ValueIter(GenericIter.GenericIter):
     """
     An iterator for a Value object
     """
-    python2 = (sys.version_info < (3,0))
 
     def get_value(self, attr):
         if attr == "name":
@@ -61,7 +60,7 @@ class ValueIter(GenericIter.GenericIter):
 
             # Some issues with the rendering of `unicode` in Python 2 directly
             # to Tree Column cell renderer. Hence, first encode it here.
-            if self.python2:
+            if ValueIter.is_python2:
                 value = value.encode('utf-8')
             return value
 

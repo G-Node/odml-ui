@@ -1,4 +1,5 @@
 import cgi
+import sys
 
 class GenericIter(object):
     """
@@ -10,6 +11,7 @@ class GenericIter(object):
     need to have a IterClass attribute. If it is missing a GenericIter
     will be used.
     """
+    is_python2 = (sys.version_info < (3,0))
 
     def __init__(self, obj):
         """
@@ -25,7 +27,10 @@ class GenericIter(object):
     @staticmethod
     def escape(value):
         """escape html for use in marked up cellrenderers"""
-        return cgi.escape(value) if value is not None else None
+        value = cgi.escape(value) if value is not None else ''
+        if value and GenericIter.is_python2:
+            value = value.encode('utf-8')
+        return value
 
     def get_value(self, attr):
         return self.escape(getattr(self._obj, attr))

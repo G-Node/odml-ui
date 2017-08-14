@@ -34,23 +34,34 @@ class odMLChooserDialog(ChooserDialog):
 
     @staticmethod
     def _setup_file_filter(filter):
-        filter.set_name("odML documents (*.xml, *.odml)")
-
-        # A lot of files which have mime type 'application/xml' also appear in
-        # the recently used files, but are not odML files.
-        # So, I was thinking of doing away with application/xml and text/xml,
-        # and if something of this sort is really needed, we can register
-        # something like appliacation/odml.
+        filter.set_name("XML Format (*.xml, *.odml)")
 
         filter.add_mime_type("application/xml")
         filter.add_mime_type("text/xml")
         filter.add_pattern('*.xml')
         filter.add_pattern('*.odml')
 
+    def yaml_filter(self):
+        filter = gtk.FileFilter()
+        filter.set_name("YAML format (*.yaml, *.odml)")
+        filter.add_pattern('*.yaml')
+        filter.add_pattern('*.yml')
+        filter.add_pattern('*.odml')
+        return filter
+
+    def json_filter(self):
+        filter = gtk.FileFilter()
+        filter.set_name("JSON format (*.json, *.odml)")
+        filter.add_pattern('*.json')
+        filter.add_pattern('*.odml')
+        return filter
+
     def add_filters(self):
         file_filter = gtk.FileFilter()
         self._setup_file_filter(file_filter)
         self.add_filter (file_filter)
+        self.add_filter(self.yaml_filter())
+        self.add_filter(self.json_filter())
 
         if not self.save:
             all_files = gtk.FileFilter()

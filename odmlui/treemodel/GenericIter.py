@@ -1,5 +1,6 @@
 import cgi
 import sys
+import odml
 
 class GenericIter(object):
     """
@@ -33,6 +34,11 @@ class GenericIter(object):
         return value
 
     def get_value(self, attr):
+        # print("*" * 60)
+        # print(attr)
+        # print("*" * 60)
+        if isinstance(self._obj, odml.value.Value):
+            return self.escape(getattr(self._obj.parent, attr))
         return self.escape(getattr(self._obj, attr))
 
     def to_path(self):

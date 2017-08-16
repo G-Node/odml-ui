@@ -17,14 +17,15 @@ debug = lambda x: 0
 
 
 ColMapper = ColumnMapper({"Name"        : (0, "name"),
-                         "Value"       : (1, "value"),
+                         "Value"       : (1, "pseudo_values"),
                          "Definition"  : (2, "definition"),
                          "Type"        : (3, "dtype"),
                          "Unit"        : (4, "unit"),
-                         "Comment"     : (5, "comment"),
-                         "Endcoder"    : (6, "encoder"),
-                         "Filename"    : (7, "filename"),
-                         "Reference"   : (8, "reference")})
+                         # "Comment"     : (5, "comment"),
+                         # "Endcoder"    : (6, "encoder"),
+                         # "Filename"    : (7, "filename"),
+                         # "Reference"   : (8, "reference")
+                         })
 
 class PropertyModel(TreeModel):
     def __init__(self, section):

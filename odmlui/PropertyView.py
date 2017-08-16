@@ -16,6 +16,7 @@ from .treemodel import PropertyModel
 from .DragProvider import DragProvider
 from .ChooserDialog import ChooserDialog
 from . import TextEditor
+from .Helpers import property_values
 
 COL_KEY = 0
 COL_VALUE = 1
@@ -147,6 +148,13 @@ class PropertyView(TerminologyPopupTreeView):
 
         updates the underlying model property that corresponds to the edited cell
         """
+        print("*" * 50)
+        print(tree_iter)
+        print(tree_iter._obj)
+        print(column_name)
+        print(new_text)
+        print("*" * 50)
+
         section = self.section
         prop = tree_iter._obj
 
@@ -166,7 +174,7 @@ class PropertyView(TerminologyPopupTreeView):
         if first_row_of_multi and column_name != "name":
             # editing multiple values of a property at once
             cmds = []
-            for value in prop.values:
+            for value in prop.pseudo_values:
                 cmds.append(commands.ChangeValue(
                     object    = value,
                     attr      = [column_name, "value"],
@@ -178,7 +186,7 @@ class PropertyView(TerminologyPopupTreeView):
 
             # first row edit event for the value, so switch the object
             if column_name != "name" and first_row:
-                prop = prop.values[0]
+                prop = prop.pseudo_values[0]
             if not (column_name == "name" and first_row):
                 column_name = [column_name, "value"] # backup the value attribute too
             cmd = commands.ChangeValue(
@@ -276,39 +284,6 @@ class PropertyView(TerminologyPopupTreeView):
                 menu_items.append(self.create_popup_menu_del_item(obj))
         return menu_items
 
-    def binary_load(self, widget, val):
-        """
-        popup menu action: load binary content
-        """
-        chooser = ChooserDialog(title="Open binary file", save=False)
-        if val.filename is not None:
-            # try to set the filename (if it exists)
-            chooser.set_file(gio.File(val.filename))
-        chooser.show()
-
-        def binary_load_file(uri):
-            if val._encoder is None:
-                val.encoder = "base64"
-            val.data = gio.File(uri).read().read()
-
-        chooser.on_accept = binary_load_file
-
-    def binary_save(self, widget, val):
-        """
-        popup menu action: load binary content
-        """
-        chooser = ChooserDialog(title="Save binary file", save=True)
-        if val.filename is not None:
-            # suggest a filename
-            chooser.set_current_name(val.filename)
-        chooser.show()
-
-        def binary_save_file(uri):
-            fp = gio.File(uri).replace(etag='', make_backup=False)
-            fp.write(val.data)
-            fp.close()
-
-        chooser.on_accept = binary_save_file
 
     def edit_text(self, widget, val):
         """
@@ -375,7 +350,10 @@ class PropertyView(TerminologyPopupTreeView):
         (obj, prop) = obj_prop_pair
         if prop is None:
             name = self.get_new_obj_name(obj.properties, prefix='Unnamed Property')
-            prop = odml.Property(name=name, value="")
+            # prop = odml.Property(name=name, value="")
+            prop = odml.Property(name=name)
+            prop._value = ["None"]
+            property_values([prop])
         else:
             prefix = prop.name
             name = self.get_new_obj_name(obj.properties, prefix=prefix)

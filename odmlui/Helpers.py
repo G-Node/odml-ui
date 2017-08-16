@@ -1,5 +1,6 @@
 
 import os
+import odml
 
 from odml.tools.odmlparser import allowed_parsers
 
@@ -44,3 +45,14 @@ def get_parser_for_uri(uri):
         parser = 'XML'
 
     return parser
+
+def property_values(odml_properties):
+    for prop in odml_properties:
+        values = prop.value
+        new_values = []
+        for index, val in enumerate(values):
+            v = odml.Value(val, index)
+            v._property = prop
+            new_values.append(v)
+        prop.pseudo_values = new_values
+    # return new_values

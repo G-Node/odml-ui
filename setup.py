@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
-import sys
 import os
 import glob
+
 
 # Use setuptools compulsarily, as the distutils doen't work out well for the 
 # installation procedure. The 'install_requires' and 'data_files' have better
 # support in setuptools.
 from setuptools import setup
-
 
 try:
     # only necessary for the windows build
@@ -25,10 +24,9 @@ packages = [
 
 install_req = ["odml==1.3.*"]
 
-data_files = [('share/applications', ['odml.desktop']),
-              ('share/pixmaps', glob.glob(os.path.join("images", "*")))
+data_files = [('share/pixmaps', glob.glob(os.path.join("images", "*"))),
+              ('/usr/share/applications', ['odml.desktop'])
               ]
-
 
 setup(name='odML-UI',
       version='1.3',

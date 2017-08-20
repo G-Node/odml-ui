@@ -11,7 +11,7 @@ from .TreeModel import TreeModel, ColumnMapper
 import sys
 import odml
 import odml.property
-import odml.value as value
+from . import value
 debug = lambda x: sys.stderr.write(x+"\n")
 debug = lambda x: 0
 
@@ -21,10 +21,6 @@ ColMapper = ColumnMapper({"Name"        : (0, "name"),
                          "Definition"  : (2, "definition"),
                          "Type"        : (3, "dtype"),
                          "Unit"        : (4, "unit"),
-                         # "Comment"     : (5, "comment"),
-                         # "Endcoder"    : (6, "encoder"),
-                         # "Filename"    : (7, "filename"),
-                         # "Reference"   : (8, "reference")
                          })
 
 class PropertyModel(TreeModel):

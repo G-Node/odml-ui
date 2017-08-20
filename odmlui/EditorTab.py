@@ -13,7 +13,7 @@ from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
 
 from .CommandManager import CommandManager
 from .ValidationWindow import ValidationWindow
-from .Helpers import uri_to_path, get_parser_for_uri, get_extension, property_values
+from .Helpers import uri_to_path, get_parser_for_uri, get_extension, create_pseudo_values
 
 
 class EditorTab(object):
@@ -50,16 +50,10 @@ class EditorTab(object):
 
     def parse_properties(self, odml_sections):
         for i in odml_sections:
-            property_values(i.properties)
+            create_pseudo_values(i.properties)
 
         for j in odml_sections:
             self.parse_properties(j.sections)
-
-        # for i in odml_sections:
-        #     print("New pseudo values for Section %s is :-" % i)
-        #     for j in i.properties:
-        #         print(j.pseudo_values)
-
 
     def load(self, uri):
         self.file_uri = uri

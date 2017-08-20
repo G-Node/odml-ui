@@ -12,7 +12,7 @@ import odml.format as format
 from odml import DType
 from . import commands
 from .TreeView import TerminologyPopupTreeView
-from .treemodel import PropertyModel
+from .treemodel import PropertyModel, value
 from .DragProvider import DragProvider
 from .ChooserDialog import ChooserDialog
 from . import TextEditor
@@ -45,9 +45,7 @@ class PropertyView(TerminologyPopupTreeView):
                     name=name,
                     edit_func=self.on_edited,
                     id=id, data=propname)
-                if name == "Unit":
-                    column.set_cell_data_func(renderer, self.unit_renderer_function, id)
-                elif name == "Value":
+                if name == "Value":
                     tv.set_expander_column(column)
 
         tv.set_headers_visible(True)
@@ -63,8 +61,8 @@ class PropertyView(TerminologyPopupTreeView):
         for target in [
             OdmlDrag(mime="odml/property-ref", inst=odml.property.Property),
             TextDrag(mime="odml/property", inst=odml.property.Property),
-            OdmlDrag(mime="odml/value-ref", inst=odml.value.Value),
-            TextDrag(mime="odml/value", inst=odml.value.Value),
+            OdmlDrag(mime="odml/value-ref", inst=value.Value),
+            TextDrag(mime="odml/value", inst=value.Value),
             TextDrag(mime="TEXT"),
             OdmlDrop(mime="odml/value-ref", target=vd, registry=registry, exec_func=_exec),
             OdmlDrop(mime="odml/property-ref", target=pd, registry=registry, exec_func=_exec),
@@ -77,13 +75,6 @@ class PropertyView(TerminologyPopupTreeView):
             dp.append(target)
         dp.execute = _exec
         dp.connect()
-
-    def unit_renderer_function(self, tv_column, column_cell, tree_model, tree_iter, data):
-        try:
-            cell_data = tree_model.get(tree_iter, data)[0]
-            column_cell.set_property('markup', cell_data)
-        except TypeError:
-            column_cell.set_property('markup', '')
 
     def dtype_renderer_function(self, tv_column, cell_combobox, tree_model, tree_iter, data):
         '''
@@ -148,13 +139,6 @@ class PropertyView(TerminologyPopupTreeView):
 
         updates the underlying model property that corresponds to the edited cell
         """
-        print("*" * 50)
-        print(tree_iter)
-        print(tree_iter._obj)
-        print(column_name)
-        print(new_text)
-        print("*" * 50)
-
         section = self.section
         prop = tree_iter._obj
 

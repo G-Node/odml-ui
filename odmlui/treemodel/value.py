@@ -41,7 +41,7 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
     IterClass = ValueIter
 
 
-    def __init__(self, value, index):
+    def __init__(self, index):
 
         self._property = None
         self._index = index

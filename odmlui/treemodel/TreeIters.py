@@ -21,18 +21,11 @@ class PropIter(GenericIter.GenericIter):
 
         else:
             return self.escape(getattr(self._obj, attr))
-        # if attr == "name":
-        #     return self.escape(self._obj.name)
-
-        # if self.has_child:
-        #     return self.get_mulitvalue(attr)
-        # else:
-        #     return self.get_singlevalue(attr)
 
     def get_mulitvalue(self, name):
         #Most of the stuff is empty and handled by the
         #value
-        if name == "pseudo_value":
+        if name == "pseudo_values":
                 return self.escape("<multi>")
         return ""
 
@@ -70,8 +63,9 @@ class ValueIter(GenericIter.GenericIter):
                 value = value.encode('utf-8')
             return value
 
+        # Return an empty string for anything lese
         return ""
-        return super(ValueIter, self).get_value(attr)
+
 
 class SectionIter(GenericIter.GenericIter):
     @property
@@ -91,4 +85,3 @@ class SectionPropertyIter(GenericIter.GenericIter):
 import odml.tools.nodes as nodes
 nodes.Section.IterClass  = SectionIter
 nodes.Property.IterClass = PropIter
-nodes.Value.IterClass    = ValueIter

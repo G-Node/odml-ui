@@ -34,12 +34,25 @@ class odMLChooserDialog(ChooserDialog):
 
     @staticmethod
     def _setup_file_filter(filter):
-        filter.set_name("XML Format (*.xml, *.odml)")
+        '''
+             Used for setting up recent filters for recently used files.
+        '''
+        filter.set_name("odML Documents (*.xml, *.yaml, *.json, *.odml)")
 
         filter.add_mime_type("application/xml")
         filter.add_mime_type("text/xml")
         filter.add_pattern('*.xml')
+        filter.add_pattern('*.yaml')
+        filter.add_pattern('*.yml')
+        filter.add_pattern('*.json')
         filter.add_pattern('*.odml')
+
+    def xml_filter(self):
+        filter = gtk.FileFilter()
+        filter.set_name("XML format (*.xml, *.odml)")
+        filter.add_pattern('*.xml')
+        filter.add_pattern('*.odml')
+        return filter
 
     def yaml_filter(self):
         filter = gtk.FileFilter()
@@ -57,9 +70,7 @@ class odMLChooserDialog(ChooserDialog):
         return filter
 
     def add_filters(self):
-        file_filter = gtk.FileFilter()
-        self._setup_file_filter(file_filter)
-        self.add_filter (file_filter)
+        self.add_filter(self.xml_filter())
         self.add_filter(self.yaml_filter())
         self.add_filter(self.json_filter())
 

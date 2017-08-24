@@ -41,18 +41,35 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
     IterClass = ValueIter
 
 
-    def __init__(self, index):
+    def __init__(self, parent, index=None):
 
-        self._property = None
+        self._property = parent
+        if index is None:  # Instantiate a new odML value
+            index = len(self._property.value)
+            dtype = self.parent.dtype
+            default_value = dtypes.default_values.get(dtype, '')
+            print("Adding newvalue to parent :- ")
+            print(self.parent.value)
+            self.parent.value.append(default_value)
+            print(self.parent.value)
+
+        assert(isinstance(index, int))
         self._index = index
 
     def __repr__(self):
-        return "<%s>" % str(self.pseudo_values)
+        return "PseudoValue <%s>" % str(self.pseudo_values)
 
     @property
     def parent(self):
         """the property containing this value"""
         return self._property
+
+    @property
+    def dtype(self):
+        '''
+            Retuns the parent DType
+        '''
+        return self.parent.dtype
 
     @property
     def pseudo_values(self):

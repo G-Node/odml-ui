@@ -61,6 +61,10 @@ class ValueIter(GenericIter.GenericIter):
             # to Tree Column cell renderer. Hence, first encode it here.
             if ValueIter.is_python2:
                 value = value.encode('utf-8')
+
+            # If the value is an empty string, render a placeholder text.
+            if value == '':
+                value = '<i>n/a</i>'
             return value
 
         # Return an empty string for anything lese

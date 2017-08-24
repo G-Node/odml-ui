@@ -13,7 +13,7 @@ import odml
 import odmlui.treemodel.mixin
 from . import commands
 
-from odmlui.treemodel import PropertyModel, SectionModel
+from odmlui.treemodel import PropertyModel, SectionModel, value
 
 from .InfoBar import EditorInfoBar
 from .ScrolledWindow import ScrolledWindow
@@ -777,7 +777,7 @@ class EditorWindow(gtk.Window):
     def new_value(self, action):
         obj = self._property_tv.get_selected_object()
         if obj is None: return
-        if isinstance(obj, odml.value.Value):
+        if isinstance(obj, value.Value):
             obj = obj.parent
         self._property_tv.add_value(None, (obj, None))
 

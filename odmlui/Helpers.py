@@ -50,8 +50,7 @@ def create_pseudo_values(odml_properties):
     for prop in odml_properties:
         values = prop.value
         new_values = []
-        for index in len(values):
-            v = value.Value(index)
-            v._property = prop
+        for index in range(len(values)):
+            v = value.Value(prop, index)
             new_values.append(v)
         prop.pseudo_values = new_values

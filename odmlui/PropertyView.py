@@ -7,6 +7,7 @@ import gtk
 import gio
 
 import odml
+import odml.dtypes as dtypes
 import odml.terminology as terminology
 import odml.format as format
 from odml import DType
@@ -16,7 +17,7 @@ from .treemodel import PropertyModel, value
 from .DragProvider import DragProvider
 from .ChooserDialog import ChooserDialog
 from . import TextEditor
-from .Helpers import property_values
+from .Helpers import create_pseudo_values
 
 COL_KEY = 0
 COL_VALUE = 1
@@ -147,15 +148,15 @@ class PropertyView(TerminologyPopupTreeView):
         first_row_of_multi = first_row and tree_iter.has_child
 
         # can only edit the subvalues, but not <multi> itself
-        if first_row_of_multi and column_name == "value":
+        if first_row_of_multi and column_name == "pseudo_value":
             return
-        if not first_row and column_name == "name":
+        if not first_row and column_name != "pseudo_values":
             return
 
         cmd = None
         # if we edit another attribute (e.g. unit), set this for all values of this property
 
-        if first_row_of_multi and column_name != "name":
+        if first_row_of_multi and column_name == "pseudo_values":
             # editing multiple values of a property at once
             cmds = []
             for value in prop.pseudo_values:
@@ -167,11 +168,12 @@ class PropertyView(TerminologyPopupTreeView):
             cmd = commands.Multiple(cmds=cmds)
 
         else:
-
-            # first row edit event for the value, so switch the object
-            if column_name != "name" and first_row:
+            # first row edit event for the property, so switch to appropriate object
+            #  - Only if the 'value' column is edited, edit the pseudo-value object.
+            #  - Else, edit the property object
+            if column_name == 'pseudo_values' and first_row:
                 prop = prop.pseudo_values[0]
-            if not (column_name == "name" and first_row):
+            if column_name == "pseudo_values" and first_row:
                 column_name = [column_name, "value"] # backup the value attribute too
             cmd = commands.ChangeValue(
                     object    = prop,
@@ -231,6 +233,7 @@ class PropertyView(TerminologyPopupTreeView):
         menu_items = self.create_popup_menu_items("Add Property", "Empty Property", model.section, self.add_property, lambda sec: sec.properties, lambda prop: prop.name, stock="odml-add-Property")
         if obj is not None: # can also add value
             prop = obj
+
             if hasattr(obj, "_property"): # we care about the properties only
                 prop = obj._property
 
@@ -241,15 +244,10 @@ class PropertyView(TerminologyPopupTreeView):
                 if item.get_submenu() is None: continue # don't want a sole Set Value item
                 menu_items.append(item)
 
-            # conditionally allow to store / load binary content
             val = obj
-            if prop is obj:
-                val = obj.value if len(obj) == 1 else None
 
-            if val is not None and val.dtype == "binary":
-                menu_items.append(self.create_menu_item("Load binary content", self.binary_load, val))
-                if val.data is not None:
-                    menu_items.append(self.create_menu_item("Save binary content", self.binary_save, val))
+            if prop is obj:
+                val = prop.pseudo_values[0] if len(prop.pseudo_values) == 1 else None
 
             if val is not None and val.dtype == "text":
                 menu_items.append(self.create_menu_item("Edit text in larger window", self.edit_text, val))
@@ -293,7 +291,7 @@ class PropertyView(TerminologyPopupTreeView):
         (prop, val) = prop_value_pair
         model, path, obj = self.popup_data
         if val is None:
-            val = odml.Value("")
+            val = value.Value(prop)
         else:
             val = val.clone()
 
@@ -318,11 +316,11 @@ class PropertyView(TerminologyPopupTreeView):
         """
         (obj, val) = obj_value_pair
         if val is None:
-            val = odml.Value("")
+            val = value.Value(obj)
         else:
             val = val.clone()
 
-        cmd = commands.AppendValue(obj=obj, val=val)
+        cmd = commands.AppendValue(obj=obj.pseudo_values, val=val)
         self.execute(cmd)
 
     def add_property(self, widget, obj_prop_pair):
@@ -334,10 +332,10 @@ class PropertyView(TerminologyPopupTreeView):
         (obj, prop) = obj_prop_pair
         if prop is None:
             name = self.get_new_obj_name(obj.properties, prefix='Unnamed Property')
-            # prop = odml.Property(name=name, value="")
-            prop = odml.Property(name=name)
-            prop._value = ["None"]
-            property_values([prop])
+            prop = odml.Property(name=name, dtype='string')
+            # The default value part should be put in odML core library
+            prop._value = [dtypes.default_values.get('string', '')]
+            create_pseudo_values([prop])
         else:
             prefix = prop.name
             name = self.get_new_obj_name(obj.properties, prefix=prefix)

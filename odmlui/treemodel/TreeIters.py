@@ -54,7 +54,7 @@ class ValueIter(GenericIter.GenericIter):
 
     def get_value(self, attr):
         if attr == "name":
-            return
+            return ""
         if attr == "value":
             value = self._obj.get_display()
 

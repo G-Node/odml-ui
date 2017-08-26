@@ -49,7 +49,8 @@ class TreeView(object):
 
         column = gtk.TreeViewColumn(name, renderer, markup=id)
         column.set_resizable(True)
-        column.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
+        column.set_min_width(15)
+        column.set_expand(True)
         self._treeview.append_column(column)
         return (renderer, column)
 

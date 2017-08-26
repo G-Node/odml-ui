@@ -5,6 +5,7 @@ pygtkcompat.enable_gtk(version='3.0')
 
 import os
 import sys
+import platform
 
 import gtk
 import gobject
@@ -107,7 +108,13 @@ def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
         f.tooltip = tooltip
         f.stock_id = stock_id
         f.label = label
+
+        nonlocal accelerator
+        # For Mac, replace 'control' modifier with 'command' modifier
+        if accelerator is not None and platform.system() == 'Darwin':
+            accelerator = accelerator.replace('control', 'Super')
         f.accelerator = accelerator
+
         return f
     return func
 

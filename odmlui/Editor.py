@@ -5,6 +5,7 @@ pygtkcompat.enable_gtk(version='3.0')
 
 import os
 import sys
+import platform
 
 import gtk
 import gobject
@@ -107,7 +108,13 @@ def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
         f.tooltip = tooltip
         f.stock_id = stock_id
         f.label = label
+
+        nonlocal accelerator
+        # For Mac, replace 'control' modifier with 'command' modifier
+        if accelerator is not None and platform.system() == 'Darwin':
+            accelerator = accelerator.replace('control', 'Super')
         f.accelerator = accelerator
+
         return f
     return func
 
@@ -365,16 +372,23 @@ class EditorWindow(gtk.Window):
         # recent_filter.filter() method. If the 'filter' return True,
         # the file is included, else not included.
         recent_odml_files = []
+        MAX_RECENT_ITEMS = 12
+
         all_recent_files = gtk.RecentManager.get_default().get_items()
         filter_info = gtk.RecentFilterInfo()
         filter_info.contains = recent_filter.get_needed()
 
         for i in all_recent_files:
+            if not i.exists():
+                continue
             filter_info.display_name = i.get_display_name()
             filter_info.uri = i.get_uri()
             filter_info.mime_type = i.get_mime_type()
-            if recent_filter.filter(filter_info) and uri_exists(i.get_uri()):
+            if recent_filter.filter(filter_info):
                 recent_odml_files.append(i)
+
+        recent_odml_files.sort(key=lambda x: x.get_age())
+        recent_odml_files = recent_odml_files[:MAX_RECENT_ITEMS]
 
         if recent_odml_files:
             text += "\n\nOr open a <b>recently used file</b>:\n"

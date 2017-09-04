@@ -48,10 +48,7 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
             index = len(self._property.value)
             dtype = self.parent.dtype
             default_value = dtypes.default_values.get(dtype, '')
-            print("Adding newvalue to parent :- ")
-            print(self.parent.value)
             self.parent.value.append(default_value)
-            print(self.parent.value)
 
         assert(isinstance(index, int))
         self._index = index

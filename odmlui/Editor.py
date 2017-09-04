@@ -5,6 +5,7 @@ pygtkcompat.enable_gtk(version='3.0')
 
 import os
 import sys
+import platform
 
 import gtk
 import gobject
@@ -13,7 +14,7 @@ import odml
 import odmlui.treemodel.mixin
 from . import commands
 
-from odmlui.treemodel import PropertyModel, SectionModel, value
+from odmlui.treemodel import PropertyModel, SectionModel, ValueModel
 
 from .InfoBar import EditorInfoBar
 from .ScrolledWindow import ScrolledWindow
@@ -107,7 +108,13 @@ def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
         f.tooltip = tooltip
         f.stock_id = stock_id
         f.label = label
+
+        nonlocal accelerator
+        # For Mac, replace 'control' modifier with 'command' modifier
+        if accelerator is not None and platform.system() == 'Darwin':
+            accelerator = accelerator.replace('control', 'primary')
         f.accelerator = accelerator
+
         return f
     return func
 
@@ -784,7 +791,7 @@ class EditorWindow(gtk.Window):
     def new_value(self, action):
         obj = self._property_tv.get_selected_object()
         if obj is None: return
-        if isinstance(obj, value.Value):
+        if isinstance(obj, ValueModel.Value):
             obj = obj.parent
         self._property_tv.add_value(None, (obj, None))
 

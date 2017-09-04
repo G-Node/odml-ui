@@ -51,16 +51,14 @@ class EditorTab(object):
     def parse_properties(self, odml_sections):
         for i in odml_sections:
             create_pseudo_values(i.properties)
-
-        for j in odml_sections:
-            self.parse_properties(j.sections)
+            self.parse_properties(i.sections)
 
     def load(self, uri):
         self.file_uri = uri
         file_path = uri_to_path(uri)
         parser = get_parser_for_uri(file_path)
         odml_reader = ODMLReader(parser=parser)
-        self.document = odml_reader.fromFile(open(file_path))
+        self.document = odml_reader.from_file(open(file_path))
 
         self.document.finalize()
         self.parse_properties(self.document.sections)

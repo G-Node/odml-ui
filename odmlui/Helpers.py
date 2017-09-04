@@ -1,6 +1,6 @@
 
 import os
-from .treemodel import value
+from .treemodel import ValueModel
 
 from odml.tools.odmlparser import allowed_parsers
 

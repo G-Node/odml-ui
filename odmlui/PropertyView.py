@@ -13,7 +13,7 @@ import odml.format as format
 from odml import DType
 from . import commands
 from .TreeView import TerminologyPopupTreeView
-from .treemodel import PropertyModel, value
+from .treemodel import PropertyModel, ValueModel
 from .DragProvider import DragProvider
 from .ChooserDialog import ChooserDialog
 from . import TextEditor
@@ -62,8 +62,8 @@ class PropertyView(TerminologyPopupTreeView):
         for target in [
             OdmlDrag(mime="odml/property-ref", inst=odml.property.Property),
             TextDrag(mime="odml/property", inst=odml.property.Property),
-            OdmlDrag(mime="odml/value-ref", inst=value.Value),
-            TextDrag(mime="odml/value", inst=value.Value),
+            OdmlDrag(mime="odml/value-ref", inst=ValueModel.Value),
+            TextDrag(mime="odml/value", inst=ValueModel.Value),
             TextDrag(mime="TEXT"),
             OdmlDrop(mime="odml/value-ref", target=vd, registry=registry, exec_func=_exec),
             OdmlDrop(mime="odml/property-ref", target=pd, registry=registry, exec_func=_exec),
@@ -291,7 +291,7 @@ class PropertyView(TerminologyPopupTreeView):
         (prop, val) = prop_value_pair
         model, path, obj = self.popup_data
         if val is None:
-            val = value.Value(prop)
+            val = ValueModel.Value(prop)
         else:
             val = val.clone()
 
@@ -316,7 +316,7 @@ class PropertyView(TerminologyPopupTreeView):
         """
         (obj, val) = obj_value_pair
         if val is None:
-            val = value.Value(obj)
+            val = ValueModel.Value(obj)
         else:
             val = val.clone()
 
@@ -362,6 +362,8 @@ class PropertyView(TerminologyPopupTreeView):
         combo_renderer.connect("edited", self.on_edited, propname)
 
         combo_col = gtk.TreeViewColumn(name, combo_renderer)
+        combo_col.set_min_width(40)
+        combo_col.set_resizable(True)
         combo_col.set_cell_data_func(combo_renderer, self.dtype_renderer_function, id)
 
         return combo_col

@@ -11,7 +11,7 @@ from .TreeModel import TreeModel, ColumnMapper
 import sys
 import odml
 import odml.property
-from . import value
+from . import ValueModel
 debug = lambda x: sys.stderr.write(x+"\n")
 debug = lambda x: 0
 
@@ -80,7 +80,7 @@ class PropertyModel(TreeModel):
     def _get_node_iter(self, node):
         if isinstance(node, odml.property.Property):
             return PropIter(node)
-        if isinstance(node, value.Value):
+        if isinstance(node, ValueModel.Value):
             return ValueIter(node)
         return SectionPropertyIter(node)
 

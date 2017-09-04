@@ -54,6 +54,7 @@ class ValueIter(GenericIter.GenericIter):
     """
 
     def get_value(self, attr):
+
         if attr == "pseudo_values":
             value = self._obj.get_display()
 

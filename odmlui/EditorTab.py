@@ -13,7 +13,8 @@ from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
 
 from .CommandManager import CommandManager
 from .ValidationWindow import ValidationWindow
-from .Helpers import uri_to_path, get_parser_for_uri, get_extension, create_pseudo_values
+from .Helpers import uri_to_path, get_parser_for_uri, get_extension
+from .MessageDialog import ErrorDialog
 
 
 class EditorTab(object):
@@ -58,13 +59,18 @@ class EditorTab(object):
         file_path = uri_to_path(uri)
         parser = get_parser_for_uri(file_path)
         odml_reader = ODMLReader(parser=parser)
-        self.document = odml_reader.from_file(open(file_path))
+        try:
+            self.document = odml_reader.from_file(open(file_path))
+        except Exception as e:
+            ErrorDialog(None, "Error while parsing '%s'" % file_path, str(e))
+            return False
 
         self.document.finalize()
         self.parse_properties(self.document.sections)
         self.window.registry.add(self.document)
         self.window._info_bar.show_info("Loading of %s done!" % (os.path.basename(file_path)))
         # TODO select default section
+        return True
 
     def reset(self):
         self.edited = 0 # initialize the edit stack position

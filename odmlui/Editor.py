@@ -414,10 +414,10 @@ class EditorWindow(gtk.Window):
         if path == "#new":
             self.new_file()
         elif path is not None:
-            loaded = self.load_document(path)
-            if not loaded:
-                # The document was not loaded due to some error, so reattach
-                # the welcome page
+            try:
+                self.load_document(path)
+            except Exception as e:
+                ErrorDialog(self, "Error while parsing '%s'" % uri_to_path(path), str(e))
                 self.welcome()
 
         return True
@@ -468,13 +468,9 @@ class EditorWindow(gtk.Window):
     def load_document(self, uri):
         """open a new tab, load the document into it"""
         tab = EditorTab(self)
-        # Check if document was loaded successfully
-        loaded = tab.load(uri)
-        if loaded:
-            self.append_tab(tab)
-            return tab
-        else:
-            return False
+        tab.load(uri)
+        self.append_tab(tab)
+        return tab
 
     @gui_action("CloneTab", tooltip="Create a copy of the current tab", label="_Clone", stock_id=gtk.STOCK_COPY, accelerator="<control><shift>C")
     def on_clone_tab(self, action):

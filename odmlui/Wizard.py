@@ -6,6 +6,7 @@ pygtkcompat.enable_gtk(version='3.0')
 
 
 import gtk
+from collections import OrderedDict
 from .treemodel.SectionModel import SectionModel
 from .SectionView import SectionView
 from .ScrolledWindow import ScrolledWindow
@@ -87,12 +88,14 @@ class DataPage(Page):
         # put the data area in center, fill only horizontally
         align = gtk.Alignment(0.5, 0.5, xscale=1.0)
         self.add(align)
-        self.fields = fields = {
-            'Author': get_username(),
-            'Date': get_date(),
-            'Version': '1.0',
-            'Repository': 'http://portal.g-node.org/odml/terminologies/v1.0/terminologies.xml',
-            }
+
+        fields = OrderedDict()
+        fields['Author'] = get_username()
+        fields['Date'] = get_date()
+        fields['Version'] = '1.0'
+        fields['Repository'] = 'http://portal.g-node.org/odml/terminologies/v1.0/terminologies.xml'
+        self.fields = fields
+
         # add a label and an entry box for each field
         for k, v in fields.items():
             label = gtk.Label("%s: " % k)

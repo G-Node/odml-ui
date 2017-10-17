@@ -13,27 +13,28 @@ class PropIter(GenericIter.GenericIter):
     """
 
     def get_value(self, attr):
-        if attr == "name":
-            return self.escape(self._obj.name)
+        if attr == "pseudo_values":
+            if self.has_child:
+                return self.get_mulitvalue(attr)
+            else:
+                return self.get_singlevalue(attr)
 
-        if self.has_child:
-            return self.get_mulitvalue(attr)
         else:
-            return self.get_singlevalue(attr)
+            return self.escape(getattr(self._obj, attr))
 
     def get_mulitvalue(self, name):
         #Most of the stuff is empty and handled by the
         #value
-        if name == "value":
+        if name == "pseudo_values":
                 return self.escape("<multi>")
         return ""
 
     def get_singlevalue(self, name):
         #here we proxy the value object
-        if len(self._obj._values) == 0:
+        if len(self._obj.pseudo_values) == 0:
             return ""
 
-        return ValueIter(self._obj.values[0]).get_value(name)
+        return ValueIter(self._obj.pseudo_values[0]).get_value(name)
 
     @property
     def has_child(self):
@@ -41,7 +42,7 @@ class PropIter(GenericIter.GenericIter):
 
     @property
     def n_children(self):
-        return len(self._obj._values)
+        return len(self._obj.pseudo_values)
 
     @property
     def parent(self):
@@ -53,18 +54,23 @@ class ValueIter(GenericIter.GenericIter):
     """
 
     def get_value(self, attr):
-        if attr == "name":
-            return ""
-        if attr == "value":
+
+        if attr == "pseudo_values":
             value = self._obj.get_display()
 
             # Some issues with the rendering of `unicode` in Python 2 directly
             # to Tree Column cell renderer. Hence, first encode it here.
             if ValueIter.is_python2:
                 value = value.encode('utf-8')
+
+            # If the value is an empty string, render a placeholder text.
+            if value == '':
+                value = '<i>n/a</i>'
             return value
 
-        return super(ValueIter, self).get_value(attr)
+        # Return an empty string for anything lese
+        return ""
+
 
 class SectionIter(GenericIter.GenericIter):
     @property
@@ -84,4 +90,3 @@ class SectionPropertyIter(GenericIter.GenericIter):
 import odml.tools.nodes as nodes
 nodes.Section.IterClass  = SectionIter
 nodes.Property.IterClass = PropIter
-nodes.Value.IterClass    = ValueIter

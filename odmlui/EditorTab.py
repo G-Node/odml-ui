@@ -13,7 +13,7 @@ from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
 
 from .CommandManager import CommandManager
 from .ValidationWindow import ValidationWindow
-from .Helpers import uri_to_path, get_parser_for_uri, get_extension
+from .Helpers import uri_to_path, get_parser_for_uri, get_extension, create_pseudo_values
 
 
 class EditorTab(object):
@@ -48,6 +48,11 @@ class EditorTab(object):
         self.document = doc
         self.file_uri = None
 
+    def parse_properties(self, odml_sections):
+        for i in odml_sections:
+            create_pseudo_values(i.properties)
+            self.parse_properties(i.sections)
+
     def load(self, uri):
         self.file_uri = uri
         file_path = uri_to_path(uri)
@@ -56,6 +61,7 @@ class EditorTab(object):
         self.document = odml_reader.from_file(open(file_path))
 
         self.document.finalize()
+        self.parse_properties(self.document.sections)
         self.window.registry.add(self.document)
         self.window._info_bar.show_info("Loading of %s done!" % (os.path.basename(file_path)))
         # TODO select default section

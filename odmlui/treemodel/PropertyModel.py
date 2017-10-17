@@ -11,20 +11,17 @@ from .TreeModel import TreeModel, ColumnMapper
 import sys
 import odml
 import odml.property
-import odml.value as value
+from . import ValueModel
 debug = lambda x: sys.stderr.write(x+"\n")
 debug = lambda x: 0
 
 
 ColMapper = ColumnMapper({"Name"        : (0, "name"),
-                         "Value"       : (1, "value"),
+                         "Value"       : (1, "pseudo_values"),
                          "Definition"  : (2, "definition"),
                          "Type"        : (3, "dtype"),
                          "Unit"        : (4, "unit"),
-                         "Comment"     : (5, "comment"),
-                         "Endcoder"    : (6, "encoder"),
-                         "Filename"    : (7, "filename"),
-                         "Reference"   : (8, "reference")})
+                         })
 
 class PropertyModel(TreeModel):
     def __init__(self, section):
@@ -83,7 +80,7 @@ class PropertyModel(TreeModel):
     def _get_node_iter(self, node):
         if isinstance(node, odml.property.Property):
             return PropIter(node)
-        if isinstance(node, value.Value):
+        if isinstance(node, ValueModel.Value):
             return ValueIter(node)
         return SectionPropertyIter(node)
 

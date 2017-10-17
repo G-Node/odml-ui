@@ -1,5 +1,6 @@
 
 import os
+from .treemodel import ValueModel
 
 from odml.tools.odmlparser import allowed_parsers
 
@@ -44,3 +45,12 @@ def get_parser_for_uri(uri):
         parser = 'XML'
 
     return parser
+
+def create_pseudo_values(odml_properties):
+    for prop in odml_properties:
+        values = prop.value
+        new_values = []
+        for index in range(len(values)):
+            v = ValueModel.Value(prop, index)
+            new_values.append(v)
+        prop.pseudo_values = new_values

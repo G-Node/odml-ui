@@ -307,6 +307,7 @@ class TerminologyPopupTreeView(TreeView):
         path = model.get_node_path(obj)
         if not path:
             return
+        path = gtk.TreePath.new_from_indices(path)
 
         if expand:
             self._treeview.expand_to_path(path)

@@ -7,15 +7,17 @@ import gtk
 import gio
 
 import odml
+import odml.dtypes as dtypes
 import odml.terminology as terminology
 import odml.format as format
 from odml import DType
 from . import commands
 from .TreeView import TerminologyPopupTreeView
-from .treemodel import PropertyModel
+from .treemodel import PropertyModel, ValueModel
 from .DragProvider import DragProvider
 from .ChooserDialog import ChooserDialog
 from . import TextEditor
+from .Helpers import create_pseudo_values
 
 COL_KEY = 0
 COL_VALUE = 1
@@ -44,9 +46,7 @@ class PropertyView(TerminologyPopupTreeView):
                     name=name,
                     edit_func=self.on_edited,
                     id=id, data=propname)
-                if name == "Unit":
-                    column.set_cell_data_func(renderer, self.unit_renderer_function, id)
-                elif name == "Value":
+                if name == "Value":
                     tv.set_expander_column(column)
 
         tv.set_headers_visible(True)
@@ -62,8 +62,8 @@ class PropertyView(TerminologyPopupTreeView):
         for target in [
             OdmlDrag(mime="odml/property-ref", inst=odml.property.Property),
             TextDrag(mime="odml/property", inst=odml.property.Property),
-            OdmlDrag(mime="odml/value-ref", inst=odml.value.Value),
-            TextDrag(mime="odml/value", inst=odml.value.Value),
+            OdmlDrag(mime="odml/value-ref", inst=ValueModel.Value),
+            TextDrag(mime="odml/value", inst=ValueModel.Value),
             TextDrag(mime="TEXT"),
             OdmlDrop(mime="odml/value-ref", target=vd, registry=registry, exec_func=_exec),
             OdmlDrop(mime="odml/property-ref", target=pd, registry=registry, exec_func=_exec),
@@ -76,13 +76,6 @@ class PropertyView(TerminologyPopupTreeView):
             dp.append(target)
         dp.execute = _exec
         dp.connect()
-
-    def unit_renderer_function(self, tv_column, column_cell, tree_model, tree_iter, data):
-        try:
-            cell_data = tree_model.get(tree_iter, data)[0]
-            column_cell.set_property('markup', cell_data)
-        except TypeError:
-            column_cell.set_property('markup', '')
 
     def dtype_renderer_function(self, tv_column, cell_combobox, tree_model, tree_iter, data):
         '''
@@ -155,18 +148,18 @@ class PropertyView(TerminologyPopupTreeView):
         first_row_of_multi = first_row and tree_iter.has_child
 
         # can only edit the subvalues, but not <multi> itself
-        if first_row_of_multi and column_name == "value":
+        if first_row_of_multi and column_name == "pseudo_value":
             return
-        if not first_row and column_name == "name":
+        if not first_row and column_name != "pseudo_values":
             return
 
         cmd = None
         # if we edit another attribute (e.g. unit), set this for all values of this property
 
-        if first_row_of_multi and column_name != "name":
+        if first_row_of_multi and column_name == "pseudo_values":
             # editing multiple values of a property at once
             cmds = []
-            for value in prop.values:
+            for value in prop.pseudo_values:
                 cmds.append(commands.ChangeValue(
                     object    = value,
                     attr      = [column_name, "value"],
@@ -175,11 +168,12 @@ class PropertyView(TerminologyPopupTreeView):
             cmd = commands.Multiple(cmds=cmds)
 
         else:
-
-            # first row edit event for the value, so switch the object
-            if column_name != "name" and first_row:
-                prop = prop.values[0]
-            if not (column_name == "name" and first_row):
+            # first row edit event for the property, so switch to appropriate object
+            #  - Only if the 'value' column is edited, edit the pseudo-value object.
+            #  - Else, edit the property object
+            if column_name == 'pseudo_values' and first_row:
+                prop = prop.pseudo_values[0]
+            if column_name == "pseudo_values" and first_row:
                 column_name = [column_name, "value"] # backup the value attribute too
             cmd = commands.ChangeValue(
                     object    = prop,
@@ -239,6 +233,7 @@ class PropertyView(TerminologyPopupTreeView):
         menu_items = self.create_popup_menu_items("Add Property", "Empty Property", model.section, self.add_property, lambda sec: sec.properties, lambda prop: prop.name, stock="odml-add-Property")
         if obj is not None: # can also add value
             prop = obj
+
             if hasattr(obj, "_property"): # we care about the properties only
                 prop = obj._property
 
@@ -249,15 +244,10 @@ class PropertyView(TerminologyPopupTreeView):
                 if item.get_submenu() is None: continue # don't want a sole Set Value item
                 menu_items.append(item)
 
-            # conditionally allow to store / load binary content
             val = obj
-            if prop is obj:
-                val = obj.value if len(obj) == 1 else None
 
-            if val is not None and val.dtype == "binary":
-                menu_items.append(self.create_menu_item("Load binary content", self.binary_load, val))
-                if val.data is not None:
-                    menu_items.append(self.create_menu_item("Save binary content", self.binary_save, val))
+            if prop is obj:
+                val = prop.pseudo_values[0] if len(prop.pseudo_values) == 1 else None
 
             if val is not None and val.dtype == "text":
                 menu_items.append(self.create_menu_item("Edit text in larger window", self.edit_text, val))
@@ -276,39 +266,6 @@ class PropertyView(TerminologyPopupTreeView):
                 menu_items.append(self.create_popup_menu_del_item(obj))
         return menu_items
 
-    def binary_load(self, widget, val):
-        """
-        popup menu action: load binary content
-        """
-        chooser = ChooserDialog(title="Open binary file", save=False)
-        if val.filename is not None:
-            # try to set the filename (if it exists)
-            chooser.set_file(gio.File(val.filename))
-        chooser.show()
-
-        def binary_load_file(uri):
-            if val._encoder is None:
-                val.encoder = "base64"
-            val.data = gio.File(uri).read().read()
-
-        chooser.on_accept = binary_load_file
-
-    def binary_save(self, widget, val):
-        """
-        popup menu action: load binary content
-        """
-        chooser = ChooserDialog(title="Save binary file", save=True)
-        if val.filename is not None:
-            # suggest a filename
-            chooser.set_current_name(val.filename)
-        chooser.show()
-
-        def binary_save_file(uri):
-            fp = gio.File(uri).replace(etag='', make_backup=False)
-            fp.write(val.data)
-            fp.close()
-
-        chooser.on_accept = binary_save_file
 
     def edit_text(self, widget, val):
         """
@@ -334,7 +291,7 @@ class PropertyView(TerminologyPopupTreeView):
         (prop, val) = prop_value_pair
         model, path, obj = self.popup_data
         if val is None:
-            val = odml.Value("")
+            val = ValueModel.Value(prop)
         else:
             val = val.clone()
 
@@ -359,11 +316,11 @@ class PropertyView(TerminologyPopupTreeView):
         """
         (obj, val) = obj_value_pair
         if val is None:
-            val = odml.Value("")
+            val = ValueModel.Value(obj)
         else:
             val = val.clone()
 
-        cmd = commands.AppendValue(obj=obj, val=val)
+        cmd = commands.AppendValue(obj=obj.pseudo_values, val=val)
         self.execute(cmd)
 
     def add_property(self, widget, obj_prop_pair):
@@ -375,7 +332,10 @@ class PropertyView(TerminologyPopupTreeView):
         (obj, prop) = obj_prop_pair
         if prop is None:
             name = self.get_new_obj_name(obj.properties, prefix='Unnamed Property')
-            prop = odml.Property(name=name, value="")
+            prop = odml.Property(name=name, dtype='string')
+            # The default value part should be put in odML core library
+            prop._value = [dtypes.default_values.get('string', '')]
+            create_pseudo_values([prop])
         else:
             prefix = prop.name
             name = self.get_new_obj_name(obj.properties, prefix=prefix)

@@ -8,6 +8,7 @@ import gtk
 from . import odmldrop
 from . import tree
 from .targets import *
+from ..treemodel import ValueModel
 
 import odml
 import odml.tools.xmlparser as xmlparser
@@ -51,7 +52,7 @@ class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
 
     def drop_object(self, action, dst, position, obj):
         for kls, tkls in [
-            (odml.value.Value, ValueDrop),
+            (ValueModel.Value, ValueDrop),
             (odml.property.Property, PropertyDrop),
             (odml.section.Section, SectionDrop)
             ]:
@@ -71,12 +72,12 @@ class TextGenericDropForPropertyTV(TextGenericDrop):
     can drop Properties and Values, but only Values into Properties
     and Properties into Sections
     """
-    targets = [odml.property.Property, odml.value.Value]
+    targets = [odml.property.Property, ValueModel.Value]
     def text_can_drop(self, action, dst, position, obj):
         if not super(TextGenericDropForPropertyTV, self).text_can_drop(action, dst, position, obj):
             return False
         # can't drop values to anything but properties
-        if isinstance(obj, odml.value.Value) and not isinstance(dst, odml.property.Property):
+        if isinstance(obj, ValueModel.Value) and not isinstance(dst, odml.property.Property):
             return False
         # can't drop properties to anything but sections
         if isinstance(obj, odml.property.Property) and not isinstance(dst, odml.section.Section):

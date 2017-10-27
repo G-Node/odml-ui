@@ -108,12 +108,11 @@ def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
         f.tooltip = tooltip
         f.stock_id = stock_id
         f.label = label
-
-        nonlocal accelerator
-        # For Mac, replace 'control' modifier with 'command' modifier
-        if accelerator is not None and platform.system() == 'Darwin':
-            accelerator = accelerator.replace('control', 'primary')
         f.accelerator = accelerator
+
+        # For Mac, replace 'control' modifier with 'primary' modifier
+        if f.accelerator is not None and platform.system() == 'Darwin':
+            f.accelerator = f.accelerator.replace('control', 'primary')
 
         return f
     return func

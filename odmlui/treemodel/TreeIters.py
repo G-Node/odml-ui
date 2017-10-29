@@ -1,5 +1,7 @@
 import sys
 from . import GenericIter
+from . import nodes
+from .ValueModel import Value
 
 class PropIter(GenericIter.GenericIter):
     """
@@ -23,8 +25,7 @@ class PropIter(GenericIter.GenericIter):
             return self.escape(getattr(self._obj, attr))
 
     def get_mulitvalue(self, name):
-        #Most of the stuff is empty and handled by the
-        #value
+        # Most of the stuff is empty and handled by the ValueIter
         if name == "pseudo_values":
                 return self.escape("<multi>")
         return ""
@@ -87,6 +88,6 @@ class SectionPropertyIter(GenericIter.GenericIter):
         return len(self._obj.properties)
 
 # associate the odml-classes to the corresponding iter-classes
-import odml.tools.nodes as nodes
 nodes.Section.IterClass  = SectionIter
 nodes.Property.IterClass = PropIter
+Value.IterClass          = ValueIter

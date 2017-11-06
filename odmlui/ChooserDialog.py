@@ -20,7 +20,9 @@ class ChooserDialog(gtk.FileChooserDialog):
 
     def response(self, widget, response_id):
         if response_id == gtk.RESPONSE_OK:
+            self.hide()
             self.on_accept(self.get_uri())
+
         self.destroy()
 
     def on_accept(self, uri):

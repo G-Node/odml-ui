@@ -245,7 +245,8 @@ class DocumentWizard:
                 for prop in sec.properties:
                     newsec.append(prop.clone())
                 sec._assoc_sec = newsec
-                sec.parent._assoc_sec.append(newsec)
+                if hasattr(sec.parent, "_assoc_sec"):
+                    sec.parent._assoc_sec.append(newsec)
 
         self.finish(doc)
 

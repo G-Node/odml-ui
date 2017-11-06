@@ -42,7 +42,7 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
         if index is None:  # Instantiate a new odML value
             index = len(self._property.value)
             dtype = self.parent.dtype
-            default_value = dtypes.default_values.get(dtype, '')
+            default_value = dtypes.default_values(dtype)
             self.parent.value.append(default_value)
 
         assert(isinstance(index, int))

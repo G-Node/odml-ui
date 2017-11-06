@@ -49,7 +49,8 @@ class TreeView(object):
 
         column = gtk.TreeViewColumn(name, renderer, markup=id)
         column.set_resizable(True)
-        column.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
+        column.set_min_width(15)
+        column.set_expand(True)
         self._treeview.append_column(column)
         return (renderer, column)
 
@@ -306,6 +307,7 @@ class TerminologyPopupTreeView(TreeView):
         path = model.get_node_path(obj)
         if not path:
             return
+        path = gtk.TreePath.new_from_indices(path)
 
         if expand:
             self._treeview.expand_to_path(path)

@@ -53,7 +53,7 @@ class EditorTab(object):
         file_path = uri_to_path(uri)
         parser = get_parser_for_uri(file_path)
         odml_reader = ODMLReader(parser=parser)
-        self.document = odml_reader.fromFile(open(file_path))
+        self.document = odml_reader.from_file(open(file_path))
 
         self.document.finalize()
         self.window.registry.add(self.document)

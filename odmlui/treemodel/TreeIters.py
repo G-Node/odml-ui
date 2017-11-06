@@ -54,7 +54,7 @@ class ValueIter(GenericIter.GenericIter):
 
     def get_value(self, attr):
         if attr == "name":
-            return
+            return ""
         if attr == "value":
             value = self._obj.get_display()
 
@@ -62,6 +62,11 @@ class ValueIter(GenericIter.GenericIter):
             # to Tree Column cell renderer. Hence, first encode it here.
             if ValueIter.is_python2:
                 value = value.encode('utf-8')
+
+            # If the value is an empty string, render a placeholder text.
+            if value == '':
+                value = '<i>n/a</i>'
+
             return value
 
         return super(ValueIter, self).get_value(attr)

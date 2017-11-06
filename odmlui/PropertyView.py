@@ -402,6 +402,8 @@ class PropertyView(TerminologyPopupTreeView):
         combo_renderer.connect("edited", self.on_edited, propname)
 
         combo_col = gtk.TreeViewColumn(name, combo_renderer)
+        combo_col.set_min_width(40)
+        combo_col.set_resizable(True)
         combo_col.set_cell_data_func(combo_renderer, self.dtype_renderer_function, id)
 
         return combo_col

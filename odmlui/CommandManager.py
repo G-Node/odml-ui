@@ -37,11 +37,9 @@ class CommandManager(object):
         try:
             cmd.undo()
         except Exception as e:
-            failed = True
             self.error_func(cmd, e)
-
-        if failed:
             raise
+
         return True
 
     def redo(self):

@@ -236,15 +236,16 @@ class DocumentWizard:
 
         # copy all selected sections from the terminology
         term = self.section_page.term
-        term._assoc_sec = doc # set the associated section
-        for sec in term.itersections(recursive=True):
-            if not sec in self.section_page.sections:
-                continue
-            newsec = sec.clone(children=False)
-            for prop in sec.properties:
-                newsec.append(prop.clone())
-            sec._assoc_sec = newsec
-            sec.parent._assoc_sec.append(newsec)
+        if term:
+            term._assoc_sec = doc # set the associated section
+            for sec in term.itersections(recursive=True):
+                if not sec in self.section_page.sections:
+                    continue
+                newsec = sec.clone(children=False)
+                for prop in sec.properties:
+                    newsec.append(prop.clone())
+                sec._assoc_sec = newsec
+                sec.parent._assoc_sec.append(newsec)
 
         self.finish(doc)
 
@@ -254,6 +255,7 @@ class DocumentWizard:
         """
         raise NotImplementedError
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     DocumentWizard()
     gtk.main()

@@ -116,7 +116,7 @@ class PropertyModel(TreeModel):
                 isinstance(context.val, odml.section.Section):
             return
 
-        if context.action == "set" and context.postChange:
+        if context.action == "set" and context.post_change:
             path = self.get_node_path(context.obj)
             if not path: return # probably the section changed
             try:
@@ -134,7 +134,7 @@ class PropertyModel(TreeModel):
         if context.action == "remove":
             self.event_remove(context)
 
-        if (context.action == "append" or context.action == "insert") and context.postChange:
+        if (context.action == "append" or context.action == "insert") and context.post_change:
             self.event_insert(context)
 
         if context.action == "reorder":

@@ -183,9 +183,9 @@ class EditorTab(object):
         """
         for err in errors:
             c = odml.tools.event.ChangeContext(('_error', True))
-            c.postChange = True
+            c.post_change = True
             c.action = "set"
-            c.passOn(err.obj)
+            c.pass_on(err.obj)
 
     def remove_validation(self):
         """remove any dangling validation references"""

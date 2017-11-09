@@ -182,16 +182,16 @@ class TreeModel(gtk.GenericTreeModel):
     def event_remove(self, context):
         """
         handles action="remove" events and notifies the model about
-        occured changes. Be sure to call this method for both preChange
-        and postChange events.
+        occured changes. Be sure to call this method for both pre_change
+        and post_change events.
         """
         if not hasattr(context, "path"):
             context.path = {}
             context.parent = {}
-        if context.preChange:
+        if context.pre_change:
             context.path[self] = self.get_node_path(context.val)
             context.parent[self] = context.val.parent
-        if context.postChange:
+        if context.post_change:
             path = context.path[self]
             self.post_delete(context.parent[self], path)
 
@@ -200,7 +200,7 @@ class TreeModel(gtk.GenericTreeModel):
         handles action="append" and action="insert" events and notifies the
         model about occured changes.
         """
-        if context.postChange:
+        if context.post_change:
             self.post_insert(context.val)
 
     def event_reorder(self, context):
@@ -208,14 +208,14 @@ class TreeModel(gtk.GenericTreeModel):
         handles action="reorder" and notifies the model accordingly issuing
         a rows_reordered call
         """
-        if context.preChange and not hasattr(context, "neworder"):
+        if context.pre_change and not hasattr(context, "neworder"):
             (childlist, new_index) = context.val
             old_index = childlist.index(context.obj)
             res = list(range(len(childlist)))
             res.insert(new_index if new_index < old_index else new_index+1, old_index)
             del res[old_index if new_index > old_index else (old_index+1)]
             context.neworder = res
-        if context.postChange:
+        if context.post_change:
             iter = self.get_node_iter(context.obj.parent)
             path = self.get_path(iter)
             if not path and context.obj.parent is not self._section:

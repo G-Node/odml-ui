@@ -102,7 +102,7 @@ class NavigationBar(gtk.Label):
         # we are only interested in changes on sections
         if context.cur is not self._document: return
 
-        if context.action == "set" and context.postChange:
+        if context.action == "set" and context.post_change:
             name, val = context.val
             if name != "name": return
 
@@ -110,7 +110,7 @@ class NavigationBar(gtk.Label):
                 if context.obj is obj:
                     self.update_display()
 
-        if context.action == "remove" and context.postChange:
+        if context.action == "remove" and context.post_change:
             # an object is removed, two reasons possible:
             # a) move (an append-action will take care of everything later, however we don't know yet)
             # b) remove
@@ -119,7 +119,7 @@ class NavigationBar(gtk.Label):
                     self.possible_move = (obj, self.current_object)
                     self.set_model(context.obj) # set the view to the parent
 
-        if (context.action == "append" or context.action == "insert") and context.postChange:
+        if (context.action == "append" or context.action == "insert") and context.post_change:
             if self.possible_move is None: return
             obj, cur = self.possible_move
             if context.val is obj:

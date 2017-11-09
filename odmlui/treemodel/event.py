@@ -47,9 +47,9 @@ class ChangeContext(object):
     """
     A ChangeContext holds information about a change event
 
-    the context object stays the same within preChange and postChange
-    events, thus you can store information in a preChange event and use
-    it later in the postChange event where the information might not be
+    the context object stays the same within pre_change and post_change
+    events, thus you can store information in a pre_change event and use
+    it later in the post_change event where the information might not be
     available any more.
 
     Attributes:
@@ -57,8 +57,8 @@ class ChangeContext(object):
     * action: the action that caused the event
     * obj: the object upon which the action is executed
     * val: a value assotiated with a action
-    * preChange: True if the change has not yet occurred
-    * postChange: True if the change has already occured
+    * pre_change: True if the change has not yet occurred
+    * post_change: True if the change has already occured
 
     Actions defined so far:
 
@@ -80,33 +80,33 @@ class ChangeContext(object):
         self.when = None
 
     @property
-    def preChange(self):
+    def pre_change(self):
         return self.when is True
 
-    @preChange.setter
-    def preChange(self, val):
+    @pre_change.setter
+    def pre_change(self, val):
         self.when = True if val else None
 
     @property
-    def postChange(self):
+    def post_change(self):
         return self.when is False
 
-    @postChange.setter
-    def postChange(self, val):
+    @post_change.setter
+    def post_change(self, val):
         self.when = False if val else None
 
     @property
     def obj(self):
         return self._obj[0]
 
-    def getStack(self, count):
+    def get_stack(self, count):
         """
         helper function used to obtain a event-pass-stack for a certain hierarchy
 
         i.e. for a property-change event caught at the parent section, _obj will be
-        [property, section] with getStack you can now obtain:
+        [property, section] with get_stack you can now obtain:
 
-        >>> value, property, section = getStack(3)
+        >>> value, property, section = get_stack(3)
 
         without checking the depth of the level, this will also hold true for longer stacks
         such as [val, prop, sec, doc] and will still work as expected
@@ -119,7 +119,7 @@ class ChangeContext(object):
     def cur(self):
         return self._obj[-1]
 
-    def passOn(self, obj):
+    def pass_on(self, obj):
         """
         pass the event to obj
 
@@ -137,8 +137,8 @@ class ChangeContext(object):
 
     def __repr__(self):
         v = ""
-        if self.preChange: v = "Pre"
-        if self.postChange: v = "Post"
+        if self.pre_change: v = "Pre"
+        if self.post_change: v = "Post"
         return "<%sChange %s.%s(%s)>" % (v, repr(self.obj), self.action, repr(self.val))
 
     def dump(self):
@@ -193,18 +193,18 @@ class ModificationNotifier(ChangeHandlable):
         """
         create a ChangeContext and
 
-        * fire a preChange-event
+        * fire a pre_change-event
         * call func
-        * fire a postChange-event
+        * fire a post_change-event
         """
         c = ChangeContext(obj)
         c.action = action
-        c.preChange = True
-        c.passOn(self)
+        c.pre_change = True
+        c.pass_on(self)
         res = func()
         c.reset()
-        c.postChange = True
-        c.passOn(self)
+        c.post_change = True
+        c.pass_on(self)
         return res
 
     def append(self, obj, *args, **kwargs):
@@ -251,7 +251,7 @@ def pass_on_change(context):
     """
     parent = context.cur.parent
     if parent is not None:
-        context.passOn(parent)
+        context.pass_on(parent)
 
 
 def pass_on_change_section(context):
@@ -261,7 +261,7 @@ def pass_on_change_section(context):
     """
     document = context.cur.document
     if document is not None:
-        context.passOn(document)
+        context.pass_on(document)
 
 # Value._Changed.finish    = pass_on_change
 Property._Changed.finish = pass_on_change

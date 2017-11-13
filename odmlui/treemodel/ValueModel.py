@@ -3,10 +3,7 @@
 import odml.base as base
 import odml.format as format
 import odml.dtypes as dtypes
-
-import odml.tools.event as event
-import odml.tools.nodes as nodes
-from .TreeIters import ValueIter
+from . import nodes, event
 
 
 class ValueNode(nodes.ParentedNode):
@@ -38,8 +35,6 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
     _Changed = event.Event("value")
     _Changed.finish = event.pass_on_change
     _format = ValueFormat
-    IterClass = ValueIter
-
 
     def __init__(self, parent, index=None):
 
@@ -47,7 +42,7 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
         if index is None:  # Instantiate a new odML value
             index = len(self._property.value)
             dtype = self.parent.dtype
-            default_value = dtypes.default_values.get(dtype, '')
+            default_value = dtypes.default_values(dtype)
             self.parent.value.append(default_value)
 
         assert(isinstance(index, int))

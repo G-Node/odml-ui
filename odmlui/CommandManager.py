@@ -33,14 +33,13 @@ class CommandManager(object):
         if len(self.undo_stack) == 0:
             self.enable_undo(enable=False)
         self.enable_redo()
-        e = None
+        failed = False
         try:
             cmd.undo()
         except Exception as e:
             self.error_func(cmd, e)
-
-        if e:
             raise
+
         return True
 
     def redo(self):

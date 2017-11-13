@@ -334,7 +334,7 @@ class PropertyView(TerminologyPopupTreeView):
             name = self.get_new_obj_name(obj.properties, prefix='Unnamed Property')
             prop = odml.Property(name=name, dtype='string')
             # The default value part should be put in odML core library
-            prop._value = [dtypes.default_values.get('string', '')]
+            prop._value = [dtypes.default_values('string')]
             create_pseudo_values([prop])
         else:
             prefix = prop.name

@@ -75,7 +75,7 @@ class AttributeView(TreeView):
         this change listener is attached to the current object class
         and updates the GUI elements upon relevant change events
         """
-        if context.cur is self._model and context.postChange:
+        if context.cur is self._model and context.post_change:
             self.fill()
 
     def on_button_press(self, widget, event):

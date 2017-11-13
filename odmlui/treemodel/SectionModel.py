@@ -98,7 +98,7 @@ class SectionModel(TreeModel):
         if not isinstance(context.obj, odml.base.sectionable): return
         if not context.cur.document is self.document: return
 
-        if context.action == "set" and context.postChange:
+        if context.action == "set" and context.post_change:
             name, value = context.val
             if name == "name":
                 path = self.get_node_path(context.obj)
@@ -113,5 +113,5 @@ class SectionModel(TreeModel):
         if context.action == "remove":
             self.event_remove(context)
 
-        if (context.action == "append" or context.action == "insert") and context.postChange:
+        if (context.action == "append" or context.action == "insert") and context.post_change:
             self.event_insert(context)

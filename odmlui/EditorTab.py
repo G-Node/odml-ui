@@ -12,9 +12,10 @@ import odml.validation
 from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
 
 from .CommandManager import CommandManager
-from .ValidationWindow import ValidationWindow
 from .Helpers import uri_to_path, get_parser_for_uri, get_extension
 from .MessageDialog import ErrorDialog
+from .treemodel import event
+from .ValidationWindow import ValidationWindow
 
 
 class EditorTab(object):
@@ -188,7 +189,7 @@ class EditorTab(object):
         so that the gui can refresh these
         """
         for err in errors:
-            c = odml.tools.event.ChangeContext(('_error', True))
+            c = event.ChangeContext(('_error', True))
             c.post_change = True
             c.action = "set"
             c.pass_on(err.obj)

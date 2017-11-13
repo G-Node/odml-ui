@@ -4,7 +4,6 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
-import gio
 import os.path
 
 import odml
@@ -30,7 +29,7 @@ class EditorTab(object):
             cmdm = CommandManager()
             cmdm.enable_undo = self.enable_undo
             cmdm.enable_redo = self.enable_redo
-            cmdm.error_func  = window.command_error
+            cmdm.error_func = window.command_error
         self.command_manager = cmdm
         self.document = None
         self.window = window
@@ -74,7 +73,7 @@ class EditorTab(object):
         return True
 
     def reset(self):
-        self.edited = 0 # initialize the edit stack position
+        self.edited = 0  # initialize the edit stack position
         self.command_manager.reset()
         self.enable_undo(enable=False)
         self.enable_redo(enable=False)
@@ -89,7 +88,8 @@ class EditorTab(object):
 
         returns false if the user cancelled the action
         """
-        if not self.is_modified: return True
+        if not self.is_modified:
+            return True
 
         dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
                                    gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO,
@@ -102,8 +102,10 @@ class EditorTab(object):
         response = dialog.run()
         dialog.destroy()
 
-        if response == gtk.RESPONSE_CANCEL: return False
-        if response == gtk.RESPONSE_NO: return True
+        if response == gtk.RESPONSE_CANCEL:
+            return False
+        if response == gtk.RESPONSE_NO:
+            return True
         return self.window.save(None)
 
     def save(self, uri):
@@ -121,10 +123,10 @@ class EditorTab(object):
             self._info_bar.show_info("Save failed: %s" % e)
             return
 
-        self.document.finalize() # undo the clean
+        self.document.finalize()  # undo the clean
         self.window._info_bar.show_info("%s was saved" % (os.path.basename(file_path)))
         self.edited = len(self.command_manager)
-        return True # TODO return false on any error and notify the user
+        return True  # TODO return false on any error and notify the user
 
     def enable_undo(self, enable=True):
         for tab in self._clones:
@@ -143,7 +145,8 @@ class EditorTab(object):
             self.window.enable_redo(enable)
 
     def clone(self, klass=None):
-        if klass is None: klass = self.__class__
+        if klass is None:
+            klass = self.__class__
         ntab = klass(self.window, self.command_manager)
         self._clones.append(ntab)
         ntab._clones = self._clones

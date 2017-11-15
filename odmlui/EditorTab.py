@@ -117,7 +117,7 @@ class EditorTab(object):
         try:
             odml_writer.write_file(self.document, file_path)
         except Exception as e:
-            self._info_bar.show_info("Save failed: %s" % e)
+            self.window._info_bar.show_info("Save failed: %s" % e)
             return
 
         self.document.finalize() # undo the clean

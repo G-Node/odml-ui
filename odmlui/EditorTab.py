@@ -60,7 +60,7 @@ class EditorTab(object):
         parser = get_parser_for_uri(file_path)
         odml_reader = ODMLReader(parser=parser)
         try:
-            self.document = odml_reader.from_file(open(file_path))
+            self.document = odml_reader.from_file(file_path)
         except Exception as e:
             ErrorDialog(None, "Error while parsing '%s'" % file_path, str(e))
             return False

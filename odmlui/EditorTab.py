@@ -109,6 +109,18 @@ class EditorTab(object):
         return self.window.save(None)
 
     def save(self, uri):
+        # Mandatory document validation before save to avoid
+        # not being able to open an invalid document.
+        self.remove_validation()
+        validation = odml.validation.Validation(self.document)
+        self.document.validation_result = validation
+
+        for e in self.document.validation_result.errors:
+            if e.is_error:
+                self.window._info_bar.show_info("Invalid document. Please fix errors (red) before saving.")
+                self.validate()
+                return
+
         self.document.clean()
         parser = get_parser_for_uri(uri)
         odml_writer = ODMLWriter(parser=parser)

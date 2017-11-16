@@ -81,6 +81,7 @@ ui_info = \
     <toolitem action='Delete'/>
     <toolitem action='Map' />
     <toolitem action='Validate' />
+    <toolitem action='odMLTablesCompare' />
   </toolbar>
 </ui>'''
 
@@ -111,7 +112,8 @@ class EditorWindow(gtk.Window):
     odMLHomepage = HOMEPAGE
     registry = DocumentRegistry()
     editors = set()
-    welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty", "NewValue", "Delete", "CloneTab", "Map", "Validate"]
+    welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty", "NewValue",
+                                "Delete", "CloneTab", "Map", "Validate", "odMLTablesCompare"]
 
     def __init__(self, parent=None):
         gtk.Window.__init__(self)
@@ -497,6 +499,16 @@ class EditorWindow(gtk.Window):
                 label="_Validate", stock_id=gtk.STOCK_APPLY, accelerator="<control>E")
     def on_validate(self, action):
         self.current_tab.validate()
+
+    @gui_action("odMLTablesCompare", tooltip="Compare entities of an odML document", label="odMLTablesCompare",
+                stock_id="INM6-compare-table", accelerator="<control>T")
+    def on_odml_tables(self, action):
+        if not self.current_tab.file_uri or self.current_tab.is_modified:
+            self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
+        elif self.odml_tables_available:
+            os.system("odmltables -w compare -f %s &" % self.current_tab.file_uri)
+        else:
+            self._info_bar.show_info("You need Python2 and odMLTables installed to run this feature.")
 
     def select_tab(self, tab, force_reset=False):
         """
@@ -971,6 +983,11 @@ def register_stock_icons():
              ('odml_addProperty', 'Add _Property', ctrlshift, ord("P"), ''),
              ('odml_addValue', 'Add _Value', ctrlshift, ord("V"), ''),
              ('odml_Dustbin', '_Delete', 0, 0, ''),
+             ('odml-add-Section',  'Add _Section',  ctrlshift, ord("S"), ''),
+             ('odml-add-Property', 'Add _Property', ctrlshift, ord("P"), ''),
+             ('odml-add-Value',    'Add _Value',    ctrlshift, ord("V"), ''),
+             ('odml_Dustbin', '_Delete', 0, 0, ''),
+             ('INM6-compare-table',      'Open odMLTables', ctrlshift, ord("T"), '')
              ]
 
     # This method is failing (silently) in registering the stock icons.

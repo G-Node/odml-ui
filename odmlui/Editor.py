@@ -241,6 +241,20 @@ class EditorWindow(gtk.Window):
         vpaned.pack1(hpaned, resize=True, shrink=False)
         vpaned.pack2(frame, resize=False, shrink=True)
 
+        # Check if Python version 2 and odML-tables are available
+        has_py2 = False
+        if sys.version_info.major == 2:
+            has_py2 = True
+
+        has_tables = False
+        if sys.platform == "linux" or sys.platform == "linux2" or sys.platform == "darwin":
+            if os.system("which odmltables") == 0:
+                has_tables = True
+
+        self.odml_tables_available = False
+        if has_py2 and has_tables:
+            self.odml_tables_available = True
+
         class Tab(gtk.HBox):
             """
             a tab container

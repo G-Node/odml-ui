@@ -73,14 +73,18 @@ ui_info = \
     <toolitem name='New' action='NewFile' />
     <toolitem name='Open' action='OpenRecent' />
     <toolitem name='Save' action='Save' />
+    <separator/>
     <toolitem name='Undo' action='Undo' />
     <toolitem name='Redo' action='Redo' />
+    <separator/>
     <toolitem action='NewSection'/>
     <toolitem action='NewProperty'/>
     <toolitem action='NewValue'/>
     <toolitem action='Delete'/>
+    <separator/>
     <toolitem action='Map' />
     <toolitem action='Validate' />
+    <separator/>
     <toolitem action='odMLTablesCompare' />
     <toolitem action='odMLTablesConvert' />
     <toolitem action='odMLTablesFilter' />

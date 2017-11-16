@@ -78,6 +78,7 @@ ui_info = \
     <toolitem action='Delete'/>
     <toolitem action='Validate' />
     <toolitem action='odMLTablesCompare' />
+    <toolitem action='odMLTablesConvert' />
   </toolbar>
 </ui>'''
 
@@ -112,7 +113,7 @@ class EditorWindow(gtk.Window):
     editors = set()
     welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty",
                                 "NewValue", "Delete", "CloneTab", "Validate",
-                                "odMLTablesCompare"]
+                                "odMLTablesCompare", "odMLTablesConvert"]
 
     def __init__(self, parent=None):
         gtk.Window.__init__(self)
@@ -482,12 +483,22 @@ class EditorWindow(gtk.Window):
         self.current_tab.validate()
 
     @gui_action("odMLTablesCompare", tooltip="Compare entities of an odML document", label="odMLTablesCompare",
-                stock_id="INM6-compare-table", accelerator="<control>T")
-    def on_odml_tables(self, action):
+                stock_id="INM6-compare-table", accelerator="<control>M")
+    def on_compare_entities(self, action):
         if not self.current_tab.file_uri or self.current_tab.is_modified:
             self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
         elif self.odml_tables_available:
             os.system("odmltables -w compare -f %s &" % self.current_tab.file_uri)
+        else:
+            self._info_bar.show_info("You need Python2 and odMLTables installed to run this feature.")
+
+    @gui_action("odMLTablesConvert", tooltip="Convert document to xls or csv", label="odMLTablesConverter",
+                stock_id="INM6-convert-odml", accelerator="<control>C")
+    def on_convert(self, action):
+        if not self.current_tab.file_uri or self.current_tab.is_modified:
+            self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
+        elif self.odml_tables_available:
+            os.system("odmltables -w convert -f %s &" % self.current_tab.file_uri)
         else:
             self._info_bar.show_info("You need Python2 and odMLTables installed to run this feature.")
 
@@ -963,7 +974,8 @@ def register_stock_icons():
              ('odml-add-Property', 'Add _Property', ctrlshift, ord("P"), ''),
              ('odml-add-Value',    'Add _Value',    ctrlshift, ord("V"), ''),
              ('odml_Dustbin', '_Delete', 0, 0, ''),
-             ('INM6-compare-table',      'Open odMLTables', ctrlshift, ord("T"), '')
+             ('INM6-compare-table', 'Compare_entities', ctrlshift, ord("M"), ''),
+             ('INM6-convert-odml', 'Convert_document', ctrlshift, ord("C"), '')
              ]
 
     # This method is failing (silently) in registering the stock icons.

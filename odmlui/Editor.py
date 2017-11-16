@@ -79,6 +79,7 @@ ui_info = \
     <toolitem action='Validate' />
     <toolitem action='odMLTablesCompare' />
     <toolitem action='odMLTablesConvert' />
+    <toolitem action='odMLTablesFilter' />
   </toolbar>
 </ui>'''
 
@@ -113,7 +114,8 @@ class EditorWindow(gtk.Window):
     editors = set()
     welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty",
                                 "NewValue", "Delete", "CloneTab", "Validate",
-                                "odMLTablesCompare", "odMLTablesConvert"]
+                                "odMLTablesCompare", "odMLTablesConvert",
+                                "odMLTablesFilter"]
 
     def __init__(self, parent=None):
         gtk.Window.__init__(self)
@@ -499,6 +501,16 @@ class EditorWindow(gtk.Window):
             self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
         elif self.odml_tables_available:
             os.system("odmltables -w convert -f %s &" % self.current_tab.file_uri)
+        else:
+            self._info_bar.show_info("You need Python2 and odMLTables installed to run this feature.")
+
+    @gui_action("odMLTablesFilter", tooltip="Filter document contents", label="odMLTablesFilter",
+                stock_id="INM6-filter-odml", accelerator="<control>F")
+    def on_filter(self, action):
+        if not self.current_tab.file_uri or self.current_tab.is_modified:
+            self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
+        elif self.odml_tables_available:
+            os.system("odmltables -w filter -f %s &" % self.current_tab.file_uri)
         else:
             self._info_bar.show_info("You need Python2 and odMLTables installed to run this feature.")
 
@@ -975,7 +987,8 @@ def register_stock_icons():
              ('odml-add-Value',    'Add _Value',    ctrlshift, ord("V"), ''),
              ('odml_Dustbin', '_Delete', 0, 0, ''),
              ('INM6-compare-table', 'Compare_entities', ctrlshift, ord("M"), ''),
-             ('INM6-convert-odml', 'Convert_document', ctrlshift, ord("C"), '')
+             ('INM6-convert-odml', 'Convert_document', ctrlshift, ord("C"), ''),
+             ('INM6-filter-odml', 'Filter_document', ctrlshift, ord("F"), '')
              ]
 
     # This method is failing (silently) in registering the stock icons.

@@ -109,6 +109,10 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
         typically takes the first line (max *max_length* chars) and adds '…'
         """
         text = str(self.pseudo_values)
+
+        # Always escape "&" and "<" since they break the view otherwise.
+        text = text.replace("&", "&amp;").replace("<", "&lt;")
+
         if self.can_display(text, max_length):
             return text
 

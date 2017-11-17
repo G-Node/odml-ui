@@ -71,6 +71,7 @@ class ValidationWindow(gtk.Window):
         self.tv.set_errors(tab.document.validation_result.errors)
 
         self.add(ScrolledWindow(self.tv._treeview))
+        self.tv._treeview.check_resize()  # required for updated size in 'treeview.size_request()'
         width, height = self.tv._treeview.size_request()
         width  = min(width+10,  max(self.width,  self.max_width))
         height = min(height+10, max(self.height, self.max_height))

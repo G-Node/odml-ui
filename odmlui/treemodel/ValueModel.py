@@ -1,4 +1,4 @@
-#-*- coding: utf8
+# -*- coding: utf8
 
 import odml.base as base
 import odml.format as format
@@ -13,6 +13,7 @@ class ValueNode(nodes.ParentedNode):
     def path_to(self, child):
         raise TypeError("Value objects have no children")
 
+
 class ValueFormat(format.Format):
     _name = "value"
     _args = {}
@@ -22,12 +23,12 @@ class ValueFormat(format.Format):
 class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifier):
     """
     Since the odML value node has been merged with the odml.Property, and is
-    only available as a 'pure' python list. We cannot render it to the Editor
+    only available as a 'pure' python list we cannot render it to the Editor
     UI directly. So, we make use of this wrapper class which acts as a mapper
     between the model values and the values rendered in Editor UI.
     
     A list of objects from this class is added as an additional attribute to
-    the original `odml.Property` node, as `psuedo_values`. All interactions
+    the original `odml.Property` node, as `pseudo_values`. All interactions
     from the Editor interact with these pseudo_values, and internally, these
     pseudo-values update the original property._value list.
 
@@ -58,24 +59,24 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
 
     @property
     def dtype(self):
-        '''
+        """
             Retuns the parent DType
-        '''
+        """
         return self.parent.dtype
 
     @property
     def pseudo_values(self):
-        '''
+        """
             Return a single element from the parent property's value list.
-        '''
+        """
         return self.parent._value[self._index]
 
     @pseudo_values.setter
     def pseudo_values(self, new_string):
-        '''
+        """
             First, try to check if the new value fits in the parent property's
             dtype. If it does, then update the value.
-        '''
+        """
         prop_dtype = self.parent.dtype
         new_value = dtypes.get(new_string, prop_dtype)
         self.parent._value[self._index] = new_value
@@ -100,7 +101,6 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
             return False
 
         return True
-
 
     def get_display(self, max_length=-1):
         """
@@ -131,4 +131,3 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
         obj = base.baseobject.clone(self)
         obj._property = None
         return obj
-

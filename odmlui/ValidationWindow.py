@@ -59,8 +59,8 @@ class ValidationView(TreeView):
 
 
 class ValidationWindow(gtk.Window):
-    max_height = 600
-    max_width = 800
+    max_height = 768
+    max_width = 1024
     height = max_height
     width = max_width
 

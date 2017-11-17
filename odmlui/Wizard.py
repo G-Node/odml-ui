@@ -75,7 +75,7 @@ def get_username():
         username = pwd.getpwnam(username).pw_gecos
     except:
         pass
-    return username
+    return username.rstrip(",")
 
 def get_date():
     import datetime

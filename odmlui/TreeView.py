@@ -313,6 +313,4 @@ class TerminologyPopupTreeView(TreeView):
             self._treeview.expand_to_path(path)
 
         selection = self._treeview.get_selection()
-        if path in selection.get_selected_rows():
-            return
         selection.select_path(path)

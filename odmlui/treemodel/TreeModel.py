@@ -3,7 +3,9 @@ from gi import pygtkcompat
 pygtkcompat.enable() 
 pygtkcompat.enable_gtk(version='3.0')
 
-import gtk, gobject
+import gtk
+import gobject
+import sys
 debug = lambda x: 0
 
 class ColumnMapper(object):
@@ -80,8 +82,14 @@ class TreeModel(gtk.GenericTreeModel):
                         warning = max(warning, 1 if err.is_error else 0)
 
             if warning >= 0:
+                warn = "\u26A0"
+                if sys.version_info.major < 3:
+                    # Even with decode the warning symbol is not properly displayed
+                    # in py2 when using the tree model. Using a workaround for now.
+                    # warn = warn.decode('unicode-escape')
+                    warn = "(!)"
                 colors = ['orange', 'red']
-                value = value + " <span foreground='%s'>\u26A0</span>" % colors[warning]
+                value = "%s <span foreground='%s'>%s</span>" % (value, colors[warning], warn)
 
         if color is None: return value
         return "<span foreground='%s'>%s</span>" % (color, value)

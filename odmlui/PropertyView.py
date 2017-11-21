@@ -152,6 +152,9 @@ class PropertyView(TerminologyPopupTreeView):
             return
         if not first_row and column_name != "pseudo_values":
             return
+        # Do not replace multiple values with pseudo_value placeholder text.
+        if first_row_of_multi and column_name == "pseudo_values" and new_text == "<multi>":
+            return
 
         cmd = None
         # if we edit another attribute (e.g. unit), set this for all values of this property
@@ -288,6 +291,7 @@ class PropertyView(TerminologyPopupTreeView):
 
         set the curr
         """
+        print("PropertyView:set_value")
         (prop, val) = prop_value_pair
         model, path, obj = self.popup_data
         if val is None:
@@ -314,6 +318,7 @@ class PropertyView(TerminologyPopupTreeView):
 
         add a value to the selected property
         """
+        print("PropertyView:addValue")
         (obj, val) = obj_value_pair
         if val is None:
             val = ValueModel.Value(obj)

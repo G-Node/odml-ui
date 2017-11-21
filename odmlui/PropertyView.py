@@ -147,9 +147,6 @@ class PropertyView(TerminologyPopupTreeView):
         first_row = not tree_iter.parent
         first_row_of_multi = first_row and tree_iter.has_child
 
-        # can only edit the subvalues, but not <multi> itself
-        if first_row_of_multi and column_name == "pseudo_value":
-            return
         if not first_row and column_name != "pseudo_values":
             return
         # Do not replace multiple values with pseudo_value placeholder text.

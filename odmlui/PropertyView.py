@@ -111,9 +111,13 @@ class PropertyView(TerminologyPopupTreeView):
         (model, tree_iter) = tree_selection.get_selected()
         if not tree_iter:
             return
-
         obj = model.get_object(tree_iter)
         self.on_property_select(obj)
+
+        # Always expand multi value properties when selected
+        is_multi_value = isinstance(obj, odml.property.Property) and len(obj.value) > 1
+        if is_multi_value:
+            tree_selection.get_tree_view().expand_row(model.get_path(tree_iter), False)
 
     def on_property_select(self, prop):
         """called when a different property is selected"""
@@ -288,7 +292,6 @@ class PropertyView(TerminologyPopupTreeView):
         """
         popup menu action: set value
         """
-        print("PropertyView:set_value")
         (prop, val) = prop_value_pair
         model, path, obj = self.popup_data
         if val is None:

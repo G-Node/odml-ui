@@ -327,6 +327,14 @@ class PropertyView(TerminologyPopupTreeView):
         cmd = commands.AppendValue(obj=obj.pseudo_values, val=val)
         self.execute(cmd)
 
+        # Reset model if the Value changes from "normal" to MultiValue.
+        if self.model and len(obj.value) > 1:
+            self.model.destroy()
+            self.model = PropertyModel.PropertyModel(obj.parent)
+
+        # Reselect updated object to update view.
+        self.select_object(obj)
+
     def add_property(self, widget, obj_prop_pair):
         """
         popup menu action: add property

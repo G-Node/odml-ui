@@ -28,7 +28,7 @@ from .EditorTab import EditorTab
 from .DocumentRegistry import DocumentRegistry
 from .Wizard import DocumentWizard
 from .Helpers import uri_exists, uri_to_path
-from .MessageDialog import ErrorDialog
+from .MessageDialog import ErrorDialog, DecisionDialog
 
 gtk.gdk.threads_init()
 
@@ -713,12 +713,13 @@ class EditorWindow(gtk.Window):
 
         always runs a file_chooser dialog to allow saving to a different filename
         """
-        self.chooser_dialog(title="Save Document", callback=self.on_file_save, save=True)
-        return False # TODO this signals that file saving was not successful
-                     #      because no action should be taken until the chooser
-                     #      dialog is finish, however the user might then need to
-                     #      repeat the action, once the document was saved and the
-                     #      edited flag was cleared
+        self.chooser_dialog(title="Save Document",
+                            callback=self.on_file_save_check_exists, save=True)
+        return False  # TODO this signals that file saving was not successful
+                        # because no action should be taken until the chooser
+                        # dialog is finish, however the user might then need to
+                        # repeat the action, once the document was saved and the
+                        # edited flag was cleared
 
     @gui_action("Save", tooltip="Save changes", stock_id=gtk.STOCK_SAVE)
     def save(self, action):
@@ -731,8 +732,30 @@ class EditorWindow(gtk.Window):
             return self.current_tab.save(self.current_tab.file_uri)
         return self.save_as(action)
 
-    def on_file_save(self, uri):
+    def on_file_save_check_exists(self, uri):
+        """
+        Called on any "Save as" action after a file has been
+        defined via the FileChooser Dialog.
 
+        Checks whether the selected File already exists
+        and provides a confirmation dialog to overwrite
+        said file.
+        """
+        if os.path.isfile(uri_to_path(uri)):
+            dialog = DecisionDialog(None, "File exists",
+                                    "The file you selected already exists. "
+                                    "Do you want to replace it?", "")
+            response = dialog.run()
+            if response == gtk.ResponseType.CANCEL:
+                dialog.destroy()
+                self.save_as(self.editor_actions.get_action("SaveAs"))
+                return
+
+            dialog.destroy()  # Cleaner handling of duplicate .destroy()?
+
+        self.on_file_save(uri)
+
+    def on_file_save(self, uri):
         self.current_tab.file_uri = uri
         self.current_tab.update_label()
         self.current_tab.save(uri)

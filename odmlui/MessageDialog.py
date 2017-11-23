@@ -4,7 +4,6 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
-import gio
 
 
 class MessageDialog(gtk.MessageDialog):
@@ -43,3 +42,21 @@ class WarnDialog(MessageDialog):
         super(WarnDialog, self).__init__(parent, primary_msg, secondary_msg)
         self.set_property('message-type', gtk.MessageType.WARNING)
         self.display()
+
+
+class DecisionDialog(gtk.MessageDialog):
+    """
+    A decision dialog window providing
+    - Window title
+    - Message
+    - Secondary message
+    - OK and Cancel button
+    """
+    def __init__(self, parent, title, message, sub_message):
+        gtk.MessageDialog.__init__(self)
+        self.parent = parent
+        self.title = title
+        self.set_property("text", message)
+        self.set_property("secondary-text", sub_message)
+        self.add_button("Cancel", gtk.ResponseType.CANCEL)
+        self.add_button("Ok", gtk.ResponseType.OK)

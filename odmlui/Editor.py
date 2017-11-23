@@ -744,7 +744,9 @@ class EditorWindow(gtk.Window):
                                     "The file you selected already exists. "
                                     "Do you want to replace it?", "")
             response = dialog.run()
-            if response == gtk.ResponseType.CANCEL:
+            if (response == gtk.ResponseType.CANCEL or
+                    response == gtk.ResponseType.DELETE_EVENT):
+
                 dialog.destroy()
                 self.save_as(self.editor_actions.get_action("SaveAs"))
                 return

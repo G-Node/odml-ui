@@ -29,10 +29,10 @@ class ChooserDialog(gtk.FileChooserDialog):
             elif filter_selection == odMLChooserDialog.JSON:
                 file_type = "JSON"
 
-            self.on_accept(self.get_uri())
+            self.on_accept(self.get_uri(), file_type)
         self.destroy()
 
-    def on_accept(self, uri):
+    def on_accept(self, uri, file_type):
         raise NotImplementedError
 
 

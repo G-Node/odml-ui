@@ -108,7 +108,7 @@ class EditorTab(object):
             return True
         return self.window.save(None)
 
-    def save(self, uri):
+    def save(self, uri, file_type=None):
         # Mandatory document validation before save to avoid
         # not being able to open an invalid document.
         self.remove_validation()

@@ -465,7 +465,7 @@ class EditorWindow(gtk.Window):
         """called to show the open file dialog"""
         self.chooser_dialog(title="Open Document", callback=self.load_document)
 
-    def load_document(self, uri):
+    def load_document(self, uri, file_type=None):
         """open a new tab, load the document into it"""
         tab = EditorTab(self)
         if not tab.load(uri):  # Close tab upon parsing errors
@@ -732,7 +732,7 @@ class EditorWindow(gtk.Window):
             return self.current_tab.save(self.current_tab.file_uri)
         return self.save_as(action)
 
-    def on_file_save_check_exists(self, uri):
+    def on_file_save_check_exists(self, uri, file_type=None):
         """
         Called on any "Save as" action after a file has been
         defined via the FileChooser Dialog.
@@ -755,12 +755,12 @@ class EditorWindow(gtk.Window):
 
             dialog.destroy()  # Cleaner handling of duplicate .destroy()?
 
-        self.on_file_save(uri)
+        self.on_file_save(uri, file_type)
 
-    def on_file_save(self, uri):
+    def on_file_save(self, uri, file_type=None):
         self.current_tab.file_uri = uri
         self.current_tab.update_label()
-        self.current_tab.save(uri)
+        self.current_tab.save(uri, file_type)
         self.set_status_filename()
 
     def save_if_changed(self):

@@ -11,7 +11,8 @@ import odml.validation
 from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
 
 from .CommandManager import CommandManager
-from .Helpers import uri_to_path, get_parser_for_uri, get_extension, create_pseudo_values
+from .Helpers import uri_to_path, get_parser_for_uri, get_extension, \
+                        create_pseudo_values, get_parser_for_file_type
 from .MessageDialog import ErrorDialog
 from .treemodel import event
 from .ValidationWindow import ValidationWindow
@@ -122,7 +123,14 @@ class EditorTab(object):
                 return
 
         self.document.clean()
-        parser = get_parser_for_uri(uri)
+
+        parser = None
+        if file_type:
+            parser = get_parser_for_file_type(file_type)
+
+        if not parser:
+            parser = get_parser_for_uri(uri)
+
         odml_writer = ODMLWriter(parser=parser)
         file_path = uri_to_path(uri)
         ext = get_extension(file_path)

@@ -134,8 +134,9 @@ class EditorTab(object):
         odml_writer = ODMLWriter(parser=parser)
         file_path = uri_to_path(uri)
         ext = get_extension(file_path)
-        if ext.upper() not in allowed_parsers:
-            file_path += '.xml'
+
+        if ext != parser:
+            file_path += ".%s" % parser.lower()
 
         try:
             odml_writer.write_file(self.document, file_path)

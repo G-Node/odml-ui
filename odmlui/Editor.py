@@ -715,7 +715,7 @@ class EditorWindow(gtk.Window):
         always runs a file_chooser dialog to allow saving to a different filename
         """
         self.chooser_dialog(title="Save Document",
-                            callback=self.on_file_save_check_exists, save=True)
+                            callback=self.on_file_save, save=True)
         return False  # TODO this signals that file saving was not successful
                         # because no action should be taken until the chooser
                         # dialog is finish, however the user might then need to
@@ -733,7 +733,7 @@ class EditorWindow(gtk.Window):
             return self.current_tab.save(self.current_tab.file_uri)
         return self.save_as(action)
 
-    def on_file_save_check_exists(self, uri, file_type=None):
+    def on_file_save(self, uri, file_type=None):
         """
         Called on any "Save as" action after a file has been
         defined via the FileChooser Dialog.
@@ -767,9 +767,6 @@ class EditorWindow(gtk.Window):
 
             dialog.destroy()  # Cleaner handling of duplicate .destroy()?
 
-        self.on_file_save(uri, file_type)
-
-    def on_file_save(self, uri, file_type=None):
         self.current_tab.file_uri = uri
         self.current_tab.update_label()
         self.current_tab.save(uri, file_type)

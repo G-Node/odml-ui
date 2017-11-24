@@ -27,7 +27,8 @@ from .ChooserDialog import odMLChooserDialog
 from .EditorTab import EditorTab
 from .DocumentRegistry import DocumentRegistry
 from .Wizard import DocumentWizard
-from .Helpers import uri_exists, uri_to_path
+from .Helpers import uri_exists, uri_to_path, get_extension, \
+    get_parser_for_file_type, get_parser_for_uri
 from .MessageDialog import ErrorDialog, DecisionDialog
 
 gtk.gdk.threads_init()
@@ -739,7 +740,18 @@ class EditorWindow(gtk.Window):
         and provides a confirmation dialog to overwrite
         said file.
         """
-        if os.path.isfile(uri_to_path(uri)):
+        parser = None
+        if file_type:
+            parser = get_parser_for_file_type(file_type)
+        if not parser:
+            parser = get_parser_for_uri(uri)
+
+        check_existing_file = uri_to_path(uri)
+        ext = get_extension(check_existing_file)
+        if ext != parser:
+            check_existing_file += ".%s" % parser.lower()
+
+        if os.path.isfile(check_existing_file):
             dialog = DecisionDialog(None, "File exists",
                                     "The file you selected already exists. "
                                     "Do you want to replace it?", "")

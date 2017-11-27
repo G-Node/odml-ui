@@ -4,7 +4,6 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
-import gio
 import os.path
 
 import odml
@@ -12,9 +11,10 @@ import odml.validation
 from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
 
 from .CommandManager import CommandManager
-from .ValidationWindow import ValidationWindow
-from .Helpers import uri_to_path, get_parser_for_uri, get_extension
+from .Helpers import uri_to_path, get_parser_for_uri, get_extension, create_pseudo_values
 from .MessageDialog import ErrorDialog
+from .treemodel import event
+from .ValidationWindow import ValidationWindow
 
 
 class EditorTab(object):
@@ -29,7 +29,7 @@ class EditorTab(object):
             cmdm = CommandManager()
             cmdm.enable_undo = self.enable_undo
             cmdm.enable_redo = self.enable_redo
-            cmdm.error_func  = window.command_error
+            cmdm.error_func = window.command_error
         self.command_manager = cmdm
         self.document = None
         self.window = window
@@ -60,7 +60,7 @@ class EditorTab(object):
         parser = get_parser_for_uri(file_path)
         odml_reader = ODMLReader(parser=parser)
         try:
-            self.document = odml_reader.from_file(open(file_path))
+            self.document = odml_reader.from_file(file_path)
         except Exception as e:
             ErrorDialog(None, "Error while parsing '%s'" % file_path, str(e))
             return False
@@ -73,7 +73,7 @@ class EditorTab(object):
         return True
 
     def reset(self):
-        self.edited = 0 # initialize the edit stack position
+        self.edited = 0  # initialize the edit stack position
         self.command_manager.reset()
         self.enable_undo(enable=False)
         self.enable_redo(enable=False)
@@ -88,7 +88,8 @@ class EditorTab(object):
 
         returns false if the user cancelled the action
         """
-        if not self.is_modified: return True
+        if not self.is_modified:
+            return True
 
         dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
                                    gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO,
@@ -101,11 +102,25 @@ class EditorTab(object):
         response = dialog.run()
         dialog.destroy()
 
-        if response == gtk.RESPONSE_CANCEL: return False
-        if response == gtk.RESPONSE_NO: return True
+        if response == gtk.RESPONSE_CANCEL:
+            return False
+        if response == gtk.RESPONSE_NO:
+            return True
         return self.window.save(None)
 
     def save(self, uri):
+        # Mandatory document validation before save to avoid
+        # not being able to open an invalid document.
+        self.remove_validation()
+        validation = odml.validation.Validation(self.document)
+        self.document.validation_result = validation
+
+        for e in self.document.validation_result.errors:
+            if e.is_error:
+                self.window._info_bar.show_info("Invalid document. Please fix errors (red) before saving.")
+                self.validate()
+                return
+
         self.document.clean()
         parser = get_parser_for_uri(uri)
         odml_writer = ODMLWriter(parser=parser)
@@ -117,13 +132,13 @@ class EditorTab(object):
         try:
             odml_writer.write_file(self.document, file_path)
         except Exception as e:
-            self._info_bar.show_info("Save failed: %s" % e)
+            self.window._info_bar.show_info("Save failed: %s" % e)
             return
 
-        self.document.finalize() # undo the clean
+        self.document.finalize()  # undo the clean
         self.window._info_bar.show_info("%s was saved" % (os.path.basename(file_path)))
         self.edited = len(self.command_manager)
-        return True # TODO return false on any error and notify the user
+        return True  # TODO return false on any error and notify the user
 
     def enable_undo(self, enable=True):
         for tab in self._clones:
@@ -142,7 +157,8 @@ class EditorTab(object):
             self.window.enable_redo(enable)
 
     def clone(self, klass=None):
-        if klass is None: klass = self.__class__
+        if klass is None:
+            klass = self.__class__
         ntab = klass(self.window, self.command_manager)
         self._clones.append(ntab)
         ntab._clones = self._clones
@@ -188,7 +204,7 @@ class EditorTab(object):
         so that the gui can refresh these
         """
         for err in errors:
-            c = odml.tools.event.ChangeContext(('_error', True))
+            c = event.ChangeContext(('_error', True))
             c.post_change = True
             c.action = "set"
             c.pass_on(err.obj)

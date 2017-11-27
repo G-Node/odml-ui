@@ -468,7 +468,9 @@ class EditorWindow(gtk.Window):
     def load_document(self, uri):
         """open a new tab, load the document into it"""
         tab = EditorTab(self)
-        tab.load(uri)
+        if not tab.load(uri):  # Close tab upon parsing errors
+            tab.close()
+            return
         self.append_tab(tab)
         return tab
 

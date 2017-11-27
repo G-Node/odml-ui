@@ -1,6 +1,6 @@
 from gi import pygtkcompat
 
-pygtkcompat.enable() 
+pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
@@ -52,8 +52,7 @@ class TreeView(object):
         column.set_min_width(15)
         column.set_expand(True)
         self._treeview.append_column(column)
-        return (renderer, column)
-
+        return renderer, column
 
     def get_selected_object(self):
         """
@@ -72,7 +71,7 @@ class TreeView(object):
         return None
 
     def on_button_press(self, widget, event):
-        if event.button == 3: # right-click
+        if event.button == 3:  # right-click
             x = int(event.x)
             y = int(event.y)
             model = widget.get_model()
@@ -127,13 +126,13 @@ class TreeView(object):
     on_selection_change = None
 
     def get_new_obj_name(self, siblings, prefix):
-        '''
+        """
             Get a uniquely indexed name of an object.
             Derives the names of new objects, like Sections and Properties,
-            being created based on a common prefix. An index is appended to 
+            being created based on a common prefix. An index is appended to
             the prefix (if necessary) in a sequential manner, selecting the
             lowest index available.
-        '''
+        """
         new_obj_index = 0
         used_obj_num = []
 
@@ -144,10 +143,10 @@ class TreeView(object):
                     heapq.heappush(used_obj_num, num)
                 except ValueError:
                     # If any sibling has a name prefixed with `prefix`
-                    # then the new object should have a count of atleast '1'.
+                    # then the new object should have a count of at least '1'.
                     heapq.heappush(used_obj_num, 0)
 
-        while(len(used_obj_num)>0):
+        while len(used_obj_num) > 0:
             popped_ele = heapq.heappop(used_obj_num)
             if new_obj_index < popped_ele:
                 break
@@ -169,9 +168,11 @@ class TerminologyPopupTreeView(TreeView):
 
         however if any result is None, return []
         """
-        if obj is None: return []
+        if obj is None:
+            return []
         term = obj.get_terminology_equivalent()
-        if term is None: return []
+        if term is None:
+            return []
         return func(term)
 
     def get_popup_menu(self, func=None):
@@ -195,7 +196,7 @@ class TerminologyPopupTreeView(TreeView):
         """
         to be implemented by a concrete TreeView
 
-        returns a list of gtk.MenuItem to be displayey in a popup menu
+        returns a list of gtk.MenuItem to be displayed in a popup menu
         """
         raise NotImplementedError
 
@@ -313,6 +314,4 @@ class TerminologyPopupTreeView(TreeView):
             self._treeview.expand_to_path(path)
 
         selection = self._treeview.get_selection()
-        if path in selection.get_selected_rows():
-            return
         selection.select_path(path)

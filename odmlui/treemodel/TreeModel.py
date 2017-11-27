@@ -1,10 +1,15 @@
 from gi import pygtkcompat
 
-pygtkcompat.enable() 
+pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-import gtk, gobject
+import gtk
+import gobject
+import sys
+
+
 debug = lambda x: 0
+
 
 class ColumnMapper(object):
     def __init__(self, mapping_dictionary):
@@ -33,10 +38,12 @@ class ColumnMapper(object):
         return self._col_map[self.rev_map[column]][1]
 
     def __len__(self):
-        return len (self._col_map)
+        return len(self._col_map)
+
 
 class TreeModel(gtk.GenericTreeModel):
-    offset = 0 # number of elements to be cutoff from treeiter paths
+    offset = 0  # number of elements to be cutoff from TreeIter paths
+
     def __init__(self, col_mapper):
         self.col_mapper = col_mapper
         gtk.GenericTreeModel.__init__(self)
@@ -60,8 +67,10 @@ class TreeModel(gtk.GenericTreeModel):
         italics = False
         merged = obj.get_merged_equivalent()
         if merged is not None:
-            if column == 0: color = "darkgrey"
-            if merged == obj: color = "grey"
+            if column == 0:
+                color = "darkgrey"
+            if merged == obj:
+                color = "grey"
 
         merged = obj.get_terminology_equivalent()
         if column == 0 and merged is not None:
@@ -80,10 +89,17 @@ class TreeModel(gtk.GenericTreeModel):
                         warning = max(warning, 1 if err.is_error else 0)
 
             if warning >= 0:
+                warn = "\u26A0"
+                if sys.version_info.major < 3:
+                    # Even with decode the warning symbol is not properly displayed
+                    # in py2 when using the tree model. Using a workaround for now.
+                    # warn = warn.decode('unicode-escape')
+                    warn = "(!)"
                 colors = ['orange', 'red']
-                value = value + " <span foreground='%s'>\u26A0</span>" % colors[warning]
+                value = "%s <span foreground='%s'>%s</span>" % (value, colors[warning], warn)
 
-        if color is None: return value
+        if color is None:
+            return value
         return "<span foreground='%s'>%s</span>" % (color, value)
 
     def on_get_flags(self):
@@ -136,9 +152,9 @@ class TreeModel(gtk.GenericTreeModel):
         """
         returns the corresponding iter to a node
         """
-        #ugly fix, so to get a GtkTreeIter from our custom Iter instance
-        #we first convert our custom Iter to a path and the return an iter from it
-        #(apparently they are different)
+        # ugly fix, so to get a GtkTreeIter from our custom Iter instance
+        # we first convert our custom Iter to a path and the return an iter from it
+        # (apparently they are different)
         custom_iter = self._get_node_iter(node)
         if custom_iter is not None:
             return self.create_tree_iter(custom_iter)
@@ -182,7 +198,7 @@ class TreeModel(gtk.GenericTreeModel):
     def event_remove(self, context):
         """
         handles action="remove" events and notifies the model about
-        occured changes. Be sure to call this method for both pre_change
+        occurred changes. Be sure to call this method for both pre_change
         and post_change events.
         """
         if not hasattr(context, "path"):
@@ -198,7 +214,7 @@ class TreeModel(gtk.GenericTreeModel):
     def event_insert(self, context):
         """
         handles action="append" and action="insert" events and notifies the
-        model about occured changes.
+        model about occurred changes.
         """
         if context.post_change:
             self.post_insert(context.val)
@@ -219,5 +235,5 @@ class TreeModel(gtk.GenericTreeModel):
             iter = self.get_node_iter(context.obj.parent)
             path = self.get_path(iter)
             if not path and context.obj.parent is not self._section:
-                return # not our deal
+                return  # not our deal
             self.rows_reordered(path, iter, context.neworder)

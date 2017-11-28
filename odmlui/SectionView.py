@@ -104,6 +104,12 @@ class SectionView(TerminologyPopupTreeView):
 
         self.execute(cmd)
 
+        # Expand tree if the parent object is a section
+        if isinstance(obj, odml.section.Section):
+            tv = self._treeview
+            (model, tree_iter) = tv.get_selection().get_selected()
+            tv.expand_row(model.get_path(tree_iter), False)
+
     def on_selection_change(self, tree_selection):
         """
         the selection moved

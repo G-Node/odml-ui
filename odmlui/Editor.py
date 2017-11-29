@@ -676,7 +676,6 @@ class EditorWindow(gtk.Window):
         chooser.on_accept = callback
         chooser.show()
 
-    # TODO gui action?
     def open_recent(self, recent_action):
         uri = recent_action.get_current_uri()
         self.load_document(uri)
@@ -696,10 +695,7 @@ class EditorWindow(gtk.Window):
             model = SectionModel.SectionModel(tab.document)
 
         self._section_tv.set_model(model)
-        # TODO restore selection/expansion if known in tab
-
         self._navigation_bar.document = tab.document
-        # TODO restore selection/expansion if known in tab
 
     @gui_action("SaveAs", tooltip="Save changes to another file", stock_id=gtk.STOCK_SAVE_AS)
     def save_as(self, action):

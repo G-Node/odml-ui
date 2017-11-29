@@ -59,7 +59,7 @@ class EditorTab(object):
         self.document.finalize()
         self.window.registry.add(self.document)
         self.window._info_bar.show_info("Loading of %s done!" % (os.path.basename(file_path)))
-        # TODO select default section
+        return True
 
     def reset(self):
         self.edited = 0 # initialize the edit stack position

@@ -4,15 +4,15 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
+import odml
 
 from . import commands
-import odml
-from .TreeView import TerminologyPopupTreeView
 from .DragProvider import DragProvider
-
-from .dnd.targets import ValueDrop, PropertyDrop, SectionDrop
 from .dnd.odmldrop import OdmlDrag, OdmlDrop
+from .dnd.targets import ValueDrop, PropertyDrop, SectionDrop
 from .dnd.text import TextDrag, TextDrop, TextGenericDropForSectionTV
+from .TreeView import TerminologyPopupTreeView
+
 
 class SectionView(TerminologyPopupTreeView):
     """
@@ -32,15 +32,17 @@ class SectionView(TerminologyPopupTreeView):
         pd = PropertyDrop(exec_func=_exec)
         sd = SectionDrop(exec_func=_exec)
         for target in [
-            OdmlDrag(mime="odml/section-ref", inst=odml.section.Section),
-            TextDrag(mime="odml/section", inst=odml.section.Section),
-            TextDrag(mime="TEXT"),
-            OdmlDrop(mime="odml/property-ref", target=pd, registry=registry, exec_func=_exec),
-            OdmlDrop(mime="odml/section-ref", target=sd, registry=registry, exec_func=_exec),
-            TextDrop(mime="odml/property", target=pd),
-            TextDrop(mime="odml/section", target=sd),
-            TextGenericDropForSectionTV(exec_func=_exec),
-            ]:
+                OdmlDrag(mime="odml/section-ref", inst=odml.section.Section),
+                TextDrag(mime="odml/section", inst=odml.section.Section),
+                TextDrag(mime="TEXT"),
+                OdmlDrop(mime="odml/property-ref", target=pd, registry=registry,
+                         exec_func=_exec),
+                OdmlDrop(mime="odml/section-ref", target=sd, registry=registry,
+                         exec_func=_exec),
+                TextDrop(mime="odml/property", target=pd),
+                TextDrop(mime="odml/section", target=sd),
+                TextGenericDropForSectionTV(exec_func=_exec),
+                ]:
             dp.append(target)
         dp.execute = _exec
         dp.connect()
@@ -50,10 +52,7 @@ class SectionView(TerminologyPopupTreeView):
 
     def on_object_edit(self, tree_iter, attr, new_value):
         section = tree_iter._obj
-        cmd = commands.ChangeValue(
-            object    = section,
-            attr      = "name",
-            new_value = new_value)
+        cmd = commands.ChangeValue(object=section, attr="name", new_value=new_value)
 
         self.execute(cmd)
 
@@ -62,13 +61,20 @@ class SectionView(TerminologyPopupTreeView):
         original_object = obj
         if obj is None:
             obj = model.document
-        menu_items = self.create_popup_menu_items("Add Section", "Empty Section", obj, self.add_section, lambda sec: sec.sections, lambda sec: "%s [%s]" % (sec.name, sec.type), stock="odml-add-Section")
+        menu_items = self.create_popup_menu_items("Add Section", "Empty Section", obj,
+                                                  self.add_section,
+                                                  lambda sec: sec.sections,
+                                                  lambda sec: "%s [%s]" %
+                                                  (sec.name, sec.type),
+                                                  stock="odml-add-Section")
         if original_object is not None:
             menu_items.append(self.create_popup_menu_del_item(original_object))
             if original_object.is_merged:
-                menu_items.append(self.create_menu_item("Unresolve links (collapse)", self.on_expand, original_object))
+                menu_items.append(self.create_menu_item("Unresolve links (collapse)",
+                                                        self.on_expand, original_object))
             elif original_object.can_be_merged:
-                menu_items.append(self.create_menu_item("Resolve links (expand)", self.on_expand, original_object))
+                menu_items.append(self.create_menu_item("Resolve links (expand)",
+                                                        self.on_expand, original_object))
         return menu_items
 
     def on_expand(self, widget, obj):
@@ -87,7 +93,7 @@ class SectionView(TerminologyPopupTreeView):
         add a section to the selected section (or document if None selected)
         """
         (obj, section) = obj_section_pair
-        
+
         if section is None:
             name = self.get_new_obj_name(obj.sections, prefix='Unnamed Section')
             section = odml.Section(name=name)

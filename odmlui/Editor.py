@@ -182,11 +182,6 @@ class EditorWindow(gtk.Window):
         tool_button.set_tooltip_text("Open Files")
 
         navigation_bar = NavigationBar()
-#        table.attach(navigation_bar,
-#                     # X direction           Y direction
-#                     1, 2,                   1, 2,
-#                     0,                      0,
-#                     0,                      0)
         navigation_bar.on_selection_change = self.on_navigate
         self._navigation_bar = navigation_bar
 
@@ -239,7 +234,6 @@ class EditorWindow(gtk.Window):
         self._section_tv = section_tv
 
         # property_view to edit ODML-Properties
-
         # to edit properties of Document, Section or Property:
         self._property_view = AttributeView(self.execute)
         frame = gtk.Frame()
@@ -282,12 +276,6 @@ class EditorWindow(gtk.Window):
         self._statusbar = statusbar
         statusbar.show()
 
-        # if not filename is None:
-        #     self.load_document(filename)
-        # else:
-        #     self._info_bar.show_info("Welcome to the G-Node odML Editor 0.1")
-        #     self.new_file(None)
-
         self.show_all()
 
     def mktab(self, tab):
@@ -323,11 +311,12 @@ class EditorWindow(gtk.Window):
             pass
 
     def __create_action_group(self):
+        # entry: name, stock id, label
         entries = [
-              ("FileMenu", None, "_File"),               # name, stock id, label */
-              ("EditMenu", None, "_Edit"),               # name, stock id, label */
-              ("AddMenu",  gtk.STOCK_ADD),                # name, stock id, label */
-              ("HelpMenu", gtk.STOCK_HELP),               # name, stock id, label */
+              ("FileMenu", None, "_File"),
+              ("EditMenu", None, "_Edit"),
+              ("AddMenu",  gtk.STOCK_ADD),
+              ("HelpMenu", gtk.STOCK_HELP),
               ]
         for (k, v) in self.__class__.__dict__.items():
             if hasattr(v, "stock_id"):
@@ -452,7 +441,7 @@ class EditorWindow(gtk.Window):
         """
         open a new tab with an empty document
 
-        if *wirzard* is True, run the wizard first
+        if *wizard* is True, run the wizard first
         """
         if wizard:
             wiz = DocumentWizard()
@@ -555,13 +544,11 @@ class EditorWindow(gtk.Window):
 
     def get_tab_state(self):
         state = self._section_tv.save_state(), self._property_tv.save_state()
-        # , self._property_view.save_state()
         return state
 
     def set_tab_state(self, state):
         self._section_tv.restore_state(state[0])
         self._property_tv.restore_state(state[1])
-        # self._property_view.restore_state(state[2])
 
     def get_notebook_page(self, tab):
         """
@@ -594,16 +581,6 @@ class EditorWindow(gtk.Window):
         btn.connect('clicked', self.on_tab_close_click, tab)
         btn.add(close_image)
         hbox.pack_start(btn, False, False)
-
-        '''
-        ### Such modification is not explicitly available in Gtk3+
-        ### Need to find some workaround
-        #this reduces the size of the button
-        style = gtk.RcStyle()
-        style.xthickness = 0
-        style.ythickness = 0
-        btn.modify_style(style)
-        '''
 
         hbox.show_all()
         return hbox
@@ -672,7 +649,6 @@ class EditorWindow(gtk.Window):
             hbox.child.show()
             hbox.add(hbox.child)
         else:
-            # hbox.child.reparent(hbox)
             prev_parent = hbox.child.get_parent()
             prev_parent.remove(hbox.child)
             hbox.add(hbox.child)
@@ -723,7 +699,6 @@ class EditorWindow(gtk.Window):
         # TODO restore selection/expansion if known in tab
 
         self._navigation_bar.document = tab.document
-        # self._property_tv.set_model()
         # TODO restore selection/expansion if known in tab
 
     @gui_action("SaveAs", tooltip="Save changes to another file", stock_id=gtk.STOCK_SAVE_AS)
@@ -886,7 +861,6 @@ class EditorWindow(gtk.Window):
     def on_object_select(self, obj):
         """an object has been selected, now fix the current property_view"""
         for name, tv in (
-            # ("NewSection", self._section_tv),
                 ("NewProperty", self._section_tv), ("NewValue", self._property_tv)):
             self.enable_action(name,
                                tv._treeview.get_selection().count_selected_rows() > 0)
@@ -970,7 +944,7 @@ class EditorWindow(gtk.Window):
 
 def get_image_path():
     try:
-        filename = "./odml-gui"  # __main__.__file__
+        filename = "./odml-gui"
     except:
         filename = sys.argv[0]
 

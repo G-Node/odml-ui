@@ -70,7 +70,6 @@ class EditorTab(object):
         self.parse_properties(self.document.sections)
         self.window.registry.add(self.document)
         self.window._info_bar.show_info("Loading of %s done!" % (os.path.basename(file_path)))
-        # TODO select default section
         return True
 
     def reset(self):

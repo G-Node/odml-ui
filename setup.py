@@ -16,6 +16,28 @@ try:
 except ImportError:
     py2exe = None
 
+
+class PackageNotFoundError(Exception):
+    pass
+
+
+# Check required non-python dependencies
+try:
+    import gi
+except ImportError as Err:
+    err_str = ("\n  ImportErrors:%s" % Err.message +
+               "\n\n  Non-Python dependency missing, please check the README.md file.")
+    raise PackageNotFoundError(err_str)
+
+try:
+    import pygtkcompat
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+except ValueError as Err:
+    err_str = ("\n  ValueError:%s" % Err.message +
+               "\n\n  Non-Python dependency missing, please check the README.md file.")
+    raise PackageNotFoundError(err_str)
+
 packages = [
     'odmlui',
     'odmlui.dnd',

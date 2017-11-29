@@ -3,33 +3,30 @@ from gi import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-import os
-import sys
-import platform
-
-import gtk
 import gobject
+import gtk
+import os
+import platform
+import sys
 
 import odml
 import odmlui.treemodel.mixin
-from . import commands
 
-from odmlui.treemodel import PropertyModel, SectionModel, ValueModel
+from odmlui.treemodel import SectionModel, ValueModel
 
-from .InfoBar import EditorInfoBar
-from .ScrolledWindow import ScrolledWindow
-from . import TreeView
-from .SectionView import SectionView
 from .AttributeView import AttributeView
-from .PropertyView import PropertyView
-from .NavigationBar import NavigationBar
 from .ChooserDialog import odMLChooserDialog
-from .EditorTab import EditorTab
 from .DocumentRegistry import DocumentRegistry
-from .Wizard import DocumentWizard
-from .Helpers import uri_exists, uri_to_path, get_extension, \
+from .EditorTab import EditorTab
+from .Helpers import uri_to_path, get_extension, \
     get_parser_for_file_type, get_parser_for_uri
+from .InfoBar import EditorInfoBar
 from .MessageDialog import ErrorDialog, DecisionDialog
+from .NavigationBar import NavigationBar
+from .PropertyView import PropertyView
+from .ScrolledWindow import ScrolledWindow
+from .SectionView import SectionView
+from .Wizard import DocumentWizard
 
 gtk.gdk.threads_init()
 

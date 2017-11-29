@@ -612,6 +612,9 @@ class EditorWindow(gtk.Window):
         self.notebook.set_tab_detachable(child, True)
         self.notebook.set_show_tabs(self.notebook.get_n_pages() > 1)
 
+        # Switch to new tab
+        self.on_tab_select(self.notebook, None, self.get_notebook_page(tab), False)
+
     def close_tab(self, tab, save=True, create_new=True, close=True):
         """
         try to save and then remove the tab from our tab list
@@ -643,7 +646,7 @@ class EditorWindow(gtk.Window):
         self.notebook.set_show_tabs(self.notebook.get_n_pages() > 1)
         return True
 
-    def on_tab_select(self, notebook, page, pagenum):
+    def on_tab_select(self, notebook, page, pagenum, force_reset=True):
         """
         the notebook widget selected a tab
         """
@@ -658,7 +661,7 @@ class EditorWindow(gtk.Window):
             prev_parent = hbox.child.get_parent()
             prev_parent.remove(hbox.child)
             hbox.add(hbox.child)
-        self.select_tab(hbox.tab, force_reset=True)
+        self.select_tab(hbox.tab, force_reset=force_reset)
 
     def on_tab_close_click(self, button, tab):
         self.close_tab(tab)

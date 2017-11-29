@@ -92,7 +92,7 @@ class PropertyView(TerminologyPopupTreeView):
 
     @section.setter
     def section(self, section):
-        if self._section is section:
+        if self._section is section and self.model:
             return
         self._section = section
         if self.model:

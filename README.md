@@ -59,6 +59,9 @@ To install the odML editor, enter the corresponding directory and run::
     $ cd /home/usr/toolbox/odml-ui/
     $ python setup.py install
 
+Note: `pip install gi` will lead to a namespace conflict with the 
+required GObject introspection library.
+
 
 Documentation
 -------------

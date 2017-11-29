@@ -19,6 +19,18 @@ The odML-Editor makes use of the Gtk library for the GUI, and the `python-odml` 
 * For Python 2, `python-gi` 
 * For Python 3, `python3-gi` 
 
+Anaconda Dependencies
+---------------------
+
+Anaconda environments require only the following packages before installing the odML-Editor: 
+
+* Python 2.7+ or Python 3.4+
+* Install the following packages in the following order. 
+    ```
+    conda install -c pkgw/label/superseded gtk3
+    conda install -c conda-forge pygobject
+    conda install -c conda-forge gdk-pixbuf
+    ```
 
 Installation
 ------------

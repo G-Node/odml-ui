@@ -521,8 +521,12 @@ class EditorWindow(gtk.Window):
         if hasattr(tab, "state"):
             self.set_tab_state(tab.state)
 
-        # Select first section when switching tabs to ensure PropertyView update
-        self._section_tv._treeview.get_selection().select_path((0,))
+        if len(tab.document.sections) > 0:
+            # Select first section when switching tabs to ensure PropertyView update
+            self._section_tv._treeview.get_selection().select_path((0,))
+        else:
+            # Reset property treeview model in case of empty document
+            self._property_tv.model = None
 
     @property
     def current_tab(self):

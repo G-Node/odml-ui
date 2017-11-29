@@ -1,15 +1,13 @@
-from gi import pygtkcompat
+import pygtkcompat
+import odml
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-import gtk
-import odml
-
 from . import commands
 from .DragProvider import DragProvider
 from .dnd.odmldrop import OdmlDrag, OdmlDrop
-from .dnd.targets import ValueDrop, PropertyDrop, SectionDrop
+from .dnd.targets import PropertyDrop, SectionDrop
 from .dnd.text import TextDrag, TextDrop, TextGenericDropForSectionTV
 from .TreeView import TerminologyPopupTreeView
 

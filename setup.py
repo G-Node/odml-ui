@@ -38,6 +38,9 @@ except ValueError as Err:
                "\n\n  Non-Python dependency missing, please check the README.md file.")
     raise PackageNotFoundError(err_str)
 
+with open('README.md') as f:
+    description_text = f.read()
+
 packages = [
     'odmlui',
     'odmlui.dnd',
@@ -64,5 +67,6 @@ setup(name='odML-UI',
       },
       install_requires=install_req,
       scripts=['odml-gui'],
-      data_files=data_files
+      data_files=data_files,
+      long_description=description_text
       )

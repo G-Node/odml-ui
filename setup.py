@@ -3,7 +3,7 @@
 import glob
 import os
 
-from odmlui import __version__
+from odmlui.info import VERSION, AUTHOR, CONTACT, HOMEPAGE
 # Use setuptools compulsorily, as the distutils doesn't work out well for the
 # installation procedure. The 'install_requires' and 'data_files' have better
 # support in setuptools.
@@ -62,11 +62,11 @@ install_req = ["odml==1.3.*"]
 data_files = [('share/pixmaps', glob.glob(os.path.join("images", "*")))]
 
 setup(name='odML-UI',
-      version=__version__,
+      version=VERSION,
       description='odML Editor',
-      author='Hagen Fritsch',
-      author_email='fritsch+gnode@in.tum.de',
-      url='https://github.com/G-Node/odml-ui',
+      author=AUTHOR,
+      author_email=CONTACT,
+      url=HOMEPAGE,
       packages=packages,
       options={
           'py2exe': {

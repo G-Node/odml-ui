@@ -1,4 +1,4 @@
 
-__version__ = '1.4.0'
+from odmlui.info import VERSION as __version__
 
 DEBUG = False

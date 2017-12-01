@@ -7,17 +7,24 @@ If you are not familiar with the version control system **git**, but still want 
 Dependencies
 ------------
 
-The odML-Editor makes use of the Gtk library for the GUI, and the `python-odml` library. Following dependencies need to be installed for the odML-Editor.
+The odML-Editor makes use of the Gtk 3+ library for the GUI, and the `python-odml` library. Following dependencies need to be installed for the odML-Editor.
 
 * Python 2.7+ or Python 3.4+
 * odml v1.3  `(pip install odml)`
-* `libffi-dev`
-* `libglib2.0-dev`
-* `libglib2.0-dev`
-* `gobject-introspection`
-* `libgtk-3-dev`
-* For Python 2, `python-gi` 
-* For Python 3, `python3-gi` 
+
+__For Ubuntu-based distributions__ :- 
+
+* `sudo apt-get install libgtk-3-0`
+* `sudo apt-get install gobject-introspection`
+* For Python 3, `sudo apt-get install python3-gi` 
+* For Python 2, `sudo apt-get install python-gi` 
+
+__For Fedora-based distributions__ :- 
+
+* `sudo yum install gtk3`
+* `sudo yum install pygobject3`
+* For Python 3, `sudo yum install python3-gobject`
+* For Python 2, `sudo yum install python-gobject`
 
 
 Installation

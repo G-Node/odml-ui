@@ -14,7 +14,8 @@ import odml
 import odmlui.treemodel.mixin
 from . import commands
 
-from odmlui.treemodel import PropertyModel, SectionModel
+from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION
+from odmlui.treemodel import SectionModel
 
 from .InfoBar import EditorInfoBar
 from .ScrolledWindow import ScrolledWindow
@@ -107,7 +108,7 @@ def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
     return func
 
 class EditorWindow(gtk.Window):
-    odMLHomepage = "http://www.g-node.org/projects/odml"
+    odMLHomepage = HOMEPAGE
     registry = DocumentRegistry()
     editors = set()
     welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty", "NewValue", "Delete", "CloneTab", "Map", "Validate"]
@@ -418,14 +419,13 @@ class EditorWindow(gtk.Window):
 
         dialog = gtk.AboutDialog()
         dialog.set_name("odMLEditor")
-        dialog.set_copyright("\302\251 Copyright 2010-2011 G-Node")
-        dialog.set_authors([
-            "Christian Kellner <kellner@bio.lmu.de>",
-            "Hagen Fritsch <fritsch+odml@in.tum.de>",
-            ])
+        dialog.set_copyright(COPYRIGHT)
+        dialog.set_authors(AUTHOR.split(", "))
         dialog.set_website(self.odMLHomepage)
         dialog.set_license(license)
         dialog.set_logo(logo)
+        dialog.set_version(VERSION)
+        dialog.set_comments("Contact <%s>" % CONTACT)
 
         dialog.set_transient_for(self)
 

@@ -22,23 +22,32 @@ class PackageNotFoundError(Exception):
 
 # Check required non-python dependencies for native install,
 # Anaconda and virtualenv environments.
+readme = "README.md"
+dep_str = "Non-Python dependency missing, please check the %s file." % readme
 try:
     import gi
+    import pygtkcompat
 except ImportError as Err:
-    err_str = ("\n  ImportErrors:%s" % Err.message +
-               "\n\n  Non-Python dependency missing, please check the README.md file.")
+    err_str = ("\n  ImportErrors:%s\n\n  %s" % (Err.message, dep_str))
     raise PackageNotFoundError(err_str)
 
 try:
-    import pygtkcompat
     pygtkcompat.enable()
     pygtkcompat.enable_gtk(version='3.0')
 except ValueError as Err:
-    err_str = ("\n  ValueError:%s" % Err.message +
-               "\n\n  Non-Python dependency missing, please check the README.md file.")
+    err_str = ("\n  ValueError:%s\n\n  %s" % (Err.message, dep_str))
     raise PackageNotFoundError(err_str)
 
-with open('README.md') as f:
+# Unfortunately this can only be imported after `pygtkcompat.enable()`.
+try:
+    import gtk
+    import gobject
+except ImportError as Err:
+    err_str = ("\n  ImportErrors:%s\n\n  %s" % (Err.message, dep_str))
+    raise PackageNotFoundError(err_str)
+
+
+with open(readme) as f:
     description_text = f.read()
 
 packages = [

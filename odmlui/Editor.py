@@ -27,8 +27,9 @@ from .ChooserDialog import odMLChooserDialog
 from .EditorTab import EditorTab
 from .DocumentRegistry import DocumentRegistry
 from .Wizard import DocumentWizard
-from .Helpers import uri_exists, uri_to_path
-from .MessageDialog import ErrorDialog
+from .Helpers import uri_exists, uri_to_path, get_extension, \
+    get_parser_for_file_type, get_parser_for_uri
+from .MessageDialog import ErrorDialog, DecisionDialog
 
 gtk.gdk.threads_init()
 
@@ -465,7 +466,7 @@ class EditorWindow(gtk.Window):
         """called to show the open file dialog"""
         self.chooser_dialog(title="Open Document", callback=self.load_document)
 
-    def load_document(self, uri):
+    def load_document(self, uri, file_type=None):
         """open a new tab, load the document into it"""
         tab = EditorTab(self)
         if not tab.load(uri):  # Close tab upon parsing errors
@@ -713,12 +714,13 @@ class EditorWindow(gtk.Window):
 
         always runs a file_chooser dialog to allow saving to a different filename
         """
-        self.chooser_dialog(title="Save Document", callback=self.on_file_save, save=True)
-        return False # TODO this signals that file saving was not successful
-                     #      because no action should be taken until the chooser
-                     #      dialog is finish, however the user might then need to
-                     #      repeat the action, once the document was saved and the
-                     #      edited flag was cleared
+        self.chooser_dialog(title="Save Document",
+                            callback=self.on_file_save, save=True)
+        return False  # TODO this signals that file saving was not successful
+                        # because no action should be taken until the chooser
+                        # dialog is finish, however the user might then need to
+                        # repeat the action, once the document was saved and the
+                        # edited flag was cleared
 
     @gui_action("Save", tooltip="Save changes", stock_id=gtk.STOCK_SAVE)
     def save(self, action):
@@ -731,11 +733,43 @@ class EditorWindow(gtk.Window):
             return self.current_tab.save(self.current_tab.file_uri)
         return self.save_as(action)
 
-    def on_file_save(self, uri):
+    def on_file_save(self, uri, file_type=None):
+        """
+        Called on any "Save as" action after a file has been
+        defined via the FileChooser Dialog.
+
+        Checks whether the selected File already exists
+        and provides a confirmation dialog to overwrite
+        said file.
+        """
+        parser = None
+        if file_type:
+            parser = get_parser_for_file_type(file_type)
+        if not parser:
+            parser = get_parser_for_uri(uri)
+
+        check_existing_file = uri_to_path(uri)
+        ext = get_extension(check_existing_file)
+        if ext != parser:
+            check_existing_file += ".%s" % parser.lower()
+
+        if os.path.isfile(check_existing_file):
+            dialog = DecisionDialog(None, "File exists",
+                                    "The file you selected already exists. "
+                                    "Do you want to replace it?", "")
+            response = dialog.run()
+            if (response == gtk.ResponseType.CANCEL or
+                    response == gtk.ResponseType.DELETE_EVENT):
+
+                dialog.destroy()
+                self.save_as(self.editor_actions.get_action("SaveAs"))
+                return
+
+            dialog.destroy()  # Cleaner handling of duplicate .destroy()?
 
         self.current_tab.file_uri = uri
         self.current_tab.update_label()
-        self.current_tab.save(uri)
+        self.current_tab.save(uri, file_type)
         self.set_status_filename()
 
     def save_if_changed(self):

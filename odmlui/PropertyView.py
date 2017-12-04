@@ -125,7 +125,7 @@ class PropertyView(TerminologyPopupTreeView):
         self.on_property_select(obj)
 
         # Always expand multi value properties when selected
-        is_multi_value = isinstance(obj, odml.property.Property) and len(obj.value) > 1
+        is_multi_value = isinstance(obj, odml.property.Property) and len(obj.values) > 1
         if is_multi_value:
             tree_selection.get_tree_view().expand_row(model.get_path(tree_iter), False)
 

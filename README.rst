@@ -13,7 +13,7 @@ The odML-Editor makes use of the Gtk 3+ library for the GUI, and the :code:`pyth
 Following dependencies need to be installed for the odML-Editor.
 
 * Python 2.7+ or Python 3.4+
-* odml v1.3  :code:`(pip install odml)`
+* odml v1.4  :code:`(pip install odml)`
 
 For Ubuntu-based distributions:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,10 +52,10 @@ repository from GitHub::
   $ cd /home/usr/toolbox/
   $ git clone https://github.com/G-Node/odml-ui.git
 
-... or if you don't want to use git, download the ZIP file also provided on 
+If you don't want to use git, download the ZIP file also provided on
 GitHub to your computer (e.g. as above on your home directory under a "toolbox" folder).
 
-To install the odML editor, enter the corresponding directory and run::
+To install the odML-Editor, enter the corresponding directory and run::
 
   $ cd /home/usr/toolbox/odml-ui/
   $ python setup.py install
@@ -66,14 +66,12 @@ required GObject introspection library.
 
 Documentation
 -------------
-`Python-odML <http://g-node.github.io/python-odml>`_
+odML related documentation can be found at the
+`Python-odML <http://g-node.github.io/python-odml>`_ tutorial page.
 
 Bugs & Questions
 ----------------
 
-Should you find a behaviour that is likely a bug, please file a bug report at 
-`the github bug tracker <https://github.com/G-Node/odml-ui/issues>`_.
-
-If you have questions regarding the use of the library or the editor, ask
-the question on `Stack Overflow <http://stackoverflow.com>`_, be sure to tag
-it with :code:`odml` and we'll do our best to quickly solve the problem.
+Should you find a behaviour that is likely a bug or feel there is something missing,
+just create an issue over at the GitHub
+`odML-Editor issue tracker <https://github.com/G-Node/odml-ui/issues>`_.

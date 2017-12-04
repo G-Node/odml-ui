@@ -370,6 +370,9 @@ class PropertyView(TerminologyPopupTreeView):
         cmd = commands.AppendValue(obj=obj, val=val)
         self.execute(cmd)
 
+        # Reselect updated object to update view.
+        self.select_object(obj)
+
     def add_property(self, widget, obj_prop_pair):
         """
         popup menu action: add property

@@ -3,7 +3,7 @@
 import glob
 import os
 
-from odmlui.info import VERSION, AUTHOR, CONTACT, HOMEPAGE
+from odmlui.info import VERSION, AUTHOR, CONTACT, HOMEPAGE, CLASSIFIERS
 # Use setuptools compulsorily, as the distutils doesn't work out well for the
 # installation procedure. The 'install_requires' and 'data_files' have better
 # support in setuptools.
@@ -78,5 +78,6 @@ setup(name='odML-UI',
       install_requires=install_req,
       scripts=['odml-gui'],
       data_files=data_files,
-      long_description=description_text
+      long_description=description_text,
+      classifiers=CLASSIFIERS
       )

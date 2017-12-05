@@ -28,23 +28,12 @@ dep_str = "Non-Python dependency missing, please check the %s file." % readme
 try:
     import gi
     import pygtkcompat
-except ImportError as Err:
-    err_str = ("\n  ImportErrors:%s\n\n  %s" % (Err.message, dep_str))
-    raise PackageNotFoundError(err_str)
-
-try:
     pygtkcompat.enable()
     pygtkcompat.enable_gtk(version='3.0')
-except ValueError as Err:
-    err_str = ("\n  ValueError:%s\n\n  %s" % (Err.message, dep_str))
-    raise PackageNotFoundError(err_str)
-
-# Unfortunately this can only be imported after `pygtkcompat.enable()`.
-try:
     import gtk
     import gobject
-except ImportError as Err:
-    err_str = ("\n  ImportErrors:%s\n\n  %s" % (Err.message, dep_str))
+except (ImportError, ValueError) as err:
+    err_str = ("\n  Error: %s\n\n  %s" % (err, dep_str))
     raise PackageNotFoundError(err_str)
 
 

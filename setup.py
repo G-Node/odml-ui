@@ -51,6 +51,9 @@ except ImportError as Err:
 with open(readme) as f:
     description_text = f.read()
 
+with open("LICENSE") as f:
+    license_text = f.read()
+
 packages = [
     'odmlui',
     'odmlui.dnd',
@@ -79,5 +82,6 @@ setup(name='odML-UI',
       scripts=['odml-gui'],
       data_files=data_files,
       long_description=description_text,
-      classifiers=CLASSIFIERS
+      classifiers=CLASSIFIERS,
+      license=license_text
       )

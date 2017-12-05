@@ -58,7 +58,6 @@ ui_info = \
       <menuitem action='Delete'/>
       <separator/>
       <menuitem action='CloneTab'/>
-      <menuitem action='Map'/>
       <menuitem action='Validate'/>
     </menu>
     <menu action='HelpMenu'>
@@ -77,7 +76,6 @@ ui_info = \
     <toolitem action='NewProperty'/>
     <toolitem action='NewValue'/>
     <toolitem action='Delete'/>
-    <toolitem action='Map' />
     <toolitem action='Validate' />
   </toolbar>
 </ui>'''
@@ -112,7 +110,7 @@ class EditorWindow(gtk.Window):
     registry = DocumentRegistry()
     editors = set()
     welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty",
-                                "NewValue", "Delete", "CloneTab", "Map", "Validate"]
+                                "NewValue", "Delete", "CloneTab", "Validate"]
 
     def __init__(self, parent=None):
         gtk.Window.__init__(self)
@@ -462,18 +460,6 @@ class EditorWindow(gtk.Window):
 
     def clone_tab(self, tab):
         ntab = tab.clone()
-        self.append_tab(ntab)
-        return ntab
-
-    @gui_action("Map",
-                tooltip="Create a new tab with the mappings of the current document",
-                label="_Map Document", accelerator="<control>M",
-                stock_id=gtk.STOCK_DND_MULTIPLE)
-    def on_map_tab(self, action):
-        self.map_tab(self.current_tab)
-
-    def map_tab(self, tab):
-        ntab = tab.clone_mapping()
         self.append_tab(ntab)
         return ntab
 

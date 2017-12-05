@@ -174,26 +174,6 @@ class EditorTab(object):
         ntab.document = self.document
         return ntab
 
-    def clone_mapping(self):
-        """
-        create a mapped clone of this tab
-
-        if there is a mapped clone already for this document
-        find it and return its clone
-
-        otherwise clone this tab and replace its document
-        with the mapping
-        """
-        for tab in self._clones:
-            if isinstance(tab, MappingEditorTab):
-                return tab.clone()
-
-        mapdoc = odml.mapping.create_mapping(tab.document)
-        self.window.registry.add(mapdoc)
-        ntab = self.clone(MappingEditorTab)
-        ntab.document = mapdoc
-        return ntab
-
     def validate(self):
         """check the document for errors"""
         self.remove_validation()
@@ -238,14 +218,3 @@ class EditorTab(object):
         any cleanup?
         """
         self._clones.remove(self)
-
-
-class MappingEditorTab(EditorTab):
-    def close(self):
-        super(MappingEditorTab, self).close()
-        if not [x for x in self._clones if isinstance(x, MappingEditorTab)]:
-            # no more mappings present, go unmap
-            odml.mapping.unmap_document(self.document._proxy_obj)
-
-    def get_name(self):
-        return "map: %s" % super(MappingEditorTab, self).get_name()

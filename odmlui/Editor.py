@@ -14,7 +14,8 @@ import odml
 import odmlui.treemodel.mixin
 from . import commands
 
-from odmlui.treemodel import PropertyModel, SectionModel
+from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION
+from odmlui.treemodel import SectionModel
 
 from .InfoBar import EditorInfoBar
 from .ScrolledWindow import ScrolledWindow
@@ -27,8 +28,9 @@ from .ChooserDialog import odMLChooserDialog
 from .EditorTab import EditorTab
 from .DocumentRegistry import DocumentRegistry
 from .Wizard import DocumentWizard
-from .Helpers import uri_exists, uri_to_path
-from .MessageDialog import ErrorDialog
+from .Helpers import uri_exists, uri_to_path, get_extension, \
+    get_parser_for_file_type, get_parser_for_uri
+from .MessageDialog import ErrorDialog, DecisionDialog
 
 gtk.gdk.threads_init()
 
@@ -83,21 +85,9 @@ ui_info = \
 </ui>'''
 
 
-license_lgpl = \
-    '''This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public License as
-published by the Free Software Foundation; either version 3 of the
-License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
-
-You should have received a copy of the GNU Library General Public
-License along with the Gnome Library; see the file COPYING.LIB.  If not,
-write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.\n'''
+license = ""
+with open("LICENSE") as f:
+    license = f.read()
 
 def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
     """
@@ -118,7 +108,7 @@ def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
     return func
 
 class EditorWindow(gtk.Window):
-    odMLHomepage = "http://www.g-node.org/projects/odml"
+    odMLHomepage = HOMEPAGE
     registry = DocumentRegistry()
     editors = set()
     welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty", "NewValue", "Delete", "CloneTab", "Map", "Validate"]
@@ -429,14 +419,13 @@ class EditorWindow(gtk.Window):
 
         dialog = gtk.AboutDialog()
         dialog.set_name("odMLEditor")
-        dialog.set_copyright("\302\251 Copyright 2010-2011 G-Node")
-        dialog.set_authors([
-            "Christian Kellner <kellner@bio.lmu.de>",
-            "Hagen Fritsch <fritsch+odml@in.tum.de>",
-            ])
+        dialog.set_copyright(COPYRIGHT)
+        dialog.set_authors(AUTHOR.split(", "))
         dialog.set_website(self.odMLHomepage)
-        dialog.set_license (license_lgpl)
+        dialog.set_license(license)
         dialog.set_logo(logo)
+        dialog.set_version(VERSION)
+        dialog.set_comments("Contact <%s>" % CONTACT)
 
         dialog.set_transient_for(self)
 
@@ -465,7 +454,7 @@ class EditorWindow(gtk.Window):
         """called to show the open file dialog"""
         self.chooser_dialog(title="Open Document", callback=self.load_document)
 
-    def load_document(self, uri):
+    def load_document(self, uri, file_type=None):
         """open a new tab, load the document into it"""
         tab = EditorTab(self)
         tab.load(uri)
@@ -519,6 +508,17 @@ class EditorWindow(gtk.Window):
 
         if hasattr(tab, "state"):
             self.set_tab_state(tab.state)
+
+        # Ensure PropertyView update for tab switch and added tabs
+        if len(tab.document.sections) > 0:
+            selection = self._section_tv._treeview.get_selection()
+            _, tree_iter = selection.get_selected()
+            # Select first section only when opening document
+            if tree_iter is None:
+                selection.select_path((0,))
+        else:
+            # Reset property treeview model in case of empty document
+            self._property_tv.model = None
 
     @property
     def current_tab(self):
@@ -608,6 +608,9 @@ class EditorWindow(gtk.Window):
         self.notebook.set_tab_detachable(child, True)
         self.notebook.set_show_tabs(self.notebook.get_n_pages() > 1)
 
+        # Switch to new tab
+        self.on_tab_select(self.notebook, None, self.get_notebook_page(tab), False)
+
     def close_tab(self, tab, save=True, create_new=True, close=True):
         """
         try to save and then remove the tab from our tab list
@@ -639,7 +642,7 @@ class EditorWindow(gtk.Window):
         self.notebook.set_show_tabs(self.notebook.get_n_pages() > 1)
         return True
 
-    def on_tab_select(self, notebook, page, pagenum):
+    def on_tab_select(self, notebook, page, pagenum, force_reset=True):
         """
         the notebook widget selected a tab
         """
@@ -654,7 +657,7 @@ class EditorWindow(gtk.Window):
             prev_parent = hbox.child.get_parent()
             prev_parent.remove(hbox.child)
             hbox.add(hbox.child)
-        self.select_tab(hbox.tab, force_reset=True)
+        self.select_tab(hbox.tab, force_reset=force_reset)
 
     def on_tab_close_click(self, button, tab):
         self.close_tab(tab)
@@ -711,12 +714,13 @@ class EditorWindow(gtk.Window):
 
         always runs a file_chooser dialog to allow saving to a different filename
         """
-        self.chooser_dialog(title="Save Document", callback=self.on_file_save, save=True)
-        return False # TODO this signals that file saving was not successful
-                     #      because no action should be taken until the chooser
-                     #      dialog is finish, however the user might then need to
-                     #      repeat the action, once the document was saved and the
-                     #      edited flag was cleared
+        self.chooser_dialog(title="Save Document",
+                            callback=self.on_file_save, save=True)
+        return False  # TODO this signals that file saving was not successful
+                        # because no action should be taken until the chooser
+                        # dialog is finish, however the user might then need to
+                        # repeat the action, once the document was saved and the
+                        # edited flag was cleared
 
     @gui_action("Save", tooltip="Save changes", stock_id=gtk.STOCK_SAVE)
     def save(self, action):
@@ -729,11 +733,43 @@ class EditorWindow(gtk.Window):
             return self.current_tab.save(self.current_tab.file_uri)
         return self.save_as(action)
 
-    def on_file_save(self, uri):
+    def on_file_save(self, uri, file_type=None):
+        """
+        Called on any "Save as" action after a file has been
+        defined via the FileChooser Dialog.
+
+        Checks whether the selected File already exists
+        and provides a confirmation dialog to overwrite
+        said file.
+        """
+        parser = None
+        if file_type:
+            parser = get_parser_for_file_type(file_type)
+        if not parser:
+            parser = get_parser_for_uri(uri)
+
+        check_existing_file = uri_to_path(uri)
+        ext = get_extension(check_existing_file)
+        if ext != parser:
+            check_existing_file += ".%s" % parser.lower()
+
+        if os.path.isfile(check_existing_file):
+            dialog = DecisionDialog(None, "File exists",
+                                    "The file you selected already exists. "
+                                    "Do you want to replace it?", "")
+            response = dialog.run()
+            if (response == gtk.ResponseType.CANCEL or
+                    response == gtk.ResponseType.DELETE_EVENT):
+
+                dialog.destroy()
+                self.save_as(self.editor_actions.get_action("SaveAs"))
+                return
+
+            dialog.destroy()  # Cleaner handling of duplicate .destroy()?
 
         self.current_tab.file_uri = uri
         self.current_tab.update_label()
-        self.current_tab.save(uri)
+        self.current_tab.save(uri, file_type)
         self.set_status_filename()
 
     def save_if_changed(self):

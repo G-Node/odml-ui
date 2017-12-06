@@ -4,8 +4,7 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
-
-from . import commands
+import sys
 from .ScrolledWindow import ScrolledWindow
 from .TreeView import TreeView
 COL_PATH = 0
@@ -32,13 +31,16 @@ class ValidationView(TreeView):
 
     def fill(self):
         self._store.clear()
+        warn = "\u26A0"
+        if sys.version_info.major < 3:
+            warn = warn.decode('unicode-escape')
 
         elements = [(err.path, j, err.msg, err.is_error) for j,err in enumerate(self.errors)]
         elements.sort()
         for (path, idx, msg, is_error) in elements:
             if not is_error:
                 path = "<span foreground='darkgrey'>%s</span>" % path
-            msg = "<span foreground='%s'>\u26A0</span> " % ("red" if is_error else "orange") + msg
+            msg = "<span foreground='%s'>%s</span> " % ("red" if is_error else "orange", warn) + msg
             self._store.append((path, idx, msg))
 
     def on_selection_change(self, tree_selection):
@@ -53,8 +55,8 @@ class ValidationView(TreeView):
         raise NotImplementedError
                 
 class ValidationWindow(gtk.Window):
-    max_height = 600
-    max_width  = 800
+    max_height = 768
+    max_width = 1024
     height = max_height
     width = max_width
     def __init__(self, tab):
@@ -69,6 +71,7 @@ class ValidationWindow(gtk.Window):
         self.tv.set_errors(tab.document.validation_result.errors)
 
         self.add(ScrolledWindow(self.tv._treeview))
+        self.tv._treeview.check_resize()  # required for updated size in 'treeview.size_request()'
         width, height = self.tv._treeview.size_request()
         width  = min(width+10,  max(self.width,  self.max_width))
         height = min(height+10, max(self.height, self.max_height))

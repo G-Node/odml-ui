@@ -13,7 +13,8 @@ from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
 
 from .CommandManager import CommandManager
 from .ValidationWindow import ValidationWindow
-from .Helpers import uri_to_path, get_parser_for_uri, get_extension
+from .Helpers import uri_to_path, get_parser_for_uri, get_extension, \
+    get_parser_for_file_type
 
 
 class EditorTab(object):
@@ -58,7 +59,7 @@ class EditorTab(object):
         self.document.finalize()
         self.window.registry.add(self.document)
         self.window._info_bar.show_info("Loading of %s done!" % (os.path.basename(file_path)))
-        # TODO select default section
+        return True
 
     def reset(self):
         self.edited = 0 # initialize the edit stack position
@@ -93,19 +94,39 @@ class EditorTab(object):
         if response == gtk.RESPONSE_NO: return True
         return self.window.save(None)
 
-    def save(self, uri):
+    def save(self, uri, file_type=None):
+        # Mandatory document validation before save to avoid
+        # not being able to open an invalid document.
+        self.remove_validation()
+        validation = odml.validation.Validation(self.document)
+        self.document.validation_result = validation
+
+        for e in self.document.validation_result.errors:
+            if e.is_error:
+                self.window._info_bar.show_info("Invalid document. Please fix errors (red) before saving.")
+                self.validate()
+                return
+
         self.document.clean()
-        parser = get_parser_for_uri(uri)
+
+        parser = None
+        if file_type:
+            parser = get_parser_for_file_type(file_type)
+
+        if not parser:
+            parser = get_parser_for_uri(uri)
+
         odml_writer = ODMLWriter(parser=parser)
         file_path = uri_to_path(uri)
         ext = get_extension(file_path)
-        if ext.upper() not in allowed_parsers:
-            file_path += '.xml'
+
+        if ext != parser:
+            file_path += ".%s" % parser.lower()
 
         try:
             odml_writer.write_file(self.document, file_path)
         except Exception as e:
-            self._info_bar.show_info("Save failed: %s" % e)
+            self.window._info_bar.show_info("Save failed: %s" % e)
             return
 
         self.document.finalize() # undo the clean

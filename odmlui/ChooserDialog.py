@@ -20,14 +20,27 @@ class ChooserDialog(gtk.FileChooserDialog):
 
     def response(self, widget, response_id):
         if response_id == gtk.RESPONSE_OK:
-            self.on_accept(self.get_uri())
+            self.hide()
+
+            filter_selection = widget.get_filter().get_name()
+            file_type = "XML"
+            if filter_selection == odMLChooserDialog.YAML:
+                file_type = "YAML"
+            elif filter_selection == odMLChooserDialog.JSON:
+                file_type = "JSON"
+
+            self.on_accept(self.get_uri(), file_type)
         self.destroy()
 
-    def on_accept(self, uri):
+    def on_accept(self, uri, file_type):
         raise NotImplementedError
 
 
 class odMLChooserDialog(ChooserDialog):
+    XML = "XML format (*.xml, *.odml)"
+    YAML = "YAML format (*.yaml, *.odml)"
+    JSON = "JSON format (*.json, *.odml)"
+
     def __init__(self, title, save):
         super(odMLChooserDialog, self).__init__(title, save)
         self.add_filters()
@@ -49,14 +62,14 @@ class odMLChooserDialog(ChooserDialog):
 
     def xml_filter(self):
         filter = gtk.FileFilter()
-        filter.set_name("XML format (*.xml, *.odml)")
+        filter.set_name(self.XML)
         filter.add_pattern('*.xml')
         filter.add_pattern('*.odml')
         return filter
 
     def yaml_filter(self):
         filter = gtk.FileFilter()
-        filter.set_name("YAML format (*.yaml, *.odml)")
+        filter.set_name(self.YAML)
         filter.add_pattern('*.yaml')
         filter.add_pattern('*.yml')
         filter.add_pattern('*.odml')
@@ -64,7 +77,7 @@ class odMLChooserDialog(ChooserDialog):
 
     def json_filter(self):
         filter = gtk.FileFilter()
-        filter.set_name("JSON format (*.json, *.odml)")
+        filter.set_name(self.JSON)
         filter.add_pattern('*.json')
         filter.add_pattern('*.odml')
         return filter

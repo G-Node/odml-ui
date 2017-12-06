@@ -44,3 +44,16 @@ def get_parser_for_uri(uri):
         parser = 'XML'
 
     return parser
+
+
+def get_parser_for_file_type(file_type):
+    """
+    Checks whether a provided file_type is supported by the currently
+    available odML parsers.
+
+    Returns either the identified parser or XML as the fallback parser.
+    """
+    parser = file_type.upper()
+    if file_type not in allowed_parsers:
+        parser = 'XML'
+    return parser

@@ -63,6 +63,10 @@ class ValueIter(GenericIter.GenericIter):
             if ValueIter.is_python2:
                 value = value.encode('utf-8')
 
+            # Always escape "&" and "<" since they break assigning values containing
+            # these characters.
+            value = value.replace("&", "&amp;").replace("<", "&lt;")
+
             # If the value is an empty string, render a placeholder text.
             if value == '':
                 value = '<i>n/a</i>'

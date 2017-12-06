@@ -102,7 +102,7 @@ class PropertyView(TerminologyPopupTreeView):
 
     @section.setter
     def section(self, section):
-        if self._section is section:
+        if self._section is section and self.model:
             return
         self._section = section
         if self.model:
@@ -121,9 +121,13 @@ class PropertyView(TerminologyPopupTreeView):
         (model, tree_iter) = tree_selection.get_selected()
         if not tree_iter:
             return
-
         obj = model.get_object(tree_iter)
         self.on_property_select(obj)
+
+        # Always expand multi value properties when selected
+        is_multi_value = isinstance(obj, odml.property.Property) and len(obj.values) > 1
+        if is_multi_value:
+            tree_selection.get_tree_view().expand_row(model.get_path(tree_iter), False)
 
     def on_property_select(self, prop):
         """called when a different property is selected"""
@@ -365,6 +369,9 @@ class PropertyView(TerminologyPopupTreeView):
 
         cmd = commands.AppendValue(obj=obj, val=val)
         self.execute(cmd)
+
+        # Reselect updated object to update view.
+        self.select_object(obj)
 
     def add_property(self, widget, obj_prop_pair):
         """

@@ -12,6 +12,7 @@ import sys
 import odml
 import odmlui.treemodel.mixin
 
+from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION
 from odmlui.treemodel import SectionModel, ValueModel
 
 from .AttributeView import AttributeView
@@ -82,21 +83,9 @@ ui_info = \
 </ui>'''
 
 
-license_lgpl = \
-    '''This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public License as
-published by the Free Software Foundation; either version 3 of the
-License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
-
-You should have received a copy of the GNU Library General Public
-License along with the Gnome Library; see the file COPYING.LIB.  If not,
-write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.\n'''
+license = ""
+with open("LICENSE") as f:
+    license = f.read()
 
 
 def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
@@ -119,7 +108,7 @@ def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
 
 
 class EditorWindow(gtk.Window):
-    odMLHomepage = "http://www.g-node.org/projects/odml"
+    odMLHomepage = HOMEPAGE
     registry = DocumentRegistry()
     editors = set()
     welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty",
@@ -422,14 +411,13 @@ class EditorWindow(gtk.Window):
 
         dialog = gtk.AboutDialog()
         dialog.set_name("odMLEditor")
-        dialog.set_copyright("\302\251 Copyright 2010-2011 G-Node")
-        dialog.set_authors([
-            "Christian Kellner <kellner@bio.lmu.de>",
-            "Hagen Fritsch <fritsch+odml@in.tum.de>",
-            ])
+        dialog.set_copyright(COPYRIGHT)
+        dialog.set_authors(AUTHOR.split(", "))
         dialog.set_website(self.odMLHomepage)
-        dialog.set_license(license_lgpl)
+        dialog.set_license(license)
         dialog.set_logo(logo)
+        dialog.set_version(VERSION)
+        dialog.set_comments("Contact <%s>" % CONTACT)
 
         dialog.set_transient_for(self)
 

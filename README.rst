@@ -26,10 +26,10 @@ For Ubuntu-based distributions:
 For Fedora-based distributions:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* :code:`sudo yum install gtk3`
-* :code:`sudo yum install pygobject3`
-* For Python 3, :code:`sudo yum install python3-gobject`
-* For Python 2, :code:`sudo yum install python-gobject`
+* :code:`sudo dnf install gtk3`
+* :code:`sudo dnf install pygobject3`
+* For Python 3, :code:`sudo dnf install python3-gobject`
+* For Python 2, :code:`sudo dnf install python-gobject`
 
 Anaconda Dependencies
 ~~~~~~~~~~~~~~~~~~~~~

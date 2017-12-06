@@ -1,4 +1,4 @@
-VERSION = '1.4.dev'
+VERSION = '1.3.0'
 STATUS = 'Release'
 RELEASE = '%s %s' % (VERSION, STATUS)
 AUTHOR = 'Shubham Dighe, Hagen Fritsch, Christian Kellner, Jan Grewe, Achilleas Koutsou, \

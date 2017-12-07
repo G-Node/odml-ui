@@ -182,6 +182,13 @@ class PropertyView(TerminologyPopupTreeView):
 
             # first row edit event for the value, so switch the object
             if column_name != "name" and first_row:
+                # Add empty value if value list is empty.
+                if len(prop.values) < 1:
+                    cmd = commands.AppendValue(obj=prop, val=odml.Value(""))
+                    self.execute(cmd)
+                    # Force reset view model to keep up to date with changed tree model.
+                    self.model = PropertyModel.PropertyModel(section)
+
                 prop = prop.values[0]
             if not (column_name == "name" and first_row):
                 column_name = [column_name, "value"] # backup the value attribute too

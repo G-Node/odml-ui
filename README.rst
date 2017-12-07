@@ -13,7 +13,7 @@ The odML-Editor makes use of the Gtk 3+ library for the GUI, and the :code:`pyth
 Following dependencies need to be installed for the odML-Editor.
 
 * Python 2.7+ or Python 3.4+
-* odml v1.4  :code:`(pip install odml)`
+* odml v1.3  :code:`(pip install odml)` or :code:`(pip3 install odml)`
 
 For Ubuntu-based distributions:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

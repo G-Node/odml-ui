@@ -43,6 +43,15 @@ Anaconda environments require only the following packages before installing the 
     $ conda install -c conda-forge pygobject
     $ conda install -c conda-forge gdk-pixbuf
 
+MacOS using homebrew:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For Python 2 (Python 3)
+* :code:`brew install gtk+ (gtk+3)`
+* :code:`brew install pygobject (pygobject3)`
+* :code:`brew install gnome-icon-theme`
+* :code:`brew install gobject-introspection`
+
+
 Installation
 ------------
 

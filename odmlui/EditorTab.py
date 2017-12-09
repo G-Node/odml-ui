@@ -93,7 +93,8 @@ class EditorTab(object):
 
         dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
                                    gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO,
-                                   "%s has been modified. Do you want to save your changes?" % self.file_uri)
+                                   "%s has been modified. Do you want to save your changes?" %
+                                   (self.file_uri if self.file_uri is not None else "The document"))
 
         dialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         dialog.set_title("Save changes?")

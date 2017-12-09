@@ -13,6 +13,7 @@ from .SectionView import SectionView
 from .ScrolledWindow import ScrolledWindow
 
 
+
 class Table(object):
     def __init__(self, cols):
         self.table = gtk.Table(rows=1, columns=cols)
@@ -206,7 +207,7 @@ class DocumentWizard:
 
         assistant.set_title("New odML-Document wizard")
         assistant.set_default_size(-1, 500)
-
+        assistant.set_position(gtk.WIN_POS_CENTER_ALWAYS)
         assistant.connect("apply", self.apply)
         assistant.connect("close", self.cancel)
         assistant.connect("cancel", self.cancel)

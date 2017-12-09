@@ -184,8 +184,9 @@ class SectionPage(Page):
         self.pack_start(ScrolledWindow(self.view._treeview), True, True, 0)
 
     def prepare(self, assistant, prev_page):
-        self.term = terminology.terminologies.load(prev_page.data['repository'])
-        self.view.set_model(SectionModel(self.term))
+        if "repository" in prev_page.data.keys() and len(prev_page.data["repository"].strip()) > 0:
+            self.term = terminology.terminologies.load(prev_page.data['repository'])
+            self.view.set_model(SectionModel(self.term))
 
     @property
     def sections(self):
@@ -215,7 +216,7 @@ class DocumentWizard:
         IntroPage().deploy(assistant, "New Document Wizard")
 
         data_page = DataPage()
-        data_page.deploy(assistant, "Setup generic information")
+        data_page.deploy(assistant, "General document information")
         self.data_page = data_page
 
         section_page = SectionPage()

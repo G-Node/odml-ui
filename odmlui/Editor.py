@@ -779,7 +779,8 @@ class EditorWindow(gtk.Window):
         returns false if the user cancelled the action
         """
         for child in self.notebook:
-            if not isinstance(child, gtk.Label) and not child.tab.save_if_changed(): return False
+            if not isinstance(child, gtk.Label) and not child.tab.save_if_changed():
+                return False
         return True
 
     @gui_action("CloseTab", tooltip="Close the current tab", stock_id=gtk.STOCK_CLOSE, label="_Close Tab", accelerator="<control>W")
@@ -806,8 +807,8 @@ class EditorWindow(gtk.Window):
     @gui_action("Quit", tooltip="Quit", stock_id=gtk.STOCK_QUIT)
     def quit(self, action, extra=None):
         for win in self.editors:
-            if not win.save_if_changed(): return True # the event is handled and
-                                                   # won't be passed to the window
+            if not win.save_if_changed():
+                return True  # the event is handled and won't be passed to the window
         gtk.main_quit()
 
     @gui_action("NewSection", label="Add Section", tooltip="Add a section to the current selected one", stock_id="odml-add-Section")

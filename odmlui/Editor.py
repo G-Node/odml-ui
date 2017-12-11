@@ -834,7 +834,7 @@ class EditorWindow(gtk.Window):
         self._property_tv.add_value(None, (obj, None))
 
     @gui_action("Delete", tooltip="Remove the currently selected object from the document",
-                stock_id="odml_Dustbin", accelerator="Delete", label="Delete")
+                stock_id="odml_Dustbin", accelerator="<shift>Delete", label="Delete")
     def delete_object(self, action):
         widget = self.get_focus()
         for w in [self._section_tv, self._property_tv]:

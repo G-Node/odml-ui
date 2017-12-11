@@ -77,7 +77,8 @@ class EditorTab(object):
 
         returns false if the user cancelled the action
         """
-        if not self.is_modified: return True
+        if not self.is_modified:
+            return True
 
         dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
                                    gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO,

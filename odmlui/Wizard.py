@@ -68,9 +68,9 @@ class IntroPage(Page):
     complete = True
 
     def init(self):
-        label = gtk.Label("Welcome! This will guide you to the first steps of creating a new odML-Document")
+        label = gtk.Label("Welcome! This assistant will guide you trough the first " +
+                          "steps of creating a new odML-Document")
         label.set_line_wrap(True)
-#        label.show()
         self.pack_start(label, True, True, 0)
 
 

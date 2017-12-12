@@ -10,6 +10,7 @@ import platform
 import sys
 
 import odml
+from odml.terminology import CACHE_DIR
 import odmlui.treemodel.mixin
 
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
@@ -498,9 +499,15 @@ class EditorWindow(gtk.Window):
         if not self.current_tab.file_uri or self.current_tab.is_modified:
             self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
         elif self.odml_tables_available:
-            os.system("odmltables -w compare -f %s &" % self.current_tab.file_uri)
+            # odmltables accepts only odml xml files with an '.odml' file ending.
+            tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
+            tmp_file = os.path.join(CACHE_DIR, ("%s.odml" % tail))
+            odml.fileio.save(self.current_tab.document, tmp_file)
+            os.system("odmltables -w compare -f %s &" % tmp_file)
         else:
-            self._info_bar.show_info("You need Python2 and odMLTables installed to run this feature.")
+            self._info_bar.show_info("You need Python2 and odMLTables (v%s or newer) "
+                                     "installed to run this feature." %
+                                     ODMLTABLES_VERSION)
 
     @gui_action("odMLTablesConvert", tooltip="Convert document to xls or csv", label="odMLTablesConverter",
                 stock_id="INM6-convert-odml", accelerator="<control>C")
@@ -508,9 +515,15 @@ class EditorWindow(gtk.Window):
         if not self.current_tab.file_uri or self.current_tab.is_modified:
             self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
         elif self.odml_tables_available:
-            os.system("odmltables -w convert -f %s &" % self.current_tab.file_uri)
+            # odmltables accepts only odml xml files with an '.odml' file ending.
+            tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
+            tmp_file = os.path.join(CACHE_DIR, ("%s.odml" % tail))
+            odml.fileio.save(self.current_tab.document, tmp_file)
+            os.system("odmltables -w convert -f %s &" % tmp_file)
         else:
-            self._info_bar.show_info("You need Python2 and odMLTables installed to run this feature.")
+            self._info_bar.show_info("You need Python2 and odMLTables (v%s or newer) "
+                                     "installed to run this feature." %
+                                     ODMLTABLES_VERSION)
 
     @gui_action("odMLTablesFilter", tooltip="Filter document contents", label="odMLTablesFilter",
                 stock_id="INM6-filter-odml", accelerator="<control>F")
@@ -518,9 +531,15 @@ class EditorWindow(gtk.Window):
         if not self.current_tab.file_uri or self.current_tab.is_modified:
             self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
         elif self.odml_tables_available:
-            os.system("odmltables -w filter -f %s &" % self.current_tab.file_uri)
+            # odmltables accepts only odml xml files with an '.odml' file ending.
+            tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
+            tmp_file = os.path.join(CACHE_DIR, ("%s.odml" % tail))
+            odml.fileio.save(self.current_tab.document, tmp_file)
+            os.system("odmltables -w filter -f %s &" % tmp_file)
         else:
-            self._info_bar.show_info("You need Python2 and odMLTables installed to run this feature.")
+            self._info_bar.show_info("You need Python2 and odMLTables (v%s or newer) "
+                                     "installed to run this feature." %
+                                     ODMLTABLES_VERSION)
 
     def select_tab(self, tab, force_reset=False):
         """

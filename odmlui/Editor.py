@@ -507,11 +507,13 @@ class EditorWindow(gtk.Window):
     def on_validate(self, action):
         self.current_tab.validate()
 
-    @gui_action("odMLTablesCompare", tooltip="Compare entities of an odML document", label="odMLTablesCompare",
-                stock_id="INM6-compare-table", accelerator="<control>M")
+    @gui_action("odMLTablesCompare", tooltip="Compare entities of an odML document",
+                label="odMLTablesCompare", stock_id="INM6-compare-table",
+                accelerator="<control>M")
     def on_compare_entities(self, action):
         if not self.current_tab.file_uri or self.current_tab.is_modified:
-            self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
+            self._info_bar.show_info("Please validate and save "
+                                     "your document before starting odMLTables.")
         elif self.odml_tables_available:
             # odmltables accepts only odml xml files with an '.odml' file ending.
             tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
@@ -523,11 +525,13 @@ class EditorWindow(gtk.Window):
                                      "installed to run this feature." %
                                      ODMLTABLES_VERSION)
 
-    @gui_action("odMLTablesConvert", tooltip="Convert document to xls or csv", label="odMLTablesConverter",
-                stock_id="INM6-convert-odml", accelerator="<control>C")
+    @gui_action("odMLTablesConvert", tooltip="Convert document to xls or csv",
+                label="odMLTablesConverter", stock_id="INM6-convert-odml",
+                accelerator="<control>C")
     def on_convert(self, action):
         if not self.current_tab.file_uri or self.current_tab.is_modified:
-            self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
+            self._info_bar.show_info("Please validate and save "
+                                     "your document before starting odMLTables.")
         elif self.odml_tables_available:
             # odmltables accepts only odml xml files with an '.odml' file ending.
             tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
@@ -539,11 +543,13 @@ class EditorWindow(gtk.Window):
                                      "installed to run this feature." %
                                      ODMLTABLES_VERSION)
 
-    @gui_action("odMLTablesFilter", tooltip="Filter document contents", label="odMLTablesFilter",
-                stock_id="INM6-filter-odml", accelerator="<control>F")
+    @gui_action("odMLTablesFilter", tooltip="Filter document contents",
+                label="odMLTablesFilter", stock_id="INM6-filter-odml",
+                accelerator="<control>F")
     def on_filter(self, action):
         if not self.current_tab.file_uri or self.current_tab.is_modified:
-            self._info_bar.show_info("Please validate and save your document before starting odMLTables.")
+            self._info_bar.show_info("Please validate and save "
+                                     "your document before starting odMLTables.")
         elif self.odml_tables_available:
             # odmltables accepts only odml xml files with an '.odml' file ending.
             tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]

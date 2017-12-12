@@ -14,7 +14,7 @@ import odml
 import odmlui.treemodel.mixin
 from . import commands
 
-from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION
+from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
 from odmlui.treemodel import SectionModel
 
 from .InfoBar import EditorInfoBar
@@ -255,9 +255,13 @@ class EditorWindow(gtk.Window):
             has_py2 = True
 
         has_tables = False
-        if sys.platform == "linux" or sys.platform == "linux2" or sys.platform == "darwin":
-            if os.system("which odmltables") == 0:
+        try:
+            from odmltables import gui
+            from odmltables import VERSION as OTVERSION
+            if OTVERSION == ODMLTABLES_VERSION:
                 has_tables = True
+        except (ImportError, AttributeError) as e:
+            print("odMLTables not available: %s" % e)
 
         self.odml_tables_available = False
         if has_py2 and has_tables:

@@ -15,3 +15,4 @@ CLASSIFIERS = [
     'Intended Audience :: Science/Research',
     'Intended Audience :: End Users/Desktop'
 ]
+ODMLTABLES_VERSION = '1.2.0'

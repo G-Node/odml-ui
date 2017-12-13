@@ -12,21 +12,25 @@ from .ScrolledWindow import ScrolledWindow
 import odml
 import odml.terminology as terminology
 
+
 class Table(object):
     def __init__(self, cols):
         self.table = gtk.Table(rows=1, columns=cols)
         self.cols = cols
         self.rows = 0
+
     def append(self, fill=[], *cols):
         self.table.resize(rows=self.rows+1, columns=self.cols)
-        for i,widget in enumerate(cols):
+        for i, widget in enumerate(cols):
             xoptions = gtk.EXPAND | gtk.FILL if widget in fill else 0
             self.table.attach(widget, i, i+1, self.rows, self.rows+1, xoptions=xoptions)
         self.rows += 1
 
+
 class Page(gtk.VBox):
     type = gtk.ASSISTANT_PAGE_CONTENT
     complete = True
+
     def __init__(self, *args, **kargs):
         super(Page, self).__init__(*args, **kargs)
         self.set_border_width(5)
@@ -58,14 +62,17 @@ class Page(gtk.VBox):
         """
         pass
 
+
 class IntroPage(Page):
     type = gtk.ASSISTANT_PAGE_INTRO
     complete = True
+
     def init(self):
-        label = gtk.Label("Welcome! This will guide you to the first steps of creating a new odML-Document")
+        label = gtk.Label("Welcome! This assistant will guide you trough the first " +
+                          "steps of creating a new odML-Document")
         label.set_line_wrap(True)
-#        label.show()
         self.pack_start(label, True, True, 0)
+
 
 def get_username():
     import getpass
@@ -77,9 +84,11 @@ def get_username():
         pass
     return username.rstrip(",")
 
+
 def get_date():
     import datetime
     return datetime.date.today().isoformat()
+
 
 class DataPage(Page):
     def init(self):
@@ -110,6 +119,7 @@ class DataPage(Page):
         self.data = {}
         for k in self.fields:
             self.data[k.lower()] = getattr(self, k.lower()).get_text()
+
 
 class CheckableSectionView(SectionView):
     """
@@ -163,14 +173,16 @@ class CheckableSectionView(SectionView):
         if not path: return
         model.row_changed(path, model.get_iter(path))
 
+
 class SectionPage(Page):
     def init(self):
         self.view = CheckableSectionView(None)
         self.pack_start(ScrolledWindow(self.view._treeview), True, True, 0)
 
     def prepare(self, assistant, prev_page):
-        self.term = terminology.terminologies.load(prev_page.data['repository'])
-        self.view.set_model(SectionModel(self.term))
+        if "repository" in prev_page.data.keys() and len(prev_page.data["repository"].strip()) > 0:
+            self.term = terminology.terminologies.load(prev_page.data['repository'])
+            self.view.set_model(SectionModel(self.term))
 
     @property
     def sections(self):
@@ -178,10 +190,13 @@ class SectionPage(Page):
             if self.view.sections.get(sec, False):
                 yield sec
 
+
 class SummaryPage(Page):
     type = gtk.ASSISTANT_PAGE_CONFIRM
+
     def init(self):
         self.add(gtk.Label("All information has been gathered. Ready to create document."))
+
 
 class DocumentWizard:
     def __init__(self):
@@ -189,7 +204,7 @@ class DocumentWizard:
 
         assistant.set_title("New odML-Document wizard")
         assistant.set_default_size(-1, 500)
-
+        assistant.set_position(gtk.WIN_POS_CENTER_ALWAYS)
         assistant.connect("apply", self.apply)
         assistant.connect("close", self.cancel)
         assistant.connect("cancel", self.cancel)
@@ -197,7 +212,7 @@ class DocumentWizard:
         IntroPage().deploy(assistant, "New Document Wizard")
 
         data_page = DataPage()
-        data_page.deploy(assistant, "Setup generic information")
+        data_page.deploy(assistant, "General document information")
         self.data_page = data_page
 
         section_page = SectionPage()

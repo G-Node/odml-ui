@@ -779,7 +779,8 @@ class EditorWindow(gtk.Window):
         returns false if the user cancelled the action
         """
         for child in self.notebook:
-            if not isinstance(child, gtk.Label) and not child.tab.save_if_changed(): return False
+            if not isinstance(child, gtk.Label) and not child.tab.save_if_changed():
+                return False
         return True
 
     @gui_action("CloseTab", tooltip="Close the current tab", stock_id=gtk.STOCK_CLOSE, label="_Close Tab", accelerator="<control>W")
@@ -806,23 +807,25 @@ class EditorWindow(gtk.Window):
     @gui_action("Quit", tooltip="Quit", stock_id=gtk.STOCK_QUIT)
     def quit(self, action, extra=None):
         for win in self.editors:
-            if not win.save_if_changed(): return True # the event is handled and
-                                                   # won't be passed to the window
+            if not win.save_if_changed():
+                return True  # the event is handled and won't be passed to the window
         gtk.main_quit()
 
-    @gui_action("NewSection", label="Add Section", tooltip="Add a section to the current selected one", stock_id="odml-add-Section")
+    @gui_action("NewSection", label="Add Section", tooltip="Add a section to the current selected one", stock_id="odml_addSection")
     def new_section(self, action):
         obj = self._section_tv.get_selected_object()
         if obj is None:
         	obj = self.current_tab.document
         self._section_tv.add_section(None, (obj, None))
 
-    @gui_action("NewProperty", label="Add Property", tooltip="Add a property to the current section", stock_id="odml-add-Property")
+    @gui_action("NewProperty", label="Add Property", tooltip="Add a property to the current section", stock_id="odml_addProperty")
     def new_property(self, action):
         obj = self._property_tv.section
         self._property_tv.add_property(None, (obj, None))
 
-    @gui_action("NewValue", label="Add Value", tooltip="Add a value to the current selected property", stock_id="odml-add-Value")
+    @gui_action("NewValue", label="Add Value",
+                tooltip="Add a value to the current selected property",
+                stock_id="odml_addValue")
     def new_value(self, action):
         obj = self._property_tv.get_selected_object()
         if obj is None: return
@@ -830,7 +833,8 @@ class EditorWindow(gtk.Window):
             obj = obj.parent
         self._property_tv.add_value(None, (obj, None))
 
-    @gui_action("Delete", tooltip="Remove the current selected object from the document", stock_id=gtk.STOCK_DELETE, accelerator="<shift>Delete")
+    @gui_action("Delete", tooltip="Remove the currently selected object from the document",
+                stock_id="odml_Dustbin", accelerator="<shift>Delete", label="Delete")
     def delete_object(self, action):
         widget = self.get_focus()
         for w in [self._section_tv, self._property_tv]:
@@ -883,7 +887,7 @@ class EditorWindow(gtk.Window):
         """navigate to a certain object"""
         # 1. select the right tab
         self.navigate_to_document(obj.document)
-            
+
         # 2. select the corresponding section
         sec = obj
         prop = None
@@ -919,11 +923,13 @@ class EditorWindow(gtk.Window):
     def enable_redo(self, enable=True):
         self.enable_action("Redo", enable)
 
-    @gui_action("Undo", tooltip="Undo last editing action", stock_id=gtk.STOCK_UNDO, label="_Undo", accelerator="<control>Z")
+    @gui_action("Undo", tooltip="Undo last editing action", stock_id=gtk.STOCK_UNDO,
+                label="_Undo", accelerator="<control>Z")
     def undo(self, action):
         self.current_tab.command_manager.undo()
 
-    @gui_action("Redo", tooltip="Redo an undone editing action", stock_id=gtk.STOCK_REDO, label="_Redo", accelerator="<control>Y")
+    @gui_action("Redo", tooltip="Redo an undone editing action", stock_id=gtk.STOCK_REDO,
+                label="_Redo", accelerator="<control>Y")
     def redo(self, action):
         self.current_tab.command_manager.redo()
 
@@ -935,7 +941,7 @@ class EditorWindow(gtk.Window):
 
 def get_image_path():
     try:
-        filename = "./odml-gui" #__main__.__file__
+        filename = "./odml-gui"  # __main__.__file__
     except:
         filename = sys.argv[0]
 
@@ -948,9 +954,10 @@ def get_image_path():
 def register_stock_icons():
     ctrlshift = gtk.gdk.CONTROL_MASK | gtk.gdk.SHIFT_MASK
     icons = [('odml-logo', '_odML', 0, 0, ''),
-             ('odml-add-Section',  'Add _Section',  ctrlshift, ord("S"), ''),
-             ('odml-add-Property', 'Add _Property', ctrlshift, ord("P"), ''),
-             ('odml-add-Value',    'Add _Value',    ctrlshift, ord("V"), ''),
+             ('odml_addSection', 'Add _Section', ctrlshift, ord("S"), ''),
+             ('odml_addProperty', 'Add _Property', ctrlshift, ord("P"), ''),
+             ('odml_addValue', 'Add _Value', ctrlshift, ord("V"), ''),
+             ('odml_Dustbin', '_Delete', 0, 0, ''),
              ]
 
     # This method is failing (silently) in registering the stock icons.

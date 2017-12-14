@@ -59,14 +59,19 @@ class ValueIter(GenericIter.GenericIter):
         if attr == "pseudo_values":
             value = self._obj.get_display()
 
-            # Some issues with the rendering of `unicode` in Python 2 directly
-            # to Tree Column cell renderer. Hence, first encode it here.
-            if ValueIter.is_python2:
-                value = value.encode('utf-8')
-
             # If the value is an empty string, render a placeholder text.
-            if value == '':
+            if not value or value == '':
                 value = '<i>n/a</i>'
+            else:
+                # Some issues with the rendering of `unicode` in Python 2 directly
+                # to Tree Column cell renderer. Hence, first encode it here.
+                if ValueIter.is_python2:
+                    value = value.encode('utf-8')
+
+                # Always escape "&" and "<" since they break assigning values containing
+                # these characters.
+                value = value.replace("&", "&amp;").replace("<", "&lt;")
+
             return value
 
         # Return an empty string for anything lese

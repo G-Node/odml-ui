@@ -89,6 +89,7 @@ ui_info = \
     <toolitem action='odMLTablesCompare' />
     <toolitem action='odMLTablesConvert' />
     <toolitem action='odMLTablesFilter' />
+    <toolitem action='odMLTablesMerge' />
   </toolbar>
 </ui>'''
 
@@ -119,8 +120,10 @@ class EditorWindow(gtk.Window):
     odMLHomepage = HOMEPAGE
     registry = DocumentRegistry()
     editors = set()
-    welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty", "NewValue", "Delete", "CloneTab",
-                                "Map", "Validate", "odMLTablesCompare", "odMLTablesConvert", "odMLTablesFilter"]
+    welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty",
+                                "NewValue", "Delete", "CloneTab", "Map", "Validate",
+                                "odMLTablesCompare", "odMLTablesConvert",
+                                "odMLTablesFilter", "odMLTablesMerge"]
 
     def __init__(self, parent=None):
         gtk.Window.__init__(self)
@@ -513,7 +516,7 @@ class EditorWindow(gtk.Window):
 
     @gui_action("odMLTablesCompare", tooltip="Compare entities of an odML document",
                 label="odMLTablesCompare", stock_id="INM6-compare-table",
-                accelerator="<control>M")
+                accelerator="<control>E")
     def on_compare_entities(self, action):
         if not self.current_tab.file_uri or self.current_tab.is_modified:
             self._info_bar.show_info("Please validate and save "
@@ -560,6 +563,24 @@ class EditorWindow(gtk.Window):
             tmp_file = os.path.join(CACHE_DIR, ("%s.odml" % tail))
             odml.fileio.save(self.current_tab.document, tmp_file)
             os.system("odmltables -w filter -f %s &" % tmp_file)
+        else:
+            self._info_bar.show_info("You need Python2 and odMLTables (v%s or newer) "
+                                     "installed to run this feature." %
+                                     ODMLTABLES_VERSION)
+
+    @gui_action("odMLTablesMerge", tooltip="Merge odML documents",
+                label="odMLTablesMerge", stock_id="INM6-merge-odml",
+                accelerator="<control>M")
+    def on_merge(self, action):
+        if not self.current_tab.file_uri or self.current_tab.is_modified:
+            self._info_bar.show_info("Please validate and save "
+                                     "your document before starting odMLTables.")
+        elif self.odml_tables_available:
+            # odmltables accepts only odml xml files with an '.odml' file ending.
+            tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
+            tmp_file = os.path.join(CACHE_DIR, ("%s.odml" % tail))
+            odml.fileio.save(self.current_tab.document, tmp_file)
+            os.system("odmltables -w merge &")
         else:
             self._info_bar.show_info("You need Python2 and odMLTables (v%s or newer) "
                                      "installed to run this feature." %
@@ -1038,14 +1059,10 @@ def register_stock_icons():
              ('odml_addProperty', 'Add _Property', ctrlshift, ord("P"), ''),
              ('odml_addValue', 'Add _Value', ctrlshift, ord("V"), ''),
              ('odml_Dustbin', '_Delete', 0, 0, ''),
-             ('odml-add-Section',  'Add _Section',  ctrlshift, ord("S"), ''),
-             ('odml-add-Property', 'Add _Property', ctrlshift, ord("P"), ''),
-             ('odml-add-Value',    'Add _Value',    ctrlshift, ord("V"), ''),
-             ('odml_Dustbin', '_Delete', 0, 0, ''),
-             ('INM6-compare-table',      'Open odMLTables', ctrlshift, ord("T"), '')
-             ('INM6-compare-table', 'Compare_entities', ctrlshift, ord("M"), ''),
+             ('INM6-compare-table', 'Compare_entities', ctrlshift, ord("E"), ''),
              ('INM6-convert-odml', 'Convert_document', ctrlshift, ord("C"), ''),
-             ('INM6-filter-odml', 'Filter_document', ctrlshift, ord("F"), '')
+             ('INM6-filter-odml', 'Filter_document', ctrlshift, ord("F"), ''),
+             ('INM6-merge-odml', 'Merge_documents', ctrlshift, ord("M"), '')
              ]
 
     # This method is failing (silently) in registering the stock icons.

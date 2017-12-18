@@ -60,7 +60,7 @@ class ValueIter(GenericIter.GenericIter):
             value = self._obj.get_display()
 
             # If the value is an empty string, render a placeholder text.
-            if not value or value == '':
+            if not value:
                 value = '<i>n/a</i>'
             else:
                 # Some issues with the rendering of `unicode` in Python 2 directly

@@ -514,7 +514,7 @@ class EditorWindow(gtk.Window):
             odml.fileio.save(self.current_tab.document, tmp_file)
             os.system("odmltables -w compare -f %s &" % tmp_file)
         else:
-            self._info_bar.show_info("You need Python2 and odMLTables (v%s or newer) "
+            self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %
                                      ODMLTABLES_VERSION)
 
@@ -532,7 +532,7 @@ class EditorWindow(gtk.Window):
             odml.fileio.save(self.current_tab.document, tmp_file)
             os.system("odmltables -w convert -f %s &" % tmp_file)
         else:
-            self._info_bar.show_info("You need Python2 and odMLTables (v%s or newer) "
+            self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %
                                      ODMLTABLES_VERSION)
 
@@ -550,7 +550,7 @@ class EditorWindow(gtk.Window):
             odml.fileio.save(self.current_tab.document, tmp_file)
             os.system("odmltables -w filter -f %s &" % tmp_file)
         else:
-            self._info_bar.show_info("You need Python2 and odMLTables (v%s or newer) "
+            self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %
                                      ODMLTABLES_VERSION)
 
@@ -568,7 +568,7 @@ class EditorWindow(gtk.Window):
             odml.fileio.save(self.current_tab.document, tmp_file)
             os.system("odmltables -w merge &")
         else:
-            self._info_bar.show_info("You need Python2 and odMLTables (v%s or newer) "
+            self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %
                                      ODMLTABLES_VERSION)
 

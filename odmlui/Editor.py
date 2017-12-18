@@ -259,23 +259,15 @@ class EditorWindow(gtk.Window):
         vpaned.pack1(hpaned, resize=True, shrink=False)
         vpaned.pack2(frame, resize=False, shrink=True)
 
-        # Check if Python version 2 and odML-tables are available
-        has_py2 = False
-        if sys.version_info.major == 2:
-            has_py2 = True
-
-        has_tables = False
+        # Check if odML-tables is available
+        self.odml_tables_available = False
         try:
             from odmltables import gui
             from odmltables import VERSION as OTVERSION
             if OTVERSION == ODMLTABLES_VERSION:
-                has_tables = True
+                self.odml_tables_available = True
         except (ImportError, AttributeError) as e:
             print("odMLTables not available: %s" % e)
-
-        self.odml_tables_available = False
-        if has_py2 and has_tables:
-            self.odml_tables_available = True
 
         class Tab(gtk.HBox):
             """

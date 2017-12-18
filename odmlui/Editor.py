@@ -404,11 +404,7 @@ class EditorWindow(gtk.Window):
         if path == "#new":
             self.new_file()
         elif path is not None:
-            try:
-                self.load_document(path)
-            except Exception as e:
-                ErrorDialog(self, "Error while parsing '%s'" % uri_to_path(path), str(e))
-                self.welcome()
+            self.load_document(path)
 
         return True
 
@@ -457,7 +453,10 @@ class EditorWindow(gtk.Window):
     def load_document(self, uri, file_type=None):
         """open a new tab, load the document into it"""
         tab = EditorTab(self)
-        tab.load(uri)
+
+        if not tab.load(uri):
+            return
+
         self.append_tab(tab)
         return tab
 

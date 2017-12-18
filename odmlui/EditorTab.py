@@ -12,9 +12,10 @@ import odml.validation
 from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
 
 from .CommandManager import CommandManager
-from .ValidationWindow import ValidationWindow
 from .Helpers import uri_to_path, get_parser_for_uri, get_extension, \
     get_parser_for_file_type
+from .MessageDialog import ErrorDialog
+from .ValidationWindow import ValidationWindow
 
 
 class EditorTab(object):
@@ -54,7 +55,13 @@ class EditorTab(object):
         file_path = uri_to_path(uri)
         parser = get_parser_for_uri(file_path)
         odml_reader = ODMLReader(parser=parser)
-        self.document = odml_reader.from_file(open(file_path))
+        try:
+            self.document = odml_reader.from_file(file_path)
+        except Exception as e:
+            ErrorDialog(self.window, "Error parsing '%s'" % file_path, str(e))
+            if len(self.window.notebook) < 1:
+                self.window.welcome()
+            return False
 
         self.document.finalize()
         self.window.registry.add(self.document)

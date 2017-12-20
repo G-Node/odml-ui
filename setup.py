@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import glob
 import os
 
@@ -69,7 +68,7 @@ setup(name='odML-UI',
           }
       },
       install_requires=install_req,
-      scripts=['odml-gui'],
+      entry_points={'gui_scripts': ['odmlui = odmlui.__main__:run []']},
       data_files=data_files,
       long_description=description_text,
       classifiers=CLASSIFIERS,

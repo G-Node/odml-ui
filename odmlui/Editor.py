@@ -23,8 +23,8 @@ from .AttributeView import AttributeView
 from .ChooserDialog import odMLChooserDialog
 from .DocumentRegistry import DocumentRegistry
 from .EditorTab import EditorTab
-from .Helpers import uri_to_path, get_extension, \
-    get_parser_for_file_type, get_parser_for_uri
+from .Helpers import uri_to_path, get_extension, get_parser_for_file_type, \
+    get_parser_for_uri, get_conda_root
 from .InfoBar import EditorInfoBar
 from .MessageDialog import ErrorDialog, DecisionDialog
 from .NavigationBar import NavigationBar
@@ -103,12 +103,25 @@ if not os.path.exists(CACHE_DIR):
         if not os.path.exists(CACHE_DIR):
             raise
 
+# Quick and dirty to find out if Anaconda is being used and where it installed
+# all the goodies we need. Not robust but good enough for now.
+conda_env_root = get_conda_root()  # root of the currently active Anaconda environment
+
+
+# Finding package root for license file and custom icons
+package_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+
 # Loading text from license file
 lic_name = "LICENSE"
 
 lic_paths = [os.path.join(os.path.dirname(__file__), lic_name),
+             os.path.join(package_root, lic_name),
+             os.path.join(package_root, 'share', 'odmlui', lic_name),
              os.path.join('usr', 'share', 'odmlui', lic_name),
              os.path.join('usr', 'local', 'share', 'odmlui', lic_name)]
+
+if conda_env_root:
+    lic_paths.append(os.path.join(conda_env_root, 'share', 'odmlui', lic_name))
 
 license = ""
 for lic in lic_paths:

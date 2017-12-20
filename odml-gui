@@ -1,4 +1,4 @@
-#!python
+#!/usr/bin/env python
 from odmlui import __main__
 
 if __name__ == '__main__':

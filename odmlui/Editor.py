@@ -1,5 +1,6 @@
 import os
 import platform
+import sys
 
 from gi import pygtkcompat
 
@@ -92,6 +93,11 @@ ui_info = \
   </toolbar>
 </ui>'''
 
+# Handle loading from python virtual environments
+env_root = ""
+if hasattr(sys, 'prefix'):
+    env_root = sys.prefix
+
 
 # See CACHE_DIR comment in the import section.
 CACHE_DIR = os.path.join(tempfile.gettempdir(), "odml.cache")
@@ -117,6 +123,7 @@ lic_name = "LICENSE"
 lic_paths = [os.path.join(os.path.dirname(__file__), lic_name),
              os.path.join(package_root, lic_name),
              os.path.join(package_root, 'share', 'odmlui', lic_name),
+             os.path.join(env_root, 'share', 'odmlui', lic_name),
              os.path.join('usr', 'share', 'odmlui', lic_name),
              os.path.join('usr', 'local', 'share', 'odmlui', lic_name)]
 
@@ -1047,6 +1054,9 @@ class EditorWindow(gtk.Window):
 def get_img_path(icon_name):
     paths = [os.path.join(package_root, 'images'),
              os.path.join(package_root, 'share', 'pixmaps')]
+
+    if env_root:
+        paths.append(os.path.join(env_root, 'share', 'pixmaps').rstrip())
 
     if conda_env_root:
         paths.append(os.path.join(conda_env_root, 'share').rstrip())

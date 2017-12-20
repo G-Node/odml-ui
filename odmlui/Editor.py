@@ -1056,6 +1056,32 @@ class EditorWindow(gtk.Window):
     def execute(self, cmd):
         return self.current_tab.command_manager.execute(cmd)
 
+
+# Dependent on python environment and installation used, default gtk
+# and custom icons will be found at different locations.
+def get_img_path(icon_name):
+    paths = [os.path.join(package_root, 'images'),
+             os.path.join(package_root, 'share', 'pixmaps')]
+
+    if conda_env_root:
+        paths.append(os.path.join(conda_env_root, 'share').rstrip())
+
+    paths.append(os.path.join('share', 'pixmaps'))
+    paths.append(os.path.join('usr', 'share', 'pixmaps'))
+    paths.append(os.path.join('usr', 'local', 'share', 'pixmaps'))
+
+    found = None
+    for check_path in paths:
+        for dp, dn, fn in os.walk(check_path):
+            for fname in [f for f in fn if f == icon_name]:
+                found = dp
+                break
+        if found:
+            break
+
+    return found
+
+
 def get_image_path():
     try:
         filename = "./odml-gui"  # __main__.__file__

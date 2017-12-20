@@ -1082,19 +1082,6 @@ def get_img_path(icon_name):
     return found
 
 
-def get_image_path():
-    try:
-        filename = "./odml-gui"  # __main__.__file__
-    except:
-        filename = sys.argv[0]
-
-    path = os.path.join(os.path.dirname(filename), 'images')
-    other_paths = ['/usr/share/pixmaps', '/usr/local/share/pixmaps', 'share/pixmaps']
-    while not os.path.exists(path):
-        path = other_paths.pop()
-    return path
-
-
 def register_stock_icons():
     ctrlshift = gtk.gdk.CONTROL_MASK | gtk.gdk.SHIFT_MASK
     icons = [('odml-logo', '_odML', 0, 0, ''),

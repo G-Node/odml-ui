@@ -1,5 +1,7 @@
-
+import json
 import os
+import subprocess
+import sys
 
 from odml.tools.odmlparser import allowed_parsers
 
@@ -57,3 +59,27 @@ def get_parser_for_file_type(file_type):
     if file_type not in allowed_parsers:
         parser = 'XML'
     return parser
+
+
+def get_conda_root():
+    """
+    Checks for an active Anaconda environment.
+
+    :return: Either the root of an active Anaconda environment or an empty string.
+    """
+    root_path = ""
+    try:
+        conda_json = subprocess.check_output("conda info --json",
+                                             shell=True, stderr=subprocess.PIPE)
+        if sys.version_info.major > 2:
+            conda_json = conda_json.decode("utf-8")
+
+        dec = json.JSONDecoder()
+        root_path = dec.decode(conda_json)['default_prefix']
+        if sys.version_info.major < 3:
+            root_path = str(root_path)
+
+    except Exception as ex:
+        print("[Info] Conda check: %s" % ex)
+
+    return root_path

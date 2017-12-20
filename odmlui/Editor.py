@@ -1104,12 +1104,20 @@ def register_stock_icons():
     factory = gtk.IconFactory()
     factory.add_default()
 
-    img_dir = get_image_path()
     for stock_icon in icons:
         icon_name = stock_icon[0]
-        img_path = os.path.join(img_dir, "%s.png" % icon_name)
 
         try:
+            # Dependent on python environment and installation used, default gtk
+            # and custom icons will be found at different locations.
+            name = "%s.%s" % (icon_name, "png")
+
+            img_dir = get_img_path(name)
+            if not img_dir:
+                print("[Warning] Icon %s not found in supported paths" % name)
+                continue
+
+            img_path = os.path.join(img_dir, name)
             icon = load_pixbuf(img_path)
             icon_set = gtk.IconSet(icon)
 
@@ -1121,7 +1129,8 @@ def register_stock_icons():
             factory.add(icon_name, icon_set)
 
         except gobject.GError as error:
-            print('Failed to load icon', icon_name, error)
+            print('[Warning] Failed to load icon', icon_name, error)
+
 
 
 def load_pixbuf(path):
@@ -1129,13 +1138,14 @@ def load_pixbuf(path):
         pixbuf = gtk.gdk.pixbuf_new_from_file(path)
         transparent = pixbuf.add_alpha(False, 255, 255, 255)
         return transparent
-    except:
+    except Exception as exc:
+        print("[Warning] Pixbuf loading exception: %s" % exc)
         return None
 
 
 def load_icon_pixbufs(prefix):
     icons = []
-    img_dir = get_image_path()
+    img_dir = get_img_path(prefix)
     files = os.listdir(img_dir)
     for f in files:
         if f.startswith(prefix):

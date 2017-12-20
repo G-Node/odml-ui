@@ -1,13 +1,13 @@
+import os
+import platform
+
 from gi import pygtkcompat
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-import gobject
 import gtk
-import os
-import platform
-import sys
+import gobject
 
 import odml
 # Currently odml.terminology does not longer support CACHE_DIR
@@ -289,7 +289,7 @@ class EditorWindow(gtk.Window):
             if OTVERSION == ODMLTABLES_VERSION:
                 self.odml_tables_available = True
         except (ImportError, AttributeError) as e:
-            print("odMLTables not available: %s" % e)
+            print("[Info] odMLTables not available: %s" % e)
 
         class Tab(gtk.HBox):
             """
@@ -1068,6 +1068,13 @@ def get_img_path(icon_name):
 
 
 def register_stock_icons():
+    # conda environments might not have access to the system stock items.
+    # Therefore update the IconTheme search path.
+    if conda_env_root:
+        print("[Info] Updating IconTheme search path")
+        icon_theme = gtk.icon_theme_get_default()
+        icon_theme.prepend_search_path(os.path.join(conda_env_root, "share", "icons"))
+
     ctrlshift = gtk.gdk.CONTROL_MASK | gtk.gdk.SHIFT_MASK
     icons = [('odml-logo', '_odML', 0, 0, ''),
              ('odml_addSection', 'Add _Section', ctrlshift, ord("S"), ''),

@@ -1159,7 +1159,13 @@ def load_pixbuf(path):
 
 def load_icon_pixbufs(prefix):
     icons = []
-    img_dir = get_img_path(prefix)
+
+    # Dirty fix for loading the odml-logo.
+    get_icon = prefix
+    if prefix == 'odml-logo':
+        get_icon = "%s.png" % prefix
+
+    img_dir = get_img_path(get_icon)
     if img_dir:
         files = os.listdir(img_dir)
         for f in files:

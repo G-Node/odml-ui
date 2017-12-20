@@ -51,7 +51,8 @@ packages = [
 
 install_req = ["odml>=1.3.3"]
 
-data_files = [('share/pixmaps', glob.glob(os.path.join("images", "*")))]
+data_files = [('share/pixmaps', glob.glob(os.path.join("images", "*"))),
+              ('share/odmlui', ['LICENSE'])]
 
 setup(name='odML-UI',
       version=VERSION,

@@ -103,10 +103,19 @@ if not os.path.exists(CACHE_DIR):
         if not os.path.exists(CACHE_DIR):
             raise
 
+# Loading text from license file
+lic_name = "LICENSE"
+
+lic_paths = [os.path.join(os.path.dirname(__file__), lic_name),
+             os.path.join('usr', 'share', 'odmlui', lic_name),
+             os.path.join('usr', 'local', 'share', 'odmlui', lic_name)]
 
 license = ""
-with open("LICENSE") as f:
-    license = f.read()
+for lic in lic_paths:
+    if os.path.isfile(lic):
+        with open(lic) as f:
+            license = f.read()
+            break
 
 
 def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):

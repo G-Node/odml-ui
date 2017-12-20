@@ -1146,11 +1146,12 @@ def load_pixbuf(path):
 def load_icon_pixbufs(prefix):
     icons = []
     img_dir = get_img_path(prefix)
-    files = os.listdir(img_dir)
-    for f in files:
-        if f.startswith(prefix):
-            abs_path = os.path.join(img_dir, f)
-            icon = load_pixbuf(abs_path)
-            if icon:
-                icons.append(icon)
+    if img_dir:
+        files = os.listdir(img_dir)
+        for f in files:
+            if f.startswith(prefix):
+                abs_path = os.path.join(img_dir, f)
+                icon = load_pixbuf(abs_path)
+                if icon:
+                    icons.append(icon)
     return icons

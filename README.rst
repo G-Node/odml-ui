@@ -42,6 +42,7 @@ Anaconda environments require only the following packages before installing the 
     $ conda install -c pkgw/label/superseded gtk3
     $ conda install -c conda-forge pygobject
     $ conda install -c conda-forge gdk-pixbuf
+    $ conda install -c pkgw-forge adwaita-icon-theme
 
 MacOS using homebrew:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

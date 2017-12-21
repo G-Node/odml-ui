@@ -247,9 +247,9 @@ class DocumentWizard:
             setattr(doc, k, v)
 
         # copy all selected sections from the terminology
-        term = self.section_page.term
-        if term:
-            term._assoc_sec = doc # set the associated section
+        if hasattr(self.section_page, 'term') and self.section_page.term:
+            term = self.section_page.term
+            term._assoc_sec = doc  # set the associated section
             for sec in term.itersections(recursive=True):
                 if not sec in self.section_page.sections:
                     continue

@@ -595,7 +595,7 @@ class EditorWindow(gtk.Window):
             tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
             tmp_file = os.path.join(CACHE_DIR, ("%s.odml" % tail))
             odml.fileio.save(self.current_tab.document, tmp_file)
-            os.system("odmltables -w merge &")
+            os.system("odmltables -w merge -f %s &" % tmp_file)
         else:
             self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %

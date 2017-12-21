@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 
+from odml import fileio
 from odml.tools.odmlparser import allowed_parsers
 
 try:  # Python 3
@@ -83,3 +84,28 @@ def get_conda_root():
         print("[Info] Conda check: %s" % ex)
 
     return root_path
+
+
+def run_odmltables(file_uri, save_dir, odml_doc, odmltables_wizard):
+    """
+    Saves an odML document to a provided folder with the file
+    ending '.odml' in format 'XML' to ensure an odmltables
+    supported file. It then executes odmltables with the provided wizard
+    and the created file.
+
+    :param file_uri: File URI of the odML document that is handed over to
+                     odmltables.
+    :param save_dir: Directory where the temporary file is saved to.
+    :param odml_doc: An odML document.
+    :param odmltables_wizard: supported values are 'compare', 'convert',
+                              'filter' and 'merge'.
+    """
+
+    tail = os.path.split(uri_to_path(file_uri))[1]
+    tmp_file = os.path.join(save_dir, ("%s.odml" % tail))
+    fileio.save(odml_doc, tmp_file)
+
+    try:
+        os.system("odmltables -w %s -f %s &" % (odmltables_wizard, tmp_file))
+    except Exception as exc:
+        print("[Warning] Error running odml-tables: %s" % exc)

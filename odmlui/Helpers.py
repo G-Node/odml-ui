@@ -1,6 +1,9 @@
-
+import json
 import os
+import subprocess
+import sys
 
+from odml import fileio
 from odml.tools.odmlparser import allowed_parsers
 
 try:  # Python 3
@@ -57,3 +60,52 @@ def get_parser_for_file_type(file_type):
     if file_type not in allowed_parsers:
         parser = 'XML'
     return parser
+
+
+def get_conda_root():
+    """
+    Checks for an active Anaconda environment.
+
+    :return: Either the root of an active Anaconda environment or an empty string.
+    """
+    root_path = ""
+    try:
+        conda_json = subprocess.check_output("conda info --json",
+                                             shell=True, stderr=subprocess.PIPE)
+        if sys.version_info.major > 2:
+            conda_json = conda_json.decode("utf-8")
+
+        dec = json.JSONDecoder()
+        root_path = dec.decode(conda_json)['default_prefix']
+        if sys.version_info.major < 3:
+            root_path = str(root_path)
+
+    except Exception as ex:
+        print("[Info] Conda check: %s" % ex)
+
+    return root_path
+
+
+def run_odmltables(file_uri, save_dir, odml_doc, odmltables_wizard):
+    """
+    Saves an odML document to a provided folder with the file
+    ending '.odml' in format 'XML' to ensure an odmltables
+    supported file. It then executes odmltables with the provided wizard
+    and the created file.
+
+    :param file_uri: File URI of the odML document that is handed over to
+                     odmltables.
+    :param save_dir: Directory where the temporary file is saved to.
+    :param odml_doc: An odML document.
+    :param odmltables_wizard: supported values are 'compare', 'convert',
+                              'filter' and 'merge'.
+    """
+
+    tail = os.path.split(uri_to_path(file_uri))[1]
+    tmp_file = os.path.join(save_dir, ("%s.odml" % tail))
+    fileio.save(odml_doc, tmp_file)
+
+    try:
+        subprocess.Popen(['odmltables', '-w', odmltables_wizard, '-f', tmp_file])
+    except Exception as exc:
+        print("[Warning] Error running odml-tables: %s" % exc)

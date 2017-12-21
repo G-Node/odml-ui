@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import glob
 import os
 
@@ -49,9 +48,10 @@ packages = [
     'odmlui.treemodel'
 ]
 
-install_req = ["odml==1.3.*"]
+install_req = ["odml>=1.3.3"]
 
-data_files = [('share/pixmaps', glob.glob(os.path.join("images", "*")))]
+data_files = [('share/pixmaps', glob.glob(os.path.join("images", "*"))),
+              ('share/odmlui', ['LICENSE'])]
 
 setup(name='odML-UI',
       version=VERSION,
@@ -68,7 +68,7 @@ setup(name='odML-UI',
           }
       },
       install_requires=install_req,
-      scripts=['odml-gui'],
+      entry_points={'gui_scripts': ['odmlui = odmlui.__main__:run []']},
       data_files=data_files,
       long_description=description_text,
       classifiers=CLASSIFIERS,

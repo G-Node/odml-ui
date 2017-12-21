@@ -106,6 +106,6 @@ def run_odmltables(file_uri, save_dir, odml_doc, odmltables_wizard):
     fileio.save(odml_doc, tmp_file)
 
     try:
-        os.system("odmltables -w %s -f %s &" % (odmltables_wizard, tmp_file))
+        subprocess.Popen(['odmltables', '-w', odmltables_wizard, '-f', tmp_file])
     except Exception as exc:
         print("[Warning] Error running odml-tables: %s" % exc)

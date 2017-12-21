@@ -536,65 +536,41 @@ class EditorWindow(gtk.Window):
     def on_validate(self, action):
         self.current_tab.validate()
 
-    @gui_action("odMLTablesCompare", tooltip="Compare entities of an odML document",
-                label="odMLTablesCompare", stock_id="INM6-compare-table",
-                accelerator="<control>E")
-    def on_compare_entities(self, action):
+    def handle_odmltables(self, wizard):
         if not self.current_tab.file_uri or self.current_tab.is_modified:
             self._info_bar.show_info("Please validate and save "
                                      "your document before starting odMLTables.")
         elif self.odml_tables_available:
             run_odmltables(self.current_tab.file_uri, CACHE_DIR,
-                            self.current_tab.document, "compare")
+                            self.current_tab.document, wizard)
         else:
             self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %
                                      ODMLTABLES_VERSION)
+
+    @gui_action("odMLTablesCompare", tooltip="Compare entities of an odML document",
+                label="odMLTablesCompare", stock_id="INM6-compare-table",
+                accelerator="<control>E")
+    def on_compare_entities(self, action):
+        self.handle_odmltables("compare")
 
     @gui_action("odMLTablesConvert", tooltip="Convert document to xls or csv",
                 label="odMLTablesConverter", stock_id="INM6-convert-odml",
                 accelerator="<control>C")
     def on_convert(self, action):
-        if not self.current_tab.file_uri or self.current_tab.is_modified:
-            self._info_bar.show_info("Please validate and save "
-                                     "your document before starting odMLTables.")
-        elif self.odml_tables_available:
-            run_odmltables(self.current_tab.file_uri, CACHE_DIR,
-                            self.current_tab.document, "convert")
-        else:
-            self._info_bar.show_info("You need odMLTables (v%s or newer) "
-                                     "installed to run this feature." %
-                                     ODMLTABLES_VERSION)
+        self.handle_odmltables("convert")
 
     @gui_action("odMLTablesFilter", tooltip="Filter document contents",
                 label="odMLTablesFilter", stock_id="INM6-filter-odml",
                 accelerator="<control>F")
     def on_filter(self, action):
-        if not self.current_tab.file_uri or self.current_tab.is_modified:
-            self._info_bar.show_info("Please validate and save "
-                                     "your document before starting odMLTables.")
-        elif self.odml_tables_available:
-            run_odmltables(self.current_tab.file_uri, CACHE_DIR,
-                            self.current_tab.document, "filter")
-        else:
-            self._info_bar.show_info("You need odMLTables (v%s or newer) "
-                                     "installed to run this feature." %
-                                     ODMLTABLES_VERSION)
+        self.handle_odmltables("filter")
 
     @gui_action("odMLTablesMerge", tooltip="Merge odML documents",
                 label="odMLTablesMerge", stock_id="INM6-merge-odml",
                 accelerator="<control>M")
     def on_merge(self, action):
-        if not self.current_tab.file_uri or self.current_tab.is_modified:
-            self._info_bar.show_info("Please validate and save "
-                                     "your document before starting odMLTables.")
-        elif self.odml_tables_available:
-            run_odmltables(self.current_tab.file_uri, CACHE_DIR,
-                            self.current_tab.document, "merge")
-        else:
-            self._info_bar.show_info("You need odMLTables (v%s or newer) "
-                                     "installed to run this feature." %
-                                     ODMLTABLES_VERSION)
+        self.handle_odmltables("merge")
 
     def select_tab(self, tab, force_reset=False):
         """

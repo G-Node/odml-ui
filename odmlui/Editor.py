@@ -29,8 +29,8 @@ from .ChooserDialog import odMLChooserDialog
 from .EditorTab import EditorTab
 from .DocumentRegistry import DocumentRegistry
 from .Wizard import DocumentWizard
-from .Helpers import uri_exists, uri_to_path, get_extension, \
-    get_parser_for_file_type, get_parser_for_uri, get_conda_root
+from .Helpers import uri_to_path, get_extension, get_parser_for_file_type, \
+get_parser_for_uri, get_conda_root, run_odmltables
 from .MessageDialog import ErrorDialog, DecisionDialog
 
 gtk.gdk.threads_init()
@@ -544,11 +544,8 @@ class EditorWindow(gtk.Window):
             self._info_bar.show_info("Please validate and save "
                                      "your document before starting odMLTables.")
         elif self.odml_tables_available:
-            # odmltables accepts only odml xml files with an '.odml' file ending.
-            tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
-            tmp_file = os.path.join(CACHE_DIR, ("%s.odml" % tail))
-            odml.fileio.save(self.current_tab.document, tmp_file)
-            os.system("odmltables -w compare -f %s &" % tmp_file)
+            run_odmltables(self.current_tab.file_uri, CACHE_DIR,
+                            self.current_tab.document, "compare")
         else:
             self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %
@@ -562,11 +559,8 @@ class EditorWindow(gtk.Window):
             self._info_bar.show_info("Please validate and save "
                                      "your document before starting odMLTables.")
         elif self.odml_tables_available:
-            # odmltables accepts only odml xml files with an '.odml' file ending.
-            tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
-            tmp_file = os.path.join(CACHE_DIR, ("%s.odml" % tail))
-            odml.fileio.save(self.current_tab.document, tmp_file)
-            os.system("odmltables -w convert -f %s &" % tmp_file)
+            run_odmltables(self.current_tab.file_uri, CACHE_DIR,
+                            self.current_tab.document, "convert")
         else:
             self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %
@@ -580,11 +574,8 @@ class EditorWindow(gtk.Window):
             self._info_bar.show_info("Please validate and save "
                                      "your document before starting odMLTables.")
         elif self.odml_tables_available:
-            # odmltables accepts only odml xml files with an '.odml' file ending.
-            tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
-            tmp_file = os.path.join(CACHE_DIR, ("%s.odml" % tail))
-            odml.fileio.save(self.current_tab.document, tmp_file)
-            os.system("odmltables -w filter -f %s &" % tmp_file)
+            run_odmltables(self.current_tab.file_uri, CACHE_DIR,
+                            self.current_tab.document, "filter")
         else:
             self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %
@@ -598,11 +589,8 @@ class EditorWindow(gtk.Window):
             self._info_bar.show_info("Please validate and save "
                                      "your document before starting odMLTables.")
         elif self.odml_tables_available:
-            # odmltables accepts only odml xml files with an '.odml' file ending.
-            tail = os.path.split(uri_to_path(self.current_tab.file_uri))[1]
-            tmp_file = os.path.join(CACHE_DIR, ("%s.odml" % tail))
-            odml.fileio.save(self.current_tab.document, tmp_file)
-            os.system("odmltables -w merge -f %s &" % tmp_file)
+            run_odmltables(self.current_tab.file_uri, CACHE_DIR,
+                            self.current_tab.document, "merge")
         else:
             self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %

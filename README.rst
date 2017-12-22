@@ -26,10 +26,10 @@ For Ubuntu-based distributions:
 For Fedora-based distributions:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* :code:`sudo yum install gtk3`
-* :code:`sudo yum install pygobject3`
-* For Python 3, :code:`sudo yum install python3-gobject`
-* For Python 2, :code:`sudo yum install python-gobject`
+* :code:`sudo dnf install gtk3`
+* :code:`sudo dnf install pygobject3`
+* For Python 3, :code:`sudo dnf install python3-gobject`
+* For Python 2, :code:`sudo dnf install python-gobject`
 
 Anaconda Dependencies
 ~~~~~~~~~~~~~~~~~~~~~
@@ -42,6 +42,15 @@ Anaconda environments require only the following packages before installing the 
     $ conda install -c pkgw/label/superseded gtk3
     $ conda install -c conda-forge pygobject
     $ conda install -c conda-forge gdk-pixbuf
+
+MacOS using homebrew:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For Python 2 (Python 3)
+* :code:`brew install gtk+ (gtk+3)`
+* :code:`brew install pygobject (pygobject3)`
+* :code:`brew install gnome-icon-theme`
+* :code:`brew install gobject-introspection`
+
 
 Installation
 ------------

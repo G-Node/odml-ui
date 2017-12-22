@@ -12,7 +12,7 @@ from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
 
 from .CommandManager import CommandManager
 from .Helpers import uri_to_path, get_parser_for_uri, get_extension, \
-                        create_pseudo_values, get_parser_for_file_type
+    create_pseudo_values, get_parser_for_file_type
 from .MessageDialog import ErrorDialog
 from .treemodel import event
 from .ValidationWindow import ValidationWindow
@@ -63,7 +63,9 @@ class EditorTab(object):
         try:
             self.document = odml_reader.from_file(file_path)
         except Exception as e:
-            ErrorDialog(None, "Error while parsing '%s'" % file_path, str(e))
+            ErrorDialog(self.window, "Error parsing '%s'" % file_path, str(e))
+            if len(self.window.notebook) < 1:
+                self.window.welcome()
             return False
 
         self.document.finalize()
@@ -93,7 +95,8 @@ class EditorTab(object):
 
         dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
                                    gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO,
-                                   "%s has been modified. Do you want to save your changes?" % self.file_uri)
+                                   "%s has been modified. Do you want to save your changes?" %
+                                   (self.file_uri if self.file_uri is not None else "The document"))
 
         dialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         dialog.set_title("Save changes?")

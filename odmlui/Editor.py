@@ -395,11 +395,7 @@ class EditorWindow(gtk.Window):
         if path == "#new":
             self.new_file()
         elif path is not None:
-            try:
-                self.load_document(path)
-            except Exception as e:
-                ErrorDialog(self, "Error while parsing '%s'" % uri_to_path(path), str(e))
-                self.welcome()
+            self.load_document(path)
 
         return True
 
@@ -450,6 +446,7 @@ class EditorWindow(gtk.Window):
         if not tab.load(uri):  # Close tab upon parsing errors
             tab.close()
             return
+
         self.append_tab(tab)
         return tab
 
@@ -785,7 +782,7 @@ class EditorWindow(gtk.Window):
 
     @gui_action("NewSection", label="Add Section",
                 tooltip="Add a section to the current selected one",
-                stock_id="odml-add-Section")
+                stock_id="odml_addSection")
     def new_section(self, action):
         obj = self._section_tv.get_selected_object()
         if obj is None:
@@ -794,14 +791,14 @@ class EditorWindow(gtk.Window):
 
     @gui_action("NewProperty", label="Add Property",
                 tooltip="Add a property to the current section",
-                stock_id="odml-add-Property")
+                stock_id="odml_addProperty")
     def new_property(self, action):
         obj = self._property_tv.section
         self._property_tv.add_property(None, (obj, None))
 
     @gui_action("NewValue", label="Add Value",
                 tooltip="Add a value to the current selected property",
-                stock_id="odml-add-Value")
+                stock_id="odml_addValue")
     def new_value(self, action):
         obj = self._property_tv.get_selected_object()
         if obj is None:
@@ -810,8 +807,8 @@ class EditorWindow(gtk.Window):
             obj = obj.parent
         self._property_tv.add_value(None, (obj, None))
 
-    @gui_action("Delete", tooltip="Remove the current selected object from the document",
-                stock_id=gtk.STOCK_DELETE, accelerator="<shift>Delete")
+    @gui_action("Delete", tooltip="Remove the currently selected object from the document",
+                stock_id="odml_Dustbin", accelerator="<shift>Delete", label="Delete")
     def delete_object(self, action):
         widget = self.get_focus()
         for w in [self._section_tv, self._property_tv]:
@@ -932,9 +929,10 @@ def get_image_path():
 def register_stock_icons():
     ctrlshift = gtk.gdk.CONTROL_MASK | gtk.gdk.SHIFT_MASK
     icons = [('odml-logo', '_odML', 0, 0, ''),
-             ('odml-add-Section',  'Add _Section',  ctrlshift, ord("S"), ''),
-             ('odml-add-Property', 'Add _Property', ctrlshift, ord("P"), ''),
-             ('odml-add-Value',    'Add _Value',    ctrlshift, ord("V"), ''),
+             ('odml_addSection', 'Add _Section', ctrlshift, ord("S"), ''),
+             ('odml_addProperty', 'Add _Property', ctrlshift, ord("P"), ''),
+             ('odml_addValue', 'Add _Value', ctrlshift, ord("V"), ''),
+             ('odml_Dustbin', '_Delete', 0, 0, ''),
              ]
 
     # This method is failing (silently) in registering the stock icons.

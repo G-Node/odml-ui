@@ -13,6 +13,7 @@ from .SectionView import SectionView
 from .ScrolledWindow import ScrolledWindow
 
 
+
 class Table(object):
     def __init__(self, cols):
         self.table = gtk.Table(rows=1, columns=cols)
@@ -68,9 +69,9 @@ class IntroPage(Page):
     complete = True
 
     def init(self):
-        label = gtk.Label("Welcome! This will guide you to the first steps of creating a new odML-Document")
+        label = gtk.Label("Welcome! This assistant will guide you trough the first " +
+                          "steps of creating a new odML-Document")
         label.set_line_wrap(True)
-#        label.show()
         self.pack_start(label, True, True, 0)
 
 
@@ -183,8 +184,9 @@ class SectionPage(Page):
         self.pack_start(ScrolledWindow(self.view._treeview), True, True, 0)
 
     def prepare(self, assistant, prev_page):
-        self.term = terminology.terminologies.load(prev_page.data['repository'])
-        self.view.set_model(SectionModel(self.term))
+        if "repository" in prev_page.data.keys() and len(prev_page.data["repository"].strip()) > 0:
+            self.term = terminology.terminologies.load(prev_page.data['repository'])
+            self.view.set_model(SectionModel(self.term))
 
     @property
     def sections(self):
@@ -206,7 +208,7 @@ class DocumentWizard:
 
         assistant.set_title("New odML-Document wizard")
         assistant.set_default_size(-1, 500)
-
+        assistant.set_position(gtk.WIN_POS_CENTER_ALWAYS)
         assistant.connect("apply", self.apply)
         assistant.connect("close", self.cancel)
         assistant.connect("cancel", self.cancel)
@@ -214,7 +216,7 @@ class DocumentWizard:
         IntroPage().deploy(assistant, "New Document Wizard")
 
         data_page = DataPage()
-        data_page.deploy(assistant, "Setup generic information")
+        data_page.deploy(assistant, "General document information")
         self.data_page = data_page
 
         section_page = SectionPage()
@@ -248,8 +250,8 @@ class DocumentWizard:
             setattr(doc, k, v)
 
         # copy all selected sections from the terminology
-        term = self.section_page.term
-        if term:
+        if hasattr(self.section_page, 'term') and self.section_page.term:
+            term = self.section_page.term
             term._assoc_sec = doc  # set the associated section
             for sec in term.itersections(recursive=True):
                 if sec not in self.section_page.sections:

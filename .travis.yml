@@ -67,8 +67,11 @@ install:
       source activate condaenv;
     fi
   - which python
-  - python setup.py install
+# Leave deactivated until the required python-odml package is available
+#  - python setup.py install
 
 script:
   - which python
-  - python setup.py test
+# Leave deactivated until the required python-odml package is available
+#  - python setup.py test
+  - python -m unittest discover test

@@ -119,16 +119,23 @@ package_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir
 
 # Loading text from license file
 lic_name = "LICENSE"
+share_lic_name = os.path.join('share', 'odmlui', lic_name)
 
 lic_paths = [os.path.join(os.path.dirname(__file__), lic_name),
              os.path.join(package_root, lic_name),
-             os.path.join(package_root, 'share', 'odmlui', lic_name),
-             os.path.join(env_root, 'share', 'odmlui', lic_name),
-             os.path.join('usr', 'share', 'odmlui', lic_name),
-             os.path.join('usr', 'local', 'share', 'odmlui', lic_name)]
+             os.path.join(package_root, share_lic_name),
+             os.path.join(env_root, share_lic_name),
+             os.path.join('usr', share_lic_name),
+             os.path.join('usr', 'local', share_lic_name)]
+
+if os.getenv('HOME'):
+    lic_paths.append(os.path.join(os.getenv('HOME'), '.local', share_lic_name))
+
+if os.getenv('USERPROFILE'):
+    lic_paths.append(os.path.join(os.getenv('USERPROFILE'), '.local', share_lic_name))
 
 if conda_env_root:
-    lic_paths.append(os.path.join(conda_env_root, 'share', 'odmlui', lic_name))
+    lic_paths.append(os.path.join(conda_env_root, share_lic_name))
 
 license = ""
 for lic in lic_paths:
@@ -1016,18 +1023,26 @@ class EditorWindow(gtk.Window):
 # Dependent on python environment and installation used, default gtk
 # and custom icons will be found at different locations.
 def get_img_path(icon_name):
+    share_pixmaps = os.path.join('share', 'pixmaps')
+
     paths = [os.path.join(package_root, 'images'),
-             os.path.join(package_root, 'share', 'pixmaps')]
+             os.path.join(package_root, share_pixmaps)]
 
     if env_root:
-        paths.append(os.path.join(env_root, 'share', 'pixmaps').rstrip())
+        paths.append(os.path.join(env_root, share_pixmaps).rstrip())
 
     if conda_env_root:
-        paths.append(os.path.join(conda_env_root, 'share').rstrip())
+        paths.append(os.path.join(conda_env_root, share_pixmaps).rstrip())
 
-    paths.append(os.path.join('share', 'pixmaps'))
-    paths.append(os.path.join('usr', 'share', 'pixmaps'))
-    paths.append(os.path.join('usr', 'local', 'share', 'pixmaps'))
+    paths.append(share_pixmaps)
+    paths.append(os.path.join('usr', share_pixmaps))
+    paths.append(os.path.join('usr', 'local', share_pixmaps))
+
+    if os.getenv('HOME'):
+        paths.append(os.path.join(os.getenv('HOME'), '.local', share_pixmaps))
+
+    if os.getenv('USERPROFILE'):
+        paths.append(os.path.join(os.getenv('USERPROFILE'), '.local', share_pixmaps))
 
     found = None
     for check_path in paths:

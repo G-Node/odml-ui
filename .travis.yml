@@ -19,7 +19,7 @@ matrix:
         #  env: TOXENV=py27
 
 install:
-  - sudo bash install_dependencies.sh 
+  - sudo bash resources/install_dependencies.sh
   - python setup.py install
 
 script:

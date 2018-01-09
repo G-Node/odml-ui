@@ -10,7 +10,10 @@ import platform
 import sys
 
 import odml
-from odml.terminology import CACHE_DIR
+# Currently odml.terminology does not longer support CACHE_DIR
+# but might again in the future.
+# from odml.terminology import CACHE_DIR
+import tempfile
 import odmlui.treemodel.mixin
 
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
@@ -87,6 +90,17 @@ ui_info = \
     <toolitem action='odMLTablesFilter' />
   </toolbar>
 </ui>'''
+
+
+# See CACHE_DIR comment in the import section.
+CACHE_DIR = os.path.join(tempfile.gettempdir(), "odml.cache")
+
+if not os.path.exists(CACHE_DIR):
+    try:
+        os.makedirs(CACHE_DIR)
+    except OSError:  # might happen due to concurrency
+        if not os.path.exists(CACHE_DIR):
+            raise
 
 
 license = ""

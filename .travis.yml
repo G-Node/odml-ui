@@ -72,6 +72,8 @@ install:
 
 script:
   - which python
+  # Make sure dependency tests run before the test bulk.
+  - python -m unittest test.test_dependencies.TestDependencies
 # Leave deactivated until the required python-odml package is available
 #  - python setup.py test
   - python -m unittest discover test

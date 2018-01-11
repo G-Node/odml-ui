@@ -21,7 +21,7 @@ class EditorInfoBar(gtk.InfoBar):
 
     def _on_response(self, obj, response_id):
         if self._timerid > 0:
-            gobject.source_remove(self._timerid)
+            glib.source_remove(self._timerid)
             self._timerid = 0
         self.hide()
 

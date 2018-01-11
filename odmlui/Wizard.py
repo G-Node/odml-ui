@@ -15,7 +15,7 @@ from .ScrolledWindow import ScrolledWindow
 
 class Table(object):
     def __init__(self, cols):
-        self.table = gtk.Table(rows=1, columns=cols)
+        self.table = gtk.Table(n_rows=1, n_columns=cols)
         self.cols = cols
         self.rows = 0
 
@@ -95,7 +95,7 @@ class DataPage(Page):
 
         # add a label and an entry box for each field
         for k, v in fields.items():
-            label = gtk.Label("%s: " % k)
+            label = gtk.Label(label="%s: " % k)
             label.set_alignment(1, 0.5)
             entry = gtk.Entry()
             entry.set_text(v)
@@ -172,7 +172,8 @@ class SectionPage(Page):
         self.pack_start(ScrolledWindow(self.view._treeview), True, True, 0)
 
     def prepare(self, assistant, prev_page):
-        if "repository" in prev_page.data.keys() and len(prev_page.data["repository"].strip()) > 0:
+        if "repository" in prev_page.data.keys() and \
+                        len(prev_page.data["repository"].strip()) > 0:
             self.term = terminology.terminologies.load(prev_page.data['repository'])
             self.view.set_model(SectionModel(self.term))
 
@@ -187,7 +188,8 @@ class SummaryPage(Page):
     type = gtk.ASSISTANT_PAGE_CONFIRM
 
     def init(self):
-        self.add(gtk.Label("All information has been gathered. Ready to create document."))
+        self.add(gtk.Label(label="All information has been gathered. "
+                                 "Ready to create document."))
 
 
 class DocumentWizard:

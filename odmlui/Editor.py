@@ -216,7 +216,7 @@ class EditorWindow(gtk.Window):
         bar = merge.get_widget("/MenuBar")
         bar.show()
 
-        table = gtk.Table(2, 6, False)
+        table = gtk.Table(n_rows=2, n_columns=6, homogeneous=False)
         self.add(table)
 
         table.attach(bar,
@@ -393,10 +393,10 @@ class EditorWindow(gtk.Window):
                     (v.name, v.stock_id, v.label, v.accelerator,
                      v.tooltip, getattr(self, k)))
 
-        recent_action = gtk.RecentAction("OpenRecent",
-                                         "Open Recent",
-                                         "Open Recent Files",
-                                         gtk.STOCK_OPEN)
+        recent_action = gtk.RecentAction(name="OpenRecent",
+                                         label="Open Recent",
+                                         tooltip="Open Recent Files",
+                                         stock_id=gtk.STOCK_OPEN)
         recent_action.connect("item-activated", self.open_recent)
 
         recent_filter = gtk.RecentFilter()
@@ -406,7 +406,7 @@ class EditorWindow(gtk.Window):
         recent_action.add_filter(recent_filter)
         recent_action.set_show_not_found(False)
 
-        action_group = gtk.ActionGroup("EditorActions")
+        action_group = gtk.ActionGroup(name="EditorActions")
         self.editor_actions = action_group
         action_group.add_actions(entries)
         action_group.add_action(recent_action)
@@ -659,8 +659,8 @@ class EditorWindow(gtk.Window):
 
     def mk_tab_label(self, tab):
         # hbox will be used to store a label and button, as notebook tab title
-        hbox = gtk.HBox(False, 0)
-        label = gtk.Label(tab.get_name())
+        hbox = gtk.HBox(homogeneous=False, spacing=0)
+        label = gtk.Label(label=tab.get_name())
         tab.label = label
         hbox.pack_start(label)
 

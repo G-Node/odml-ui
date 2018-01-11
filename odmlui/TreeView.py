@@ -15,7 +15,7 @@ class TreeView(object):
     popup = None
 
     def __init__(self, store=None):
-        tv = gtk.TreeView(store)
+        tv = gtk.TreeView(model=store)
         tv.set_headers_visible(False)
 
         if self.on_selection_change is not None:

@@ -6,10 +6,11 @@ pygtkcompat.enable_gtk(version='3.0')
 import gtk
 import gobject
 
+
 class EditorInfoBar(gtk.InfoBar):
     def __init__(self, *args, **kargs):
         gtk.InfoBar.__init__(self, *args, **kargs)
-        self._msg_label = gtk.Label("")
+        self._msg_label = gtk.Label(label="")
         self._msg_label.show()
         self.get_content_area().pack_start (self._msg_label, True, True, 0)
         self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)

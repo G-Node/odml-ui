@@ -102,7 +102,7 @@ class DataPage(Page):
         fields['Author'] = get_username()
         fields['Date'] = get_date()
         fields['Version'] = '1.0'
-        fields['Repository'] = 'http://portal.g-node.org/odml/terminologies/v1.0/terminologies.xml'
+        fields['Repository'] = terminology.REPOSITORY
         self.fields = fields
 
         # add a label and an entry box for each field

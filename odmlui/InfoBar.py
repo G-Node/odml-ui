@@ -3,8 +3,9 @@ from gi import pygtkcompat
 pygtkcompat.enable() 
 pygtkcompat.enable_gtk(version='3.0')
 
-import gtk
+import glib
 import gobject
+import gtk
 
 
 class EditorInfoBar(gtk.InfoBar):
@@ -12,7 +13,7 @@ class EditorInfoBar(gtk.InfoBar):
         gtk.InfoBar.__init__(self, *args, **kargs)
         self._msg_label = gtk.Label(label="")
         self._msg_label.show()
-        self.get_content_area().pack_start (self._msg_label, True, True, 0)
+        self.get_content_area().pack_start(self._msg_label, True, True, 0)
         self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
 
         self.connect("response", self._on_response)
@@ -37,7 +38,7 @@ class EditorInfoBar(gtk.InfoBar):
         self.show()
 
     def add_timer(self, seconds=3):
-        self._timerid = gobject.timeout_add_seconds(seconds, self.on_timer)
+        self._timerid = glib.timeout_add_seconds(seconds, self.on_timer)
 
     def on_timer(self):
         self.hide()

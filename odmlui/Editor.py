@@ -1097,7 +1097,7 @@ def register_stock_icons():
 
             img_path = os.path.join(img_dir, name)
             icon = load_pixbuf(img_path)
-            icon_set = gtk.IconSet(icon)
+            icon_set = gtk.IconSet.new_from_pixbuf(icon)
 
             for icon in load_icon_pixbufs(icon_name):
                 src = gtk.IconSource()

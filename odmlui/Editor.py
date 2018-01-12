@@ -2,8 +2,7 @@ import os
 import platform
 import sys
 
-from gi import pygtkcompat
-
+import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 

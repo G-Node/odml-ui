@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from collections import OrderedDict
-from gi import pygtkcompat
-
+import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 

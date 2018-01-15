@@ -1,26 +1,31 @@
+import os
+import platform
+import sys
+
 from gi import pygtkcompat
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-import gobject
 import gtk
-import os
-import platform
-import sys
+import gobject
 
 import odml
+# Currently odml.terminology does not longer support CACHE_DIR
+# but might again in the future.
+# from odml.terminology import CACHE_DIR
+import tempfile
 import odmlui.treemodel.mixin
 
-from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION
+from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
 from odmlui.treemodel import SectionModel, ValueModel
 
 from .AttributeView import AttributeView
 from .ChooserDialog import odMLChooserDialog
 from .DocumentRegistry import DocumentRegistry
 from .EditorTab import EditorTab
-from .Helpers import uri_to_path, get_extension, \
-    get_parser_for_file_type, get_parser_for_uri
+from .Helpers import uri_to_path, get_extension, get_parser_for_file_type, \
+        get_parser_for_uri, get_conda_root, run_odmltables
 from .InfoBar import EditorInfoBar
 from .MessageDialog import ErrorDialog, DecisionDialog
 from .NavigationBar import NavigationBar
@@ -70,20 +75,85 @@ ui_info = \
     <toolitem name='New' action='NewFile' />
     <toolitem name='Open' action='OpenRecent' />
     <toolitem name='Save' action='Save' />
+    <separator/>
     <toolitem name='Undo' action='Undo' />
     <toolitem name='Redo' action='Redo' />
+    <separator/>
     <toolitem action='NewSection'/>
     <toolitem action='NewProperty'/>
     <toolitem action='NewValue'/>
     <toolitem action='Delete'/>
+    <separator/>
     <toolitem action='Validate' />
+    <separator/>
+    <toolitem action='odMLTablesCompare' />
+    <toolitem action='odMLTablesConvert' />
+    <toolitem action='odMLTablesFilter' />
+    <toolitem action='odMLTablesMerge' />
   </toolbar>
 </ui>'''
 
+# Handle loading from python virtual environments
+env_root = ""
+if hasattr(sys, 'prefix'):
+    env_root = sys.prefix
+
+
+# See CACHE_DIR comment in the import section.
+CACHE_DIR = os.path.join(tempfile.gettempdir(), "odml.cache")
+
+if not os.path.exists(CACHE_DIR):
+    try:
+        os.makedirs(CACHE_DIR)
+    except OSError:  # might happen due to concurrency
+        if not os.path.exists(CACHE_DIR):
+            raise
+
+# Quick and dirty to find out if Anaconda is being used and where it installed
+# all the goodies we need. Not robust but good enough for now.
+conda_env_root = get_conda_root()  # root of the currently active Anaconda environment
+
+
+# Finding package root for license file and custom icons
+package_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+
+
+def lookup_resource_paths(const_path):
+    res = [const_path,
+           os.path.join(package_root, const_path),
+           os.path.join(env_root, const_path),
+           os.path.join('usr', const_path),
+           os.path.join('usr', 'local', const_path)]
+
+    if env_root:
+        res.append(os.path.join(env_root, const_path))
+
+    if conda_env_root:
+        res.append(os.path.join(conda_env_root, const_path))
+
+    if os.getenv('HOME'):
+        res.append(os.path.join(os.getenv('HOME'), '.local', const_path))
+
+    if os.getenv('USERPROFILE'):
+        res.append(os.path.join(os.getenv('USERPROFILE'), '.local', const_path))
+
+    return res
+
+
+# Loading text from license file
+lic_name = "LICENSE"
+
+lic_paths = lookup_resource_paths(os.path.join('share', 'odmlui', lic_name))
+
+lic_paths.append(os.path.join(os.path.dirname(__file__), lic_name))
+lic_paths.append(os.path.join(package_root, lic_name))
 
 license = ""
-with open("LICENSE") as f:
-    license = f.read()
+for lic in lic_paths:
+    if os.path.isfile(lic):
+        with open(lic) as f:
+            license = f.read()
+            break
 
 
 def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
@@ -110,7 +180,9 @@ class EditorWindow(gtk.Window):
     registry = DocumentRegistry()
     editors = set()
     welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty",
-                                "NewValue", "Delete", "CloneTab", "Validate"]
+                                "NewValue", "Delete", "CloneTab", "Validate",
+                                "odMLTablesCompare", "odMLTablesConvert",
+                                "odMLTablesFilter", "odMLTablesMerge"]
 
     def __init__(self, parent=None):
         gtk.Window.__init__(self)
@@ -233,6 +305,16 @@ class EditorWindow(gtk.Window):
         vpaned.set_position(350)
         vpaned.pack1(hpaned, resize=True, shrink=False)
         vpaned.pack2(frame, resize=False, shrink=True)
+
+        # Check if odML-tables is available
+        self.odml_tables_available = False
+        try:
+            from odmltables import gui
+            from odmltables import VERSION as OTVERSION
+            if OTVERSION == ODMLTABLES_VERSION:
+                self.odml_tables_available = True
+        except (ImportError, AttributeError) as e:
+            print("[Info] odMLTables not available: %s" % e)
 
         class Tab(gtk.HBox):
             """
@@ -464,6 +546,42 @@ class EditorWindow(gtk.Window):
                 label="_Validate", stock_id=gtk.STOCK_APPLY, accelerator="<control>E")
     def on_validate(self, action):
         self.current_tab.validate()
+
+    def handle_odmltables(self, wizard):
+        if not self.current_tab.file_uri or self.current_tab.is_modified:
+            self._info_bar.show_info("Please validate and save "
+                                     "your document before starting odMLTables.")
+        elif self.odml_tables_available:
+            run_odmltables(self.current_tab.file_uri, CACHE_DIR,
+                            self.current_tab.document, wizard)
+        else:
+            self._info_bar.show_info("You need odMLTables (v%s or newer) "
+                                     "installed to run this feature." %
+                                     ODMLTABLES_VERSION)
+
+    @gui_action("odMLTablesCompare", tooltip="Compare entities of an odML document",
+                label="odMLTablesCompare", stock_id="INM6-compare-table",
+                accelerator="<control>E")
+    def on_compare_entities(self, action):
+        self.handle_odmltables("compare")
+
+    @gui_action("odMLTablesConvert", tooltip="Convert document to xls or csv",
+                label="odMLTablesConverter", stock_id="INM6-convert-odml",
+                accelerator="<control>C")
+    def on_convert(self, action):
+        self.handle_odmltables("convert")
+
+    @gui_action("odMLTablesFilter", tooltip="Filter document contents",
+                label="odMLTablesFilter", stock_id="INM6-filter-odml",
+                accelerator="<control>F")
+    def on_filter(self, action):
+        self.handle_odmltables("filter")
+
+    @gui_action("odMLTablesMerge", tooltip="Merge odML documents",
+                label="odMLTablesMerge", stock_id="INM6-merge-odml",
+                accelerator="<control>M")
+    def on_merge(self, action):
+        self.handle_odmltables("merge")
 
     def select_tab(self, tab, force_reset=False):
         """
@@ -913,26 +1031,44 @@ class EditorWindow(gtk.Window):
         return self.current_tab.command_manager.execute(cmd)
 
 
-def get_image_path():
-    try:
-        filename = "./odml-gui"
-    except:
-        filename = sys.argv[0]
+# Dependent on python environment and installation used, default gtk
+# and custom icons will be found at different locations.
+def get_img_path(icon_name):
+    share_pixmaps = os.path.join('share', 'pixmaps')
 
-    path = os.path.join(os.path.dirname(filename), 'images')
-    other_paths = ['/usr/share/pixmaps', '/usr/local/share/pixmaps', 'share/pixmaps']
-    while not os.path.exists(path):
-        path = other_paths.pop()
-    return path
+    paths = lookup_resource_paths(share_pixmaps)
+    paths.append(os.path.join(package_root, 'images'))
+
+    found = None
+    for check_path in paths:
+        for dp, dn, fn in os.walk(check_path):
+            for fname in [f for f in fn if f == icon_name]:
+                found = dp
+                break
+        if found:
+            break
+
+    return found
 
 
 def register_stock_icons():
+    # conda environments might not have access to the system stock items.
+    # Therefore update the IconTheme search path.
+    if conda_env_root:
+        print("[Info] Updating IconTheme search path")
+        icon_theme = gtk.icon_theme_get_default()
+        icon_theme.prepend_search_path(os.path.join(conda_env_root, "share", "icons"))
+
     ctrlshift = gtk.gdk.CONTROL_MASK | gtk.gdk.SHIFT_MASK
     icons = [('odml-logo', '_odML', 0, 0, ''),
              ('odml_addSection', 'Add _Section', ctrlshift, ord("S"), ''),
              ('odml_addProperty', 'Add _Property', ctrlshift, ord("P"), ''),
              ('odml_addValue', 'Add _Value', ctrlshift, ord("V"), ''),
              ('odml_Dustbin', '_Delete', 0, 0, ''),
+             ('INM6-compare-table', 'Compare_entities', ctrlshift, ord("E"), ''),
+             ('INM6-convert-odml', 'Convert_document', ctrlshift, ord("C"), ''),
+             ('INM6-filter-odml', 'Filter_document', ctrlshift, ord("F"), ''),
+             ('INM6-merge-odml', 'Merge_documents', ctrlshift, ord("M"), '')
              ]
 
     # This method is failing (silently) in registering the stock icons.
@@ -946,12 +1082,20 @@ def register_stock_icons():
     factory = gtk.IconFactory()
     factory.add_default()
 
-    img_dir = get_image_path()
     for stock_icon in icons:
         icon_name = stock_icon[0]
-        img_path = os.path.join(img_dir, "%s.png" % icon_name)
 
         try:
+            # Dependent on python environment and installation used, default gtk
+            # and custom icons will be found at different locations.
+            name = "%s.%s" % (icon_name, "png")
+
+            img_dir = get_img_path(name)
+            if not img_dir:
+                print("[Warning] Icon %s not found in supported paths" % name)
+                continue
+
+            img_path = os.path.join(img_dir, name)
             icon = load_pixbuf(img_path)
             icon_set = gtk.IconSet(icon)
 
@@ -963,7 +1107,8 @@ def register_stock_icons():
             factory.add(icon_name, icon_set)
 
         except gobject.GError as error:
-            print('Failed to load icon', icon_name, error)
+            print('[Warning] Failed to load icon', icon_name, error)
+
 
 
 def load_pixbuf(path):
@@ -971,18 +1116,26 @@ def load_pixbuf(path):
         pixbuf = gtk.gdk.pixbuf_new_from_file(path)
         transparent = pixbuf.add_alpha(False, 255, 255, 255)
         return transparent
-    except:
+    except Exception as exc:
+        print("[Warning] Pixbuf loading exception: %s" % exc)
         return None
 
 
 def load_icon_pixbufs(prefix):
     icons = []
-    img_dir = get_image_path()
-    files = os.listdir(img_dir)
-    for f in files:
-        if f.startswith(prefix):
-            abs_path = os.path.join(img_dir, f)
-            icon = load_pixbuf(abs_path)
-            if icon:
-                icons.append(icon)
+
+    # Dirty fix for loading the odml-logo.
+    get_icon = prefix
+    if prefix == 'odml-logo':
+        get_icon = "%s.png" % prefix
+
+    img_dir = get_img_path(get_icon)
+    if img_dir:
+        files = os.listdir(img_dir)
+        for f in files:
+            if f.startswith(prefix):
+                abs_path = os.path.join(img_dir, f)
+                icon = load_pixbuf(abs_path)
+                if icon:
+                    icons.append(icon)
     return icons

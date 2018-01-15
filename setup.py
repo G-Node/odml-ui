@@ -72,5 +72,6 @@ setup(name='odML-UI',
       data_files=data_files,
       long_description=description_text,
       classifiers=CLASSIFIERS,
-      license=license_text
+      license=license_text,
+      test_suite='test'
       )

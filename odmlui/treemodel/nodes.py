@@ -31,7 +31,6 @@ def identity_index(obj, val):
     for i, v in enumerate(obj):
         if v is val: return i
 
-    import pdb; pdb.set_trace()
     raise ValueError("%s does not contain the item %s" % (repr(obj), repr(val)))
 
 class RootNode(object):

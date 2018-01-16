@@ -1,21 +1,22 @@
 """
-provides node functionality for the eventable odml types
-Document, Section, Property and Value
+Provides node functionality for the eventable odml types
+Document, Section, Property and Value.
 
-additionally implements change notifications up to the corresponding section
+Additionally implements change notifications up to the corresponding section.
 """
 import odml.property
 from . import event
 
+
 def identity_index(obj, val):
     """
-    same as obj.index(val) but will only return a position
-    if the object val is found in the list
+    Same as obj.index(val) but will only return a position
+    if the object val is found in the list.
 
     i.e.
     >>> identity_index(["1"], "1")
-    will raise an ValueError because the two strings
-    are different objects with the same content
+    will raise a ValueError because the two strings
+    are different objects with the same content.
 
     >>> a = "1"
     >>> identity_index([a], a)
@@ -29,9 +30,11 @@ def identity_index(obj, val):
     0
     """
     for i, v in enumerate(obj):
-        if v is val: return i
+        if v is val:
+            return i
 
     raise ValueError("%s does not contain the item %s" % (repr(obj), repr(val)))
+
 
 class RootNode(object):
     @property
@@ -49,7 +52,8 @@ class RootNode(object):
 
     def path_to(self, child):
         """return the path from this node to its direct child *child*"""
-        return (identity_index(self._sections, child),)
+        return identity_index(self._sections, child),
+
 
 class ParentedNode(RootNode):
     def to_path(self, parent=None):
@@ -83,6 +87,7 @@ class ParentedNode(RootNode):
     def position(self):
         return self.parent.path_to(self)[-1]
 
+
 class SectionNode(ParentedNode):
     """
     SectionNodes are special as they wrap two types of sub-nodes:
@@ -93,7 +98,7 @@ class SectionNode(ParentedNode):
     def from_path(self, path):
         assert len(path) > 1
 
-        if path[0] == 0: # sections
+        if path[0] == 0:  # sections
             return super(SectionNode, self).from_path(path[1:])
 
         # else: properties
@@ -105,8 +110,8 @@ class SectionNode(ParentedNode):
 
     def path_to(self, child):
         if isinstance(child, odml.property.Property):
-            return (1, identity_index(self._props, child))
-        return (0, identity_index(self._sections, child))
+            return 1, identity_index(self._props, child)
+        return 0, identity_index(self._sections, child)
 
 
 class PropertyNode(ParentedNode):
@@ -118,7 +123,8 @@ class PropertyNode(ParentedNode):
         return self.parent._props[self.position + 1]
 
     def path_to(self, child):
-        return (identity_index(self.pseudo_values, child),)
+        return identity_index(self.pseudo_values, child),
+
 
 class ValueNode(ParentedNode):
     def path_from(self, path):
@@ -127,14 +133,28 @@ class ValueNode(ParentedNode):
     def path_to(self, child):
         raise TypeError("Value objects have no children")
 
-#TODO? provide this externally?
+
+# TODO? provide this externally?
 name = "nodes"
 provides = event.provides + ["nodes"]
-class Document(event.Document, RootNode): pass
-# class Value(event.Value, ValueNode): pass
-class Value(ValueNode): pass
-class Property(event.Property, PropertyNode): pass
-class Section(event.Section, SectionNode): pass
 
-import sys, odml
+
+class Document(event.Document, RootNode):
+    pass
+
+
+class Value(ValueNode):
+    pass
+
+
+class Property(event.Property, PropertyNode):
+    pass
+
+
+class Section(event.Section, SectionNode):
+    pass
+
+
+import sys
+import odml
 odml.addImplementation(sys.modules[__name__])

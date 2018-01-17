@@ -2,16 +2,12 @@ import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-import sys
 import odml
 import odml.property
-import odmlui
 
 from .TreeIters import PropIter, ValueIter, SectionPropertyIter
 from .TreeModel import TreeModel, ColumnMapper
 from . import ValueModel
-debug = lambda x: sys.stderr.write(x+"\n")
-debug = lambda x: 0
 
 
 ColMapper = ColumnMapper({"Name":        (0, "name"),
@@ -45,8 +41,6 @@ class PropertyModel(TreeModel):
         return path[1:]
 
     def on_get_iter(self, path):
-        debug(":on_get_iter [%s] " % repr(path))
-
         if len(self._section._props) == 0:
             return None
 
@@ -74,7 +68,6 @@ class PropertyModel(TreeModel):
         return super(PropertyModel, self).on_iter_n_children(tree_iter)
 
     def on_iter_nth_child(self, tree_iter, n):
-        debug(":on_iter_nth_child [%d]: %s " % (n, tree_iter))
         if tree_iter is None:
             prop = self._section._props[n]
             return PropIter(prop)
@@ -110,9 +103,6 @@ class PropertyModel(TreeModel):
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh the corresponding cells
         """
-        if odmlui.DEBUG:
-            print("change event(property): ", context)
-
         # we are only interested in changes going up to the section level,
         # but not those dealing with subsections of ours
         if context.cur is not self._section or \

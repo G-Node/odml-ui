@@ -297,7 +297,7 @@ class EditorWindow(gtk.Window):
 
         vpaned = gtk.VPaned()
         vpaned.show()
-        vpaned.set_position(350)
+        vpaned.set_position(290)
         vpaned.pack1(hpaned, resize=True, shrink=False)
         vpaned.pack2(frame, resize=False, shrink=True)
 

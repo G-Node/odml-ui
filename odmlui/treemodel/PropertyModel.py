@@ -19,12 +19,13 @@ debug = lambda x: 0
 ColMapper = ColumnMapper({"Name":        (0, "name"),
                           "Value":       (1, "value"),
                           "Unit":        (2, "unit"),
-                          "Type":        (3, "dtype"),
-                          "Definition":  (4, "definition"),
-                          "Comment":     (5, "comment"),
-                          "Endcoder":    (6, "encoder"),
-                          "Filename":    (7, "filename"),
-                          "Reference":   (8, "reference")})
+                          "Uncertainty": (3, "uncertainty"),
+                          "Type":        (4, "dtype"),
+                          "Definition":  (5, "definition"),
+                          "Comment":     (6, "comment"),
+                          "Endcoder":    (7, "encoder"),
+                          "Filename":    (8, "filename"),
+                          "Reference":   (9, "reference")})
 
 class PropertyModel(TreeModel):
     def __init__(self, section):

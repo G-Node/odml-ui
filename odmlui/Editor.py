@@ -194,6 +194,13 @@ class EditorWindow(gtk.Window):
         self.set_title("odML Editor")
         self.set_default_size(800, 600)
 
+        # Check available screen size and adjust default app size to 1024x768 if possible.
+        screen = self.get_screen()
+        currmon = screen.get_monitor_at_window(screen.get_active_window())
+        mondims = screen.get_monitor_geometry(currmon)
+        if mondims.width >= 1024 and mondims.height >= 768:
+            self.set_default_size(1024, 768)
+
         icons = load_icon_pixbufs("odml-logo")
         self.set_icon_list(icons)
 

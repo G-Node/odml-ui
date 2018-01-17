@@ -308,7 +308,8 @@ class EditorWindow(gtk.Window):
 
         vpaned = gtk.VPaned()
         vpaned.show()
-        vpaned.set_position(350)
+        # Adjust Attribute view position to default window size
+        vpaned.set_position(self.get_default_size().height - 340)
         vpaned.pack1(hpaned, resize=True, shrink=False)
         vpaned.pack2(frame, resize=False, shrink=True)
 

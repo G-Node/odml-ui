@@ -15,12 +15,13 @@ debug = lambda x: sys.stderr.write(x+"\n")
 debug = lambda x: 0
 
 
-ColMapper = ColumnMapper({"Name"        : (0, "name"),
-                         "Value"       : (1, "pseudo_values"),
-                         "Definition"  : (2, "definition"),
-                         "Type"        : (3, "dtype"),
-                         "Unit"        : (4, "unit"),
-                         })
+ColMapper = ColumnMapper({"Name":        (0, "name"),
+                          "Value":       (1, "pseudo_values"),
+                          "Type":        (2, "dtype"),
+                          "Unit":        (3, "unit"),
+                          "Uncertainty": (4, "uncertainty"),
+                          "Definition":  (5, "definition"),
+                          })
 
 class PropertyModel(TreeModel):
     def __init__(self, section):

@@ -4,7 +4,7 @@ pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
 import cgi
-import odml.format as format
+from odml import format as ofmt
 from . import commands
 from .TreeView import TreeView
 COL_KEY = 0
@@ -23,6 +23,10 @@ class AttributeView(TreeView):
         self._model = None
         if obj is not None:
             self.set_model(obj)
+
+        # List of property attributes that is displayed in the property window
+        # and is not displayed again in the attribute view.
+        self._property_exclude = ["unit", "type", "uncertainty", "definition"]
 
         super(AttributeView, self).__init__(self._store)
 
@@ -56,6 +60,13 @@ class AttributeView(TreeView):
             if not isinstance(v, list):
                 if v is not None:
                     v = cgi.escape(v)
+
+                # Exclude property attributes that are displayed in the
+                # PropertyView window.
+                if isinstance(self._fmt, type(ofmt.Property)) and \
+                        k in self._property_exclude:
+                    continue
+
                 self._store.append([k, v])
 
     def on_edited(self, widget, row, new_value, col):

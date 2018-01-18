@@ -1,14 +1,18 @@
+import cgi
 import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
-import cgi
 from odml import format as ofmt
+
 from . import commands
 from .TreeView import TreeView
+
 COL_KEY = 0
 COL_VALUE = 1
+
+
 class AttributeView(TreeView):
     """
     A key-value ListStore based TreeView
@@ -46,7 +50,7 @@ class AttributeView(TreeView):
         obj.add_change_handler(self.on_object_change)
 
         self._model = obj
-        self._fmt   = obj._format
+        self._fmt = obj._format
         self.fill()
 
     def get_model(self):
@@ -71,12 +75,12 @@ class AttributeView(TreeView):
 
     def on_edited(self, widget, row, new_value, col):
         store = self._store
-        iter = store.get_iter(row)
-        k = store.get_value(iter, COL_KEY)
+        store_iter = store.get_iter(row)
+        k = store.get_value(store_iter, COL_KEY)
         cmd = commands.ChangeValue(
-            object    = self._model,
-            attr      = self._fmt.map(k),
-            new_value = new_value)
+            object=self._model,
+            attr=self._fmt.map(k),
+            new_value=new_value)
 
         self.execute(cmd)
 

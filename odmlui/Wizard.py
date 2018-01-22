@@ -12,7 +12,6 @@ from .ScrolledWindow import ScrolledWindow
 import odml
 import odml.terminology as terminology
 
-
 class Table(object):
     def __init__(self, cols):
         self.table = gtk.Table(rows=1, columns=cols)
@@ -61,17 +60,6 @@ class Page(gtk.VBox):
         called to finish processing the page and allow it to collect all entered data
         """
         pass
-
-
-class IntroPage(Page):
-    type = gtk.ASSISTANT_PAGE_INTRO
-    complete = True
-
-    def init(self):
-        label = gtk.Label("Welcome! This assistant will guide you trough the first " +
-                          "steps of creating a new odML-Document")
-        label.set_line_wrap(True)
-        self.pack_start(label, True, True, 0)
 
 
 def get_username():
@@ -203,21 +191,19 @@ class DocumentWizard:
         assistant = gtk.Assistant()
 
         assistant.set_title("New odML-Document wizard")
-        assistant.set_default_size(-1, 500)
+        assistant.set_default_size(800, 500)
         assistant.set_position(gtk.WIN_POS_CENTER_ALWAYS)
         assistant.connect("apply", self.apply)
         assistant.connect("close", self.cancel)
         assistant.connect("cancel", self.cancel)
 
-        IntroPage().deploy(assistant, "New Document Wizard")
-
         data_page = DataPage()
-        data_page.deploy(assistant, "General document information")
+        data_page.deploy(assistant, "Document information")
         self.data_page = data_page
 
         section_page = SectionPage()
         section_page.data = data_page
-        section_page.deploy(assistant, "Select which sections to import from the repository")
+        section_page.deploy(assistant, "Repository section import")
         self.section_page = section_page
 
         SummaryPage().deploy(assistant, "Complete")

@@ -16,15 +16,16 @@ debug = lambda x: sys.stderr.write(x+"\n")
 debug = lambda x: 0
 
 
-ColMapper = ColumnMapper({"Name"        : (0, "name"),
-                         "Value"       : (1, "value"),
-                         "Definition"  : (2, "definition"),
-                         "Type"        : (3, "dtype"),
-                         "Unit"        : (4, "unit"),
-                         "Comment"     : (5, "comment"),
-                         "Endcoder"    : (6, "encoder"),
-                         "Filename"    : (7, "filename"),
-                         "Reference"   : (8, "reference")})
+ColMapper = ColumnMapper({"Name":        (0, "name"),
+                          "Value":       (1, "value"),
+                          "Unit":        (2, "unit"),
+                          "Uncertainty": (3, "uncertainty"),
+                          "Type":        (4, "dtype"),
+                          "Definition":  (5, "definition"),
+                          "Comment":     (6, "comment"),
+                          "Endcoder":    (7, "encoder"),
+                          "Filename":    (8, "filename"),
+                          "Reference":   (9, "reference")})
 
 class PropertyModel(TreeModel):
     def __init__(self, section):

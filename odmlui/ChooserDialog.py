@@ -1,9 +1,9 @@
-from gi import pygtkcompat
-
+import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
+
 
 class ChooserDialog(gtk.FileChooserDialog):
     def __init__(self, title, save):
@@ -11,9 +11,9 @@ class ChooserDialog(gtk.FileChooserDialog):
         default_action = gtk.FILE_CHOOSER_ACTION_SAVE if save else gtk.FILE_CHOOSER_ACTION_OPEN
         super(ChooserDialog, self).__init__(
                 title=title,
-                buttons=(default_button, gtk.RESPONSE_OK,
-                         gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL),
                 action=default_action)
+        self.add_button(default_button, gtk.RESPONSE_OK)
+        self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
 
         self.save = save
         self.connect('response', self.response)
@@ -48,9 +48,9 @@ class odMLChooserDialog(ChooserDialog):
 
     @staticmethod
     def _setup_file_filter(filter):
-        '''
+        """
              Used for setting up recent filters for recently used files.
-        '''
+        """
         filter.set_name("odML Documents (*.xml, *.yaml, *.json, *.odml)")
 
         filter.add_mime_type("application/xml")
@@ -90,6 +90,6 @@ class odMLChooserDialog(ChooserDialog):
 
         if not self.save:
             all_files = gtk.FileFilter()
-            all_files.set_name ("All Files")
+            all_files.set_name("All Files")
             all_files.add_pattern("*")
-            self.add_filter (all_files)
+            self.add_filter(all_files)

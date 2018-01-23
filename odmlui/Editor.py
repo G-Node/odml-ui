@@ -2,8 +2,7 @@ import os
 import platform
 import sys
 
-from gi import pygtkcompat
-
+import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
@@ -195,6 +194,13 @@ class EditorWindow(gtk.Window):
         self.set_title("odML Editor")
         self.set_default_size(800, 600)
 
+        # Check available screen size and adjust default app size to 1024x768 if possible.
+        screen = self.get_screen()
+        currmon = screen.get_monitor_at_window(screen.get_active_window())
+        mondims = screen.get_monitor_geometry(currmon)
+        if mondims.width >= 1024 and mondims.height >= 768:
+            self.set_default_size(1024, 768)
+
         icons = load_icon_pixbufs("odml-logo")
         self.set_icon_list(icons)
 
@@ -216,7 +222,7 @@ class EditorWindow(gtk.Window):
         bar = merge.get_widget("/MenuBar")
         bar.show()
 
-        table = gtk.Table(2, 6, False)
+        table = gtk.Table(n_rows=2, n_columns=6, homogeneous=False)
         self.add(table)
 
         table.attach(bar,
@@ -302,7 +308,8 @@ class EditorWindow(gtk.Window):
 
         vpaned = gtk.VPaned()
         vpaned.show()
-        vpaned.set_position(350)
+        # Adjust Attribute view position to default window size
+        vpaned.set_position(self.get_default_size().height - 300)
         vpaned.pack1(hpaned, resize=True, shrink=False)
         vpaned.pack2(frame, resize=False, shrink=True)
 
@@ -393,10 +400,10 @@ class EditorWindow(gtk.Window):
                     (v.name, v.stock_id, v.label, v.accelerator,
                      v.tooltip, getattr(self, k)))
 
-        recent_action = gtk.RecentAction("OpenRecent",
-                                         "Open Recent",
-                                         "Open Recent Files",
-                                         gtk.STOCK_OPEN)
+        recent_action = gtk.RecentAction(name="OpenRecent",
+                                         label="Open Recent",
+                                         tooltip="Open Recent Files",
+                                         stock_id=gtk.STOCK_OPEN)
         recent_action.connect("item-activated", self.open_recent)
 
         recent_filter = gtk.RecentFilter()
@@ -406,7 +413,7 @@ class EditorWindow(gtk.Window):
         recent_action.add_filter(recent_filter)
         recent_action.set_show_not_found(False)
 
-        action_group = gtk.ActionGroup("EditorActions")
+        action_group = gtk.ActionGroup(name="EditorActions")
         self.editor_actions = action_group
         action_group.add_actions(entries)
         action_group.add_action(recent_action)
@@ -659,8 +666,8 @@ class EditorWindow(gtk.Window):
 
     def mk_tab_label(self, tab):
         # hbox will be used to store a label and button, as notebook tab title
-        hbox = gtk.HBox(False, 0)
-        label = gtk.Label(tab.get_name())
+        hbox = gtk.HBox(homogeneous=False, spacing=0)
+        label = gtk.Label(label=tab.get_name())
         tab.label = label
         hbox.pack_start(label)
 
@@ -1097,7 +1104,7 @@ def register_stock_icons():
 
             img_path = os.path.join(img_dir, name)
             icon = load_pixbuf(img_path)
-            icon_set = gtk.IconSet(icon)
+            icon_set = gtk.IconSet.new_from_pixbuf(icon)
 
             for icon in load_icon_pixbufs(icon_name):
                 src = gtk.IconSource()

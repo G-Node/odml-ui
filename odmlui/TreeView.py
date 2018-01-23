@@ -1,5 +1,4 @@
-from gi import pygtkcompat
-
+import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
@@ -15,7 +14,7 @@ class TreeView(object):
     popup = None
 
     def __init__(self, store=None):
-        tv = gtk.TreeView(store)
+        tv = gtk.TreeView(model=store)
         tv.set_headers_visible(False)
 
         if self.on_selection_change is not None:

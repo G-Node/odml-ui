@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from collections import OrderedDict
-from gi import pygtkcompat
-
+import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
@@ -13,10 +12,9 @@ from .SectionView import SectionView
 from .ScrolledWindow import ScrolledWindow
 
 
-
 class Table(object):
     def __init__(self, cols):
-        self.table = gtk.Table(rows=1, columns=cols)
+        self.table = gtk.Table(n_rows=1, n_columns=cols)
         self.cols = cols
         self.rows = 0
 
@@ -64,17 +62,6 @@ class Page(gtk.VBox):
         pass
 
 
-class IntroPage(Page):
-    type = gtk.ASSISTANT_PAGE_INTRO
-    complete = True
-
-    def init(self):
-        label = gtk.Label("Welcome! This assistant will guide you trough the first " +
-                          "steps of creating a new odML-Document")
-        label.set_line_wrap(True)
-        self.pack_start(label, True, True, 0)
-
-
 def get_username():
     import getpass
     username = getpass.getuser()
@@ -102,12 +89,12 @@ class DataPage(Page):
         fields['Author'] = get_username()
         fields['Date'] = get_date()
         fields['Version'] = '1.0'
-        fields['Repository'] = 'http://portal.g-node.org/odml/terminologies/v1.0/terminologies.xml'
+        fields['Repository'] = terminology.REPOSITORY
         self.fields = fields
 
         # add a label and an entry box for each field
         for k, v in fields.items():
-            label = gtk.Label("%s: " % k)
+            label = gtk.Label(label="%s: " % k)
             label.set_alignment(1, 0.5)
             entry = gtk.Entry()
             entry.set_text(v)
@@ -184,7 +171,8 @@ class SectionPage(Page):
         self.pack_start(ScrolledWindow(self.view._treeview), True, True, 0)
 
     def prepare(self, assistant, prev_page):
-        if "repository" in prev_page.data.keys() and len(prev_page.data["repository"].strip()) > 0:
+        if "repository" in prev_page.data.keys() and \
+                        len(prev_page.data["repository"].strip()) > 0:
             self.term = terminology.terminologies.load(prev_page.data['repository'])
             self.view.set_model(SectionModel(self.term))
 
@@ -199,7 +187,8 @@ class SummaryPage(Page):
     type = gtk.ASSISTANT_PAGE_CONFIRM
 
     def init(self):
-        self.add(gtk.Label("All information has been gathered. Ready to create document."))
+        self.add(gtk.Label(label="All information has been gathered. "
+                                 "Ready to create document."))
 
 
 class DocumentWizard:
@@ -207,21 +196,19 @@ class DocumentWizard:
         assistant = gtk.Assistant()
 
         assistant.set_title("New odML-Document wizard")
-        assistant.set_default_size(-1, 500)
+        assistant.set_default_size(800, 500)
         assistant.set_position(gtk.WIN_POS_CENTER_ALWAYS)
         assistant.connect("apply", self.apply)
         assistant.connect("close", self.cancel)
         assistant.connect("cancel", self.cancel)
 
-        IntroPage().deploy(assistant, "New Document Wizard")
-
         data_page = DataPage()
-        data_page.deploy(assistant, "General document information")
+        data_page.deploy(assistant, "Document information")
         self.data_page = data_page
 
         section_page = SectionPage()
         section_page.data = data_page
-        section_page.deploy(assistant, "Select which sections to import from the repository")
+        section_page.deploy(assistant, "Repository section import")
         self.section_page = section_page
 
         SummaryPage().deploy(assistant, "Complete")

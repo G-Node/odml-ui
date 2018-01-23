@@ -1,5 +1,4 @@
-from gi import pygtkcompat
-
+import pygtkcompat
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
@@ -93,10 +92,14 @@ class EditorTab(object):
         if not self.is_modified:
             return True
 
-        dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                                   gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO,
-                                   "%s has been modified. Do you want to save your changes?" %
-                                   (self.file_uri if self.file_uri is not None else "The document"))
+        msg = "%s has been modified. Do you want to save your changes?" % (
+            self.file_uri if self.file_uri is not None else "The document")
+
+        dialog = gtk.MessageDialog(transient_for=self.window,
+                                   modal=True,
+                                   message_type=gtk.MESSAGE_INFO,
+                                   buttons=gtk.BUTTONS_YES_NO,
+                                   text=msg)
 
         dialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         dialog.set_title("Save changes?")

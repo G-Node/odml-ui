@@ -1,27 +1,23 @@
-from gi import pygtkcompat
-
-pygtkcompat.enable() 
+import pygtkcompat
+pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-import gtk, gobject
-import odmlui
+import odml
+import odml.property
 
 from .TreeIters import PropIter, ValueIter, SectionPropertyIter
 from .TreeModel import TreeModel, ColumnMapper
-import sys
-import odml
-import odml.property
 from . import ValueModel
-debug = lambda x: sys.stderr.write(x+"\n")
-debug = lambda x: 0
 
 
-ColMapper = ColumnMapper({"Name"        : (0, "name"),
-                         "Value"       : (1, "pseudo_values"),
-                         "Definition"  : (2, "definition"),
-                         "Type"        : (3, "dtype"),
-                         "Unit"        : (4, "unit"),
-                         })
+ColMapper = ColumnMapper({"Name":        (0, "name"),
+                          "Value":       (1, "pseudo_values"),
+                          "Type":        (2, "dtype"),
+                          "Unit":        (3, "unit"),
+                          "Uncertainty": (4, "uncertainty"),
+                          "Definition":  (5, "definition"),
+                          })
+
 
 class PropertyModel(TreeModel):
     def __init__(self, section):
@@ -30,25 +26,25 @@ class PropertyModel(TreeModel):
         self._section.add_change_handler(self.on_section_changed)
         self.offset = len(section.to_path())
 
-    def model_path_to_odml_path(self, path):
+    @staticmethod
+    def model_path_to_odml_path(path):
         # (n, ...) -> (1, ...)
         # this can only go wrong sometimes because properties
         # with only one value share a common path
-        return (1,) + tuple(path.get_indices()) # we consider properties only
+        return (1,) + tuple(path.get_indices())  # we consider properties only
 
     def odml_path_to_model_path(self, path):
-        if len(path) == 3: # 1, prop, val
+        if len(path) == 3:  # 1, prop, val
             # if only one child, return property row
             if len(self._section.from_path(path[:2])) == 1:
                 return path[1:2]
         return path[1:]
 
     def on_get_iter(self, path):
-        debug(":on_get_iter [%s] " % repr(path))
+        if len(self._section._props) == 0:
+            return None
 
-        if len(self._section._props) == 0: return None
-
-        path = self.model_path_to_odml_path(path) # we consider properties only
+        path = self.model_path_to_odml_path(path)  # we consider properties only
         node = self._section.from_path(path)
         return self._get_node_iter(node)
 
@@ -57,7 +53,8 @@ class PropertyModel(TreeModel):
         add some coloring to the value in certain cases
         """
         v = super(PropertyModel, self).on_get_value(tree_iter, column)
-        if v is None: return v
+        if v is None:
+            return v
 
         obj = tree_iter._obj
         if isinstance(tree_iter, ValueIter):
@@ -71,8 +68,7 @@ class PropertyModel(TreeModel):
         return super(PropertyModel, self).on_iter_n_children(tree_iter)
 
     def on_iter_nth_child(self, tree_iter, n):
-        debug(":on_iter_nth_child [%d]: %s " % (n, tree_iter))
-        if tree_iter == None:
+        if tree_iter is None:
             prop = self._section._props[n]
             return PropIter(prop)
         return super(PropertyModel, self).on_iter_nth_child(tree_iter, n)
@@ -92,7 +88,7 @@ class PropertyModel(TreeModel):
                 # the last child row is also not present anymore,
                 # the value is now displayed inline
                 path = self.get_node_path(parent)
-                self.row_deleted(path + (0,)) # first child
+                self.row_deleted(path + (0,))  # first child
                 self.row_has_child_toggled(path, self.get_iter(path))
 
     def post_insert(self, node):
@@ -107,34 +103,34 @@ class PropertyModel(TreeModel):
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh the corresponding cells
         """
-        if odmlui.DEBUG:
-            print("change event(property): ", context)
-
         # we are only interested in changes going up to the section level,
         # but not those dealing with subsections of ours
-        if not context.cur is self._section or \
+        if context.cur is not self._section or \
                 isinstance(context.val, odml.section.Section):
             return
 
         if context.action == "set" and context.post_change:
             path = self.get_node_path(context.obj)
-            if not path: return # probably the section changed
+            if not path:
+                return  # probably the section changed
             try:
-                iter = self.get_iter(path)
-                self.row_changed(path, iter)
-            except ValueError as e: # an invalid tree path, that should never have reached us
+                curriter = self.get_iter(path)
+                self.row_changed(path, curriter)
+            except ValueError as e:
+                # an invalid tree path, that should never have reached us
                 print(repr(e))
                 print(context.dump())
 
         # there was some reason we did this, however context.obj can
         # also be a property of the current section
-        #if not context.obj is self._section:
+        # if not context.obj is self._section:
         #    return
 
         if context.action == "remove":
             self.event_remove(context)
 
-        if (context.action == "append" or context.action == "insert") and context.post_change:
+        if (context.action == "append" or
+                context.action == "insert") and context.post_change:
             self.event_insert(context)
 
         if context.action == "reorder":
@@ -144,7 +140,7 @@ class PropertyModel(TreeModel):
         self._section.remove_change_handler(self.on_section_changed)
 
     def __repr__(self):
-        return "<PropertyModel of %s>" % (self.section)
+        return "<PropertyModel of %s>" % self.section
 
     @property
     def section(self):

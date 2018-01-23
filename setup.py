@@ -39,9 +39,6 @@ except (ImportError, ValueError) as err:
 with open(readme) as f:
     description_text = f.read()
 
-with open("LICENSE") as f:
-    license_text = f.read()
-
 packages = [
     'odmlui',
     'odmlui.dnd',
@@ -72,6 +69,6 @@ setup(name='odML-UI',
       data_files=data_files,
       long_description=description_text,
       classifiers=CLASSIFIERS,
-      license=license_text,
+      license="BSD",
       test_suite='test'
       )

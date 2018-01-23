@@ -1,15 +1,18 @@
-from gi import pygtkcompat
-
-pygtkcompat.enable() 
+import cgi
+import pygtkcompat
+pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
-import cgi
-import odml.format as format
+from odml import format as ofmt
+
 from . import commands
 from .TreeView import TreeView
+
 COL_KEY = 0
 COL_VALUE = 1
+
+
 class AttributeView(TreeView):
     """
     A key-value ListStore based TreeView
@@ -24,6 +27,10 @@ class AttributeView(TreeView):
         self._model = None
         if obj is not None:
             self.set_model(obj)
+
+        # List of property attributes that is displayed in the property window
+        # and is not displayed again in the attribute view.
+        self._property_exclude = ["unit", "type", "uncertainty", "definition"]
 
         super(AttributeView, self).__init__(self._store)
 
@@ -43,7 +50,7 @@ class AttributeView(TreeView):
         obj.add_change_handler(self.on_object_change)
 
         self._model = obj
-        self._fmt   = obj._format
+        self._fmt = obj._format
         self.fill()
 
     def get_model(self):
@@ -57,16 +64,23 @@ class AttributeView(TreeView):
             if not isinstance(v, list):
                 if v is not None:
                     v = cgi.escape(v)
+
+                # Exclude property attributes that are displayed in the
+                # PropertyView window.
+                if isinstance(self._fmt, type(ofmt.Property)) and \
+                        k in self._property_exclude:
+                    continue
+
                 self._store.append([k, v])
 
     def on_edited(self, widget, row, new_value, col):
         store = self._store
-        iter = store.get_iter(row)
-        k = store.get_value(iter, COL_KEY)
+        store_iter = store.get_iter(row)
+        k = store.get_value(store_iter, COL_KEY)
         cmd = commands.ChangeValue(
-            object    = self._model,
-            attr      = self._fmt.map(k),
-            new_value = new_value)
+            object=self._model,
+            attr=self._fmt.map(k),
+            new_value=new_value)
 
         self.execute(cmd)
 

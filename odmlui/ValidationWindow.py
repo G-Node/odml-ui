@@ -93,17 +93,31 @@ class ValidationWindow(gtk.Window):
 
 if __name__ == "__main__":
     from odml.validation import Validation
-    from odml.tools.jsonparser import JSONReader
+    from odml.tools.odmlparser import ODMLReader
 
-    class Tab:  # a small stupid mock object
-        document = JSONReader().fromString("""
-    {"_type": "Document", "section": [
-        {"_type": "Section", "name": "sec1", "property": [
-            {"_type": "Property", "name": "prop1", "value": [{"_type": "Value", "value": "1"}]},
-            {"_type": "Property", "name": "prop1", "value": [{"_type": "Value", "value": "1"}]}
-        ]}
-    ]}
-    """)
+    class Tab:  # a small mock object
+        document = ODMLReader("JSON").from_string("""
+{
+    "odml-version": "1.1",
+    "Document": {
+        "sections": [{
+                "sections": [],
+                "properties": [
+                    {
+                        "dtype": "string",
+                        "name": "Unnamed Property",
+                        "value": [""]
+                    },{
+                        "dtype": "string",
+                        "name": "Unnamed Property 1",
+                        "value": [""]
+                    }
+                ],
+                "name": "Unnamed Section"
+        }]
+    }
+}
+""")
 
         def get_name(self):
             return "animal_keeping.odml"

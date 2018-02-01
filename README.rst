@@ -49,6 +49,7 @@ These dependencies currently only work on Linux, MacOS is not supported!
 MacOS using homebrew:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 For Python 2 (Python 3)
+
 * :code:`brew install gtk+ (gtk+3)`
 * :code:`brew install pygobject (pygobject3)`
 * :code:`brew install gnome-icon-theme`

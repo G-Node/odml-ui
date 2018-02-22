@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import glob
+import json
 import os
 
 # Use setuptools compulsorily, as the distutils doesn't work out well for the
@@ -14,24 +15,14 @@ try:
 except ImportError:
     py2exe = None
 
-try:
-    from odml.info import AUTHOR, CONTACT, CLASSIFIERS, HOMEPAGE, VERSION
-except ImportError as ex:
-    # Read the information from odml.info.py if package dependencies
-    # are not yet available during a local install.
-    CLASSIFIERS = ""
-    with open('odml/info.py') as f:
-        for line in f:
-            curr_args = line.split(" = ")
-            if len(curr_args) == 2:
-                if curr_args[0] == "AUTHOR":
-                    AUTHOR = curr_args[1].replace('\'', '').replace('\\', '').strip()
-                elif curr_args[0] == "CONTACT":
-                    CONTACT = curr_args[1].replace('\'', '').strip()
-                elif curr_args[0] == "HOMEPAGE":
-                    HOMEPAGE = curr_args[1].replace('\'', '').strip()
-                elif curr_args[0] == "VERSION":
-                    VERSION = curr_args[1].replace('\'', '').strip()
+with open(os.path.join("odmlui/info.json")) as infofile:
+    infodict = json.load(infofile)
+
+VERSION = infodict["VERSION"]
+AUTHOR = infodict["AUTHOR"]
+CONTACT = infodict["CONTACT"]
+HOMEPAGE = infodict["HOMEPAGE"]
+CLASSIFIERS = infodict["CLASSIFIERS"]
 
 
 class PackageNotFoundError(Exception):
@@ -83,6 +74,7 @@ setup(name='odML-UI',
           }
       },
       install_requires=install_req,
+      include_package_data=True,
       entry_points={'gui_scripts': ['odmlui = odmlui.__main__:run []']},
       data_files=data_files,
       long_description=description_text,

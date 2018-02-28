@@ -15,7 +15,7 @@ try:
 except ImportError:
     py2exe = None
 
-with open(os.path.join("odmlui/info.json")) as infofile:
+with open(os.path.join("odmlui", "info.json")) as infofile:
     infodict = json.load(infofile)
 
 VERSION = infodict["VERSION"]

@@ -44,6 +44,8 @@ Anaconda environments require only the following packages before installing the 
     $ conda install -c conda-forge gdk-pixbuf
     $ conda install -c pkgw-forge adwaita-icon-theme
 
+These dependencies currently only work on Linux, MacOS is not supported!
+
 MacOS using homebrew:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 For Python 2 (Python 3)

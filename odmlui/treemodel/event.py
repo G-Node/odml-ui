@@ -223,7 +223,29 @@ class ModificationNotifier(ChangeHandlable):
         func = lambda: super(ModificationNotifier, self)._reorder(childlist, new_index)
         return self.__fireChange("reorder", (childlist, new_index), func)
 
-# create a seperate global Event listeners for each class
+
+def remove_value(prop, pseudo):
+    """
+    Remove a pseudo value and its content from a property
+    and cleanup the index of subsequent pseudo values to
+    make sure the view does not break.
+    :param prop: odml Property augmented to fit odml-ui.
+    :param pseudo: odmlui.treemodel.ValueModel.Value that should be
+                   removed from prop.
+    """
+    # Remove pseudo_value first.
+    del prop.pseudo_values[pseudo._index]
+    # Clean up indices of subsequent pseudovalues.
+    for pval in prop.pseudo_values[pseudo._index:]:
+        pval._index = pval._index - 1
+    # Finally remove the actual value from the property value list.
+    # Property.value always returns a copy so we need to modify and reassign
+    # the affected values.
+    cp_val = prop.value
+    del cp_val[pseudo._index]
+    prop._value = cp_val
+
+# create a separate global Event listeners for each class
 # and provide ModificationNotifier Capabilities
 name = "event"
 provides = odml.getImplementation().provides + ["event"]

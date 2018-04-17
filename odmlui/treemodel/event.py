@@ -213,6 +213,14 @@ class ModificationNotifier(ChangeHandlable):
 
     def remove(self, obj):
         func = lambda: super(ModificationNotifier, self).remove(obj)
+
+        # Dirty Hack - if we are trying to remove a pseudo value from a property
+        # (both can be identified by having the 'pseudo_values' attribute), pass only
+        # the value itself, not the object. Otherwise property.remove() will
+        # try to remove the pseudo value, which of course it does not contain.
+        if hasattr(self, "pseudo_values") and hasattr(obj, "pseudo_values"):
+            func = lambda: remove_value(self, obj)
+
         self.__fireChange("remove", obj, func)
 
     def insert(self, position, obj):

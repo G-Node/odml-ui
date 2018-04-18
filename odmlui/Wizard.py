@@ -8,9 +8,7 @@ import gtk
 import odml
 import odml.terminology as terminology
 
-from odml.dtypes import default_values
-
-from .Helpers import create_pseudo_values
+from .Helpers import handle_property_import
 from .treemodel.SectionModel import SectionModel
 from .SectionView import SectionView
 from .ScrolledWindow import ScrolledWindow
@@ -249,19 +247,10 @@ class DocumentWizard:
                     continue
                 newsec = sec.clone(children=False)
                 for prop in sec.properties:
-                    # Every prop requires at least one default value according to its
-                    # dtype otherwise the property is currently broken.
                     cprop = prop.clone()
-                    if len(cprop._value) < 1:
-                        if cprop.dtype:
-                            cprop._value = [default_values(cprop.dtype)]
-                        else:
-                            cprop._value = [default_values('string')]
 
-                    # odml-ui properties are augmented with 'pseudo_values'.
-                    # When creating the properties for the current document,
-                    # make sure the pseudo_values are also initialized and added.
-                    create_pseudo_values([cprop])
+                    # All added properties need to be adjusted to odml-ui needs!
+                    handle_property_import(cprop)
 
                     newsec.append(cprop)
 

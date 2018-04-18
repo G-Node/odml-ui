@@ -5,6 +5,8 @@ pygtkcompat.enable_gtk(version='3.0')
 import odml
 import odml.property
 
+from odml.section import BaseSection
+
 from .TreeIters import PropIter, ValueIter, SectionPropertyIter
 from .TreeModel import TreeModel, ColumnMapper
 from . import ValueModel
@@ -106,7 +108,7 @@ class PropertyModel(TreeModel):
         # we are only interested in changes going up to the section level,
         # but not those dealing with subsections of ours
         if context.cur is not self._section or \
-                isinstance(context.val, odml.section.Section):
+                isinstance(context.val, BaseSection):
             return
 
         if context.action == "set" and context.post_change:

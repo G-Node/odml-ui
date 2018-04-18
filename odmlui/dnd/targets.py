@@ -1,6 +1,7 @@
 import odml
 
 from odml.base import Sectionable
+from odml.section import BaseSection
 
 from .. import commands
 
@@ -41,7 +42,7 @@ class ValueDrop(GenericDrop):
 class PropertyDrop(GenericDrop):
     def get_drop_dest(self, dst, action):
         if action.link: return None
-        while not isinstance(dst, odml.section.Section):
+        while not isinstance(dst, BaseSection):
             dst = dst.parent
         return dst
 
@@ -50,7 +51,7 @@ class PropertyDrop(GenericDrop):
         can only move/copy into Sections
         """
         if action.link: return False
-        return isinstance(dst, odml.section.Section)
+        return isinstance(dst, BaseSection)
 
 class SectionDrop(GenericDrop):
     def drop_object(self, action, dst, position, obj):
@@ -77,7 +78,7 @@ class SectionDrop(GenericDrop):
         * can only establish links to Sections
         * can only move/copy into Sections/Documents
         """
-        if action.link: return isinstance(dst, odml.section.Section)
+        if action.link: return isinstance(dst, BaseSection)
         return isinstance(dst, Sectionable)
 
 # TODO make links / include from other apps work

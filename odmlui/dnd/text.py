@@ -4,13 +4,15 @@ pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
 
+import odml
+import odml.tools.xmlparser as xmlparser
+
+from odml.section import BaseSection
+
 from . import odmldrop
 from . import tree
 from .targets import *
 from ..treemodel import ValueModel
-
-import odml
-import odml.tools.xmlparser as xmlparser
 
 class TextDrop(odmldrop.OdmlTreeDropTarget):
     """
@@ -53,7 +55,7 @@ class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
         for kls, tkls in [
             (ValueModel.Value, ValueDrop),
             (odml.property.Property, PropertyDrop),
-            (odml.section.Section, SectionDrop)
+            (BaseSection, SectionDrop)
             ]:
             if not kls in self.targets:
                 continue
@@ -79,7 +81,7 @@ class TextGenericDropForPropertyTV(TextGenericDrop):
         if isinstance(obj, ValueModel.Value) and not isinstance(dst, odml.property.Property):
             return False
         # can't drop properties to anything but sections
-        if isinstance(obj, odml.property.Property) and not isinstance(dst, odml.section.Section):
+        if isinstance(obj, odml.property.Property) and not isinstance(dst, BaseSection):
             return False
         return True
 
@@ -88,7 +90,7 @@ class TextGenericDropForSectionTV(TextGenericDropForPropertyTV):
     can drop Properties and Section, inherited is the capability to only drop
     Properties into Sections (not into Documents)
     """
-    targets = [odml.property.Property, odml.section.Section]
+    targets = [odml.property.Property, BaseSection]
 
 class TextDrag(odmldrop.OdmlDrag):
     """

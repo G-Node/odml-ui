@@ -1,8 +1,10 @@
 # -*- coding: utf8
 
-import odml.base as base
 import odml.format as format
 import odml.dtypes as dtypes
+
+from odml.base import BaseObject
+
 from . import nodes, event
 
 
@@ -20,7 +22,7 @@ class ValueFormat(format.Format):
     _map = {}
 
 
-class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifier):
+class Value(BaseObject, ValueNode, event.ModificationNotifier):
     """
     Since the odML value node has been merged with the odml.Property, and is
     only available as a 'pure' python list we cannot render it to the Editor
@@ -133,6 +135,6 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
         return self._reorder(self.parent.value, new_index)
 
     def clone(self):
-        obj = base.baseobject.clone(self)
+        obj = BaseObject.clone(self)
         obj._property = None
         return obj

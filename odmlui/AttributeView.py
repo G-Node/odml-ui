@@ -63,7 +63,7 @@ class AttributeView(TreeView):
             v = getattr(self._model, self._fmt.map(k))
             if not isinstance(v, list):
                 if v is not None:
-                    v = cgi.escape(v)
+                    v = cgi.escape(str(v))
 
                 # Exclude property attributes that are displayed in the
                 # PropertyView window.

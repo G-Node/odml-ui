@@ -3,8 +3,8 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 import odml
-import odml.property
 
+from odml.property import BaseProperty
 from odml.section import BaseSection
 
 from .TreeIters import PropIter, ValueIter, SectionPropertyIter
@@ -76,7 +76,7 @@ class PropertyModel(TreeModel):
         return super(PropertyModel, self).on_iter_nth_child(tree_iter, n)
 
     def _get_node_iter(self, node):
-        if isinstance(node, odml.property.Property):
+        if isinstance(node, BaseProperty):
             return PropIter(node)
         if isinstance(node, ValueModel.Value):
             return ValueIter(node)
@@ -84,7 +84,7 @@ class PropertyModel(TreeModel):
 
     def post_delete(self, parent, old_path):
         super(PropertyModel, self).post_delete(parent, old_path)
-        if isinstance(parent, odml.property.Property):
+        if isinstance(parent, BaseProperty):
             # a value was deleted
             if len(parent) == 1:
                 # the last child row is also not present anymore,

@@ -1,6 +1,7 @@
 import odml
 
 from odml.base import Sectionable
+from odml.property import BaseProperty
 from odml.section import BaseSection
 
 from .. import commands
@@ -37,7 +38,7 @@ class ValueDrop(GenericDrop):
         can only move/copy into Properties
         """
         if action.link: return False
-        return isinstance(dst, odml.property.Property)
+        return isinstance(dst, BaseProperty)
 
 class PropertyDrop(GenericDrop):
     def get_drop_dest(self, dst, action):

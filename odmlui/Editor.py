@@ -16,6 +16,8 @@ import odml
 import tempfile
 import odmlui.treemodel.mixin
 
+from odml.property import BaseProperty
+
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
 from odmlui.treemodel import SectionModel, ValueModel
 
@@ -995,7 +997,7 @@ class EditorWindow(gtk.Window):
         # 2. select the corresponding section
         sec = obj
         prop = None
-        if isinstance(obj, odml.property.Property):
+        if isinstance(obj, BaseProperty):
             sec = obj.parent
             prop = obj
         self._section_tv.select_object(sec)

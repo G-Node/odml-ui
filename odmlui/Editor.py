@@ -186,7 +186,13 @@ class EditorWindow(gtk.Window):
 
         # Check available screen size and adjust default app size to 1024x768 if possible.
         screen = self.get_screen()
-        currmon = screen.get_monitor_at_window(screen.get_active_window())
+        # Use first available monitor as default.
+        currmon = 0
+        actwin = screen.get_active_window()
+        # Set current monitor only, when active window returns not None.
+        if actwin:
+            currmon = screen.get_monitor_at_window(actwin)
+
         mondims = screen.get_monitor_geometry(currmon)
         if mondims.width >= 1024 and mondims.height >= 768:
             self.set_default_size(1024, 768)

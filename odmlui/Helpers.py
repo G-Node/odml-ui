@@ -74,24 +74,32 @@ def handle_section_import(section):
     """
     Augment all properties of an imported section according to odml-ui needs.
 
-    Every odml-ui property requires at least one default value according
-    to its dtype, otherwise the property is currently broken.
-    Further the properties are augmented with 'pseudo_values' which need to be
-    initialized and added to each property.
     :param section: imported odml.BaseSection
     """
     for prop in section.properties:
-        if len(prop._value) < 1:
-            if prop.dtype:
-                prop._value = [default_values(prop.dtype)]
-            else:
-                prop._value = [default_values('string')]
-
-        create_pseudo_values([prop])
+        handle_property_import(prop)
 
     # Make sure properties down the rabbit hole are also treated.
     for sec in section.sections:
         handle_section_import(sec)
+
+
+def handle_property_import(prop):
+    """
+    Every odml-ui property requires at least one default value according
+    to its dtype, otherwise the property is currently broken.
+    Further the properties are augmented with 'pseudo_values' which need to be
+    initialized and added to each property.
+
+    :param prop: imported odml.BaseProperty
+    """
+    if len(prop._value) < 1:
+        if prop.dtype:
+            prop._value = [default_values(prop.dtype)]
+        else:
+            prop._value = [default_values('string')]
+
+    create_pseudo_values([prop])
 
 
 def create_pseudo_values(odml_properties):

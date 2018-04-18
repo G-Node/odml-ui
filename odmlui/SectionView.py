@@ -11,6 +11,7 @@ from .DragProvider import DragProvider
 from .dnd.odmldrop import OdmlDrag, OdmlDrop
 from .dnd.targets import PropertyDrop, SectionDrop
 from .dnd.text import TextDrag, TextDrop, TextGenericDropForSectionTV
+from .Helpers import handle_section_import
 from .TreeView import TerminologyPopupTreeView
 
 
@@ -105,6 +106,9 @@ class SectionView(TerminologyPopupTreeView):
 
             # It is a terminology section. By default, pull in all its properties.
             section.merge()
+
+            # All added properties need to be adjusted to odml-ui needs!
+            handle_section_import(section)
 
         cmd = commands.AppendValue(obj=obj, val=section)
 

@@ -44,7 +44,12 @@ class Value(base.baseobject, base._baseobj, ValueNode, event.ModificationNotifie
             index = len(self._property.value)
             dtype = self.parent.dtype
             default_value = dtypes.default_values(dtype)
-            self.parent.value.append(default_value)
+            # property.value returns a copy: we therefore need an in between step
+            # to append a new value and reassign the modified value to the parent
+            # property.value.
+            val_cp = self.parent.value
+            val_cp.append(default_value)
+            self.parent.value = val_cp
 
         assert(isinstance(index, int))
         self._index = index

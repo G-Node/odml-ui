@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import glob
+import json
 import os
 
-from odmlui.info import VERSION, AUTHOR, CONTACT, HOMEPAGE, CLASSIFIERS
 # Use setuptools compulsorily, as the distutils doesn't work out well for the
 # installation procedure. The 'install_requires' and 'data_files' have better
 # support in setuptools.
@@ -14,6 +14,15 @@ try:
     kwargs.update({'console': ['odml-gui']})
 except ImportError:
     py2exe = None
+
+with open(os.path.join("odmlui", "info.json")) as infofile:
+    infodict = json.load(infofile)
+
+VERSION = infodict["VERSION"]
+AUTHOR = infodict["AUTHOR"]
+CONTACT = infodict["CONTACT"]
+HOMEPAGE = infodict["HOMEPAGE"]
+CLASSIFIERS = infodict["CLASSIFIERS"]
 
 
 class PackageNotFoundError(Exception):
@@ -65,6 +74,7 @@ setup(name='odML-UI',
           }
       },
       install_requires=install_req,
+      include_package_data=True,
       entry_points={'gui_scripts': ['odmlui = odmlui.__main__:run []']},
       data_files=data_files,
       long_description=description_text,

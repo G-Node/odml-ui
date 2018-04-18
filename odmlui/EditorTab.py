@@ -7,7 +7,7 @@ import os.path
 
 import odml
 import odml.validation
-from odml.tools.odmlparser import ODMLReader, ODMLWriter, allowed_parsers
+from odml.tools.odmlparser import ODMLReader, ODMLWriter
 
 from .CommandManager import CommandManager
 from .Helpers import uri_to_path, get_parser_for_uri, get_extension, \

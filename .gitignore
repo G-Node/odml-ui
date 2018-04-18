@@ -2,6 +2,7 @@
 *.pyc
 *.pyo
 *.egg
+*.eggs
 *.egg-info
 dist
 build

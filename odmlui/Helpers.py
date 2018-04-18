@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 from odml import fileio
-from odml.tools.odmlparser import allowed_parsers
+from odml.tools.parser_utils import SUPPORTED_PARSERS
 from .treemodel import ValueModel
 
 try:  # Python 3
@@ -49,7 +49,7 @@ def get_parser_for_uri(uri):
     path = uri_to_path(uri)
     parser = get_extension(path)
 
-    if parser not in allowed_parsers:
+    if parser not in SUPPORTED_PARSERS:
         parser = 'XML'
 
     return parser
@@ -63,7 +63,7 @@ def get_parser_for_file_type(file_type):
     Returns either the identified parser or XML as the fallback parser.
     """
     parser = file_type.upper()
-    if file_type not in allowed_parsers:
+    if file_type not in SUPPORTED_PARSERS:
         parser = 'XML'
     return parser
 

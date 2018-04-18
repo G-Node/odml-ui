@@ -213,6 +213,14 @@ class ModificationNotifier(ChangeHandlable):
 
     def remove(self, obj):
         func = lambda: super(ModificationNotifier, self).remove(obj)
+
+        # Dirty Hack - if we are trying to remove a pseudo value from a property
+        # (both can be identified by having the 'pseudo_values' attribute), pass only
+        # the value itself, not the object. Otherwise property.remove() will
+        # try to remove the pseudo value, which of course it does not contain.
+        if hasattr(self, "pseudo_values") and hasattr(obj, "pseudo_values"):
+            func = lambda: remove_value(self, obj)
+
         self.__fireChange("remove", obj, func)
 
     def insert(self, position, obj):
@@ -223,7 +231,29 @@ class ModificationNotifier(ChangeHandlable):
         func = lambda: super(ModificationNotifier, self)._reorder(childlist, new_index)
         return self.__fireChange("reorder", (childlist, new_index), func)
 
-# create a seperate global Event listeners for each class
+
+def remove_value(prop, pseudo):
+    """
+    Remove a pseudo value and its content from a property
+    and cleanup the index of subsequent pseudo values to
+    make sure the view does not break.
+    :param prop: odml Property augmented to fit odml-ui.
+    :param pseudo: odmlui.treemodel.ValueModel.Value that should be
+                   removed from prop.
+    """
+    # Remove pseudo_value first.
+    del prop.pseudo_values[pseudo._index]
+    # Clean up indices of subsequent pseudovalues.
+    for pval in prop.pseudo_values[pseudo._index:]:
+        pval._index = pval._index - 1
+    # Finally remove the actual value from the property value list.
+    # Property.value always returns a copy so we need to modify and reassign
+    # the affected values.
+    cp_val = prop.value
+    del cp_val[pseudo._index]
+    prop._value = cp_val
+
+# create a separate global Event listeners for each class
 # and provide ModificationNotifier Capabilities
 name = "event"
 provides = odml.getImplementation().provides + ["event"]

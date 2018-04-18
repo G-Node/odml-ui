@@ -5,7 +5,9 @@ pygtkcompat.enable_gtk(version='3.0')
 import gtk, gobject
 import odmlui
 import odml.doc
-import odml.base
+
+from odml.base import Sectionable
+
 from .TreeIters import SectionIter
 from .TreeModel import TreeModel, ColumnMapper
 debug = lambda x: 0
@@ -94,7 +96,7 @@ class SectionModel(TreeModel):
             print("change event(section): ", context)
 
         # we are only interested in changes on sections
-        if not isinstance(context.obj, odml.base.sectionable): return
+        if not isinstance(context.obj, Sectionable): return
         if not context.cur.document is self.document: return
 
         if context.action == "set" and context.post_change:
@@ -107,7 +109,7 @@ class SectionModel(TreeModel):
             self.event_reorder(context)
 
         obj = context.val
-        if not isinstance(obj, odml.base.sectionable): return
+        if not isinstance(obj, Sectionable): return
 
         if context.action == "remove":
             self.event_remove(context)

@@ -1,5 +1,9 @@
 import odml
+
+from odml.base import Sectionable
+
 from .. import commands
+
 
 class ActionDrop(object):
     """
@@ -74,6 +78,6 @@ class SectionDrop(GenericDrop):
         * can only move/copy into Sections/Documents
         """
         if action.link: return isinstance(dst, odml.section.Section)
-        return isinstance(dst, odml.base.sectionable)
+        return isinstance(dst, Sectionable)
 
 # TODO make links / include from other apps work

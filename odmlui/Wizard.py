@@ -258,6 +258,11 @@ class DocumentWizard:
                         else:
                             cprop._value = [default_values('string')]
 
+                    # odml-ui properties are augmented with 'pseudo_values'.
+                    # When creating the properties for the current document,
+                    # make sure the pseudo_values are also initialized and added.
+                    create_pseudo_values([cprop])
+
                     newsec.append(cprop)
 
                 sec._assoc_sec = newsec

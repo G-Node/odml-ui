@@ -4,11 +4,14 @@ import odml
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
+from odml.section import BaseSection
+
 from . import commands
 from .DragProvider import DragProvider
 from .dnd.odmldrop import OdmlDrag, OdmlDrop
 from .dnd.targets import PropertyDrop, SectionDrop
 from .dnd.text import TextDrag, TextDrop, TextGenericDropForSectionTV
+from .Helpers import handle_section_import
 from .TreeView import TerminologyPopupTreeView
 
 
@@ -30,8 +33,8 @@ class SectionView(TerminologyPopupTreeView):
         pd = PropertyDrop(exec_func=_exec)
         sd = SectionDrop(exec_func=_exec)
         for target in [
-                OdmlDrag(mime="odml/section-ref", inst=odml.section.Section),
-                TextDrag(mime="odml/section", inst=odml.section.Section),
+                OdmlDrag(mime="odml/section-ref", inst=BaseSection),
+                TextDrag(mime="odml/section", inst=BaseSection),
                 TextDrag(mime="TEXT"),
                 OdmlDrop(mime="odml/property-ref", target=pd, registry=registry,
                          exec_func=_exec),
@@ -104,12 +107,15 @@ class SectionView(TerminologyPopupTreeView):
             # It is a terminology section. By default, pull in all its properties.
             section.merge()
 
+            # All added properties need to be adjusted to odml-ui needs!
+            handle_section_import(section)
+
         cmd = commands.AppendValue(obj=obj, val=section)
 
         self.execute(cmd)
 
         # Expand tree if the parent object is a section
-        if isinstance(obj, odml.section.Section):
+        if isinstance(obj, BaseSection):
             tv = self._treeview
             (model, tree_iter) = tv.get_selection().get_selected()
             tv.expand_row(model.get_path(tree_iter), False)

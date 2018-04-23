@@ -7,6 +7,8 @@ pygtkcompat.enable_gtk(version='3.0')
 import gtk
 import odml
 import odml.terminology as terminology
+
+from .Helpers import handle_property_import
 from .treemodel.SectionModel import SectionModel
 from .SectionView import SectionView
 from .ScrolledWindow import ScrolledWindow
@@ -245,7 +247,13 @@ class DocumentWizard:
                     continue
                 newsec = sec.clone(children=False)
                 for prop in sec.properties:
-                    newsec.append(prop.clone())
+                    cprop = prop.clone()
+
+                    # All added properties need to be adjusted to odml-ui needs!
+                    handle_property_import(cprop)
+
+                    newsec.append(cprop)
+
                 sec._assoc_sec = newsec
                 if hasattr(sec.parent, "_assoc_sec"):
                     sec.parent._assoc_sec.append(newsec)

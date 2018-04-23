@@ -4,7 +4,8 @@ Document, Section, Property and Value.
 
 Additionally implements change notifications up to the corresponding section.
 """
-import odml.property
+from odml.property import BaseProperty
+
 from . import event
 
 
@@ -109,7 +110,7 @@ class SectionNode(ParentedNode):
         return child.from_path(path[2:])
 
     def path_to(self, child):
-        if isinstance(child, odml.property.Property):
+        if isinstance(child, BaseProperty):
             return 1, identity_index(self._props, child)
         return 0, identity_index(self._sections, child)
 

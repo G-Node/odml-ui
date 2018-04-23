@@ -9,6 +9,8 @@ import odml.dtypes as dtypes
 import odml.terminology as terminology
 
 from odml import DType
+from odml.property import BaseProperty
+
 from . import commands
 from . import TextEditor
 from .DragProvider import DragProvider
@@ -57,8 +59,8 @@ class PropertyView(TerminologyPopupTreeView):
         pd = PropertyDrop(exec_func=_exec)
         sd = SectionDrop(exec_func=_exec)
         for target in [
-            OdmlDrag(mime="odml/property-ref", inst=odml.property.Property),
-            TextDrag(mime="odml/property", inst=odml.property.Property),
+            OdmlDrag(mime="odml/property-ref", inst=BaseProperty),
+            TextDrag(mime="odml/property", inst=BaseProperty),
             OdmlDrag(mime="odml/value-ref", inst=ValueModel.Value),
             TextDrag(mime="odml/value", inst=ValueModel.Value),
             TextDrag(mime="TEXT"),
@@ -114,7 +116,7 @@ class PropertyView(TerminologyPopupTreeView):
         self.on_property_select(obj)
 
         # Always expand multi value properties when selected
-        is_multi_value = isinstance(obj, odml.property.Property) and len(obj.value) > 1
+        is_multi_value = isinstance(obj, BaseProperty) and len(obj.value) > 1
         if is_multi_value:
             tree_selection.get_tree_view().expand_row(model.get_path(tree_iter), False)
 

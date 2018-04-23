@@ -4,13 +4,15 @@ pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
 
+import odml.tools.xmlparser as xmlparser
+
+from odml.property import BaseProperty
+from odml.section import BaseSection
+
 from . import odmldrop
 from . import tree
 from .targets import *
 from ..treemodel import ValueModel
-
-import odml
-import odml.tools.xmlparser as xmlparser
 
 class TextDrop(odmldrop.OdmlTreeDropTarget):
     """
@@ -52,8 +54,8 @@ class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
     def drop_object(self, action, dst, position, obj):
         for kls, tkls in [
             (ValueModel.Value, ValueDrop),
-            (odml.property.Property, PropertyDrop),
-            (odml.section.Section, SectionDrop)
+            (BaseProperty, PropertyDrop),
+            (BaseSection, SectionDrop)
             ]:
             if not kls in self.targets:
                 continue
@@ -71,15 +73,15 @@ class TextGenericDropForPropertyTV(TextGenericDrop):
     can drop Properties and Values, but only Values into Properties
     and Properties into Sections
     """
-    targets = [odml.property.Property, ValueModel.Value]
+    targets = [BaseProperty, ValueModel.Value]
     def text_can_drop(self, action, dst, position, obj):
         if not super(TextGenericDropForPropertyTV, self).text_can_drop(action, dst, position, obj):
             return False
         # can't drop values to anything but properties
-        if isinstance(obj, ValueModel.Value) and not isinstance(dst, odml.property.Property):
+        if isinstance(obj, ValueModel.Value) and not isinstance(dst, BaseProperty):
             return False
         # can't drop properties to anything but sections
-        if isinstance(obj, odml.property.Property) and not isinstance(dst, odml.section.Section):
+        if isinstance(obj, BaseProperty) and not isinstance(dst, BaseSection):
             return False
         return True
 
@@ -88,7 +90,7 @@ class TextGenericDropForSectionTV(TextGenericDropForPropertyTV):
     can drop Properties and Section, inherited is the capability to only drop
     Properties into Sections (not into Documents)
     """
-    targets = [odml.property.Property, odml.section.Section]
+    targets = [BaseProperty, BaseSection]
 
 class TextDrag(odmldrop.OdmlDrag):
     """

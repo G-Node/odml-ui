@@ -547,6 +547,18 @@ class EditorWindow(gtk.Window):
         self.append_tab(tab)
         return tab
 
+    def convert_version(self, uri, file_type=None):
+        """
+        Open a new tab, and load a previous version odML file into it.
+        """
+        tab = EditorTab(self)
+        if not tab.convert(uri):  # Close tab upon parsing errors
+            tab.close()
+            return
+
+        self.append_tab(tab)
+        return tab
+
     @gui_action("CloneTab", tooltip="Create a copy of the current tab", label="_Clone",
                 stock_id=gtk.STOCK_COPY, accelerator="<control><shift>C")
     def on_clone_tab(self, action):

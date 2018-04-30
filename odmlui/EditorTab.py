@@ -8,6 +8,8 @@ import os.path
 import odml
 import odml.validation
 from odml.tools.odmlparser import ODMLReader, ODMLWriter
+from odml.tools.parser_utils import InvalidVersionException
+from odml.tools.version_converter import VersionConverter
 
 from .CommandManager import CommandManager
 from .Helpers import uri_to_path, get_parser_for_uri, get_extension, \
@@ -61,6 +63,15 @@ class EditorTab(object):
         odml_reader = ODMLReader(parser=parser)
         try:
             self.document = odml_reader.from_file(file_path)
+        except InvalidVersionException as inver:
+            _, curr_file = os.path.split(file_path)
+            err_header = "Cannot open file '%s'." % curr_file
+            err_msg = ("You are trying to open an odML file of an outdated format. "
+                       "\n\nUse 'File .. import' to convert and open files of "
+                       "a previous odML format.")
+            ErrorDialog(self.window, err_header, err_msg)
+            return False
+
         except Exception as e:
             ErrorDialog(self.window, "Error parsing '%s'" % file_path, str(e))
             if len(self.window.notebook) < 1:

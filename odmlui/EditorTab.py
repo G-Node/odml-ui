@@ -86,12 +86,23 @@ class EditorTab(object):
 
     def convert(self, uri):
         file_path = uri_to_path(uri)
+        parser = get_parser_for_uri(file_path)
+        vconv = VersionConverter(file_path)
 
         # Currently we can only convert to xml out of the box,
         # so don't bother about the extension.
         file_name = os.path.basename(file_path)
         new_file_name = "%s_converted.xml" % os.path.splitext(file_name)[0]
         new_file_path = os.path.join(os.path.dirname(file_path), new_file_name)
+
+        try:
+            vconv.write_to_file(new_file_path, parser)
+        except Exception as err:
+            err_header = "Error converting file '%s'." % file_name
+            ErrorDialog(self.window, err_header, str(err))
+            return False
+
+        # TODO display conversion warnings
 
         return True
 

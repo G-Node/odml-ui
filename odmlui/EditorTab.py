@@ -104,7 +104,8 @@ class EditorTab(object):
 
         # TODO display conversion warnings
 
-        return True
+        # When we have written, we can load!
+        return self.load(new_file_path)
 
     def reset(self):
         self.edited = 0  # initialize the edit stack position

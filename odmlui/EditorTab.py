@@ -85,6 +85,14 @@ class EditorTab(object):
         return True
 
     def convert(self, uri):
+        """
+        Convert a previous odML version to the current one. If the file can be
+        successfully converted, it is saved with the old filename and the
+        postfix '_converted' in the xml format and immediately loaded into a new tab.
+
+        :param uri: uri of the conversion candidate file.
+        :return: True if loading worked, False if any conversion or loading errors occur.
+        """
         file_path = uri_to_path(uri)
         parser = get_parser_for_uri(file_path)
         vconv = VersionConverter(file_path)

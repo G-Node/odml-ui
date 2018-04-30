@@ -85,6 +85,14 @@ class EditorTab(object):
         return True
 
     def convert(self, uri):
+        file_path = uri_to_path(uri)
+
+        # Currently we can only convert to xml out of the box,
+        # so don't bother about the extension.
+        file_name = os.path.basename(file_path)
+        new_file_name = "%s_converted.xml" % os.path.splitext(file_name)[0]
+        new_file_path = os.path.join(os.path.dirname(file_path), new_file_name)
+
         return True
 
     def reset(self):

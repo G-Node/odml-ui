@@ -84,6 +84,9 @@ class EditorTab(object):
         self.window._info_bar.show_info("Loading of %s done!" % (os.path.basename(file_path)))
         return True
 
+    def convert(self, uri):
+        return True
+
     def reset(self):
         self.edited = 0  # initialize the edit stack position
         self.command_manager.reset()

@@ -13,5 +13,6 @@
     "Intended Audience :: Science/Research",
     "Intended Audience :: End Users/Desktop"
   ],
-  "ODMLTABLES_VERSION": "0.2.0"
+  "ODMLTABLES_VERSION_MIN": "0.2.0",
+  "ODMLTABLES_VERSION_MAX": "0.9.9"
 }

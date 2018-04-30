@@ -44,6 +44,7 @@ ui_info = \
     <menu name='FileMenu' action='FileMenu'>
       <menuitem action='NewFile'/>
       <menuitem action='FileOpen'/>
+      <menuitem action='Import'/>
       <menuitem action='OpenRecent' />
       <menuitem name='Save' action='Save' />
       <menuitem action='SaveAs' />
@@ -546,6 +547,12 @@ class EditorWindow(gtk.Window):
 
         self.append_tab(tab)
         return tab
+
+    @gui_action("Import", tooltip="Import previous odML version", label="Import odML")
+    def import_file(self, action):
+        """Open a file chooser dialog to import a previous odML version file."""
+        self.chooser_dialog(title="Import previous odML version",
+                            callback=self.convert_version)
 
     def convert_version(self, uri, file_type=None):
         """

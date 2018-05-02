@@ -10,12 +10,16 @@ pygtkcompat.enable_gtk(version='3.0')
 import gtk
 import gobject
 
+from distutils.version import LooseVersion as CheckVer
+
 import odml
 from odml.terminology import CACHE_DIR
 import odmlui.treemodel.mixin
 from . import commands
 
-from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
+from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION
+from odmlui.info import ODMLTABLES_VERSION_MAX as OTV_MAX
+from odmlui.info import ODMLTABLES_VERSION_MIN as OTV_MIN
 from odmlui.treemodel import SectionModel
 
 from .InfoBar import EditorInfoBar
@@ -320,8 +324,8 @@ class EditorWindow(gtk.Window):
         self.odml_tables_available = False
         try:
             from odmltables import gui
-            from odmltables import VERSION as OTVERSION
-            if OTVERSION == ODMLTABLES_VERSION:
+            from odmltables import VERSION as OT_VERSION
+            if CheckVer(OTV_MIN) <= CheckVer(OT_VERSION) <= CheckVer(OTV_MAX):
                 self.odml_tables_available = True
         except (ImportError, AttributeError) as e:
             print("[Info] odMLTables not available: %s" % e)
@@ -578,8 +582,7 @@ class EditorWindow(gtk.Window):
                             self.current_tab.document, wizard)
         else:
             self._info_bar.show_info("You need odMLTables (v%s or newer) "
-                                     "installed to run this feature." %
-                                     ODMLTABLES_VERSION)
+                                     "installed to run this feature." % OTV_MIN)
 
     @gui_action("odMLTablesCompare", tooltip="Compare entities of an odML document",
                 label="odMLTablesCompare", stock_id="INM6-compare-table",

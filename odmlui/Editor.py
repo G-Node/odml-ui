@@ -44,6 +44,7 @@ ui_info = \
     <menu name='FileMenu' action='FileMenu'>
       <menuitem action='NewFile'/>
       <menuitem action='FileOpen'/>
+      <menuitem action='Import'/>
       <menuitem action='OpenRecent' />
       <menuitem name='Save' action='Save' />
       <menuitem action='SaveAs' />
@@ -541,6 +542,24 @@ class EditorWindow(gtk.Window):
         """open a new tab, load the document into it"""
         tab = EditorTab(self)
         if not tab.load(uri):  # Close tab upon parsing errors
+            tab.close()
+            return
+
+        self.append_tab(tab)
+        return tab
+
+    @gui_action("Import", tooltip="Import previous odML version", label="Import odML")
+    def import_file(self, action):
+        """Open a file chooser dialog to import a previous odML version file."""
+        self.chooser_dialog(title="Import previous odML version",
+                            callback=self.convert_version)
+
+    def convert_version(self, uri, file_type=None):
+        """
+        Open a new tab, and load a previous version odML file into it.
+        """
+        tab = EditorTab(self)
+        if not tab.convert(uri):  # Close tab upon parsing errors
             tab.close()
             return
 

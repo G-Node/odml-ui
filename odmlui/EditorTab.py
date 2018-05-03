@@ -8,6 +8,8 @@ import os.path
 import odml
 import odml.validation
 from odml.tools.odmlparser import ODMLReader, ODMLWriter
+from odml.tools.parser_utils import InvalidVersionException
+from odml.tools.version_converter import VersionConverter
 
 from .CommandManager import CommandManager
 from .Helpers import uri_to_path, get_parser_for_uri, get_extension, \
@@ -61,6 +63,15 @@ class EditorTab(object):
         odml_reader = ODMLReader(parser=parser)
         try:
             self.document = odml_reader.from_file(file_path)
+        except InvalidVersionException as inver:
+            _, curr_file = os.path.split(file_path)
+            err_header = "Cannot open file '%s'." % curr_file
+            err_msg = ("You are trying to open an odML file of an outdated format. "
+                       "\n\nUse 'File .. import' to convert and open files of "
+                       "a previous odML format.")
+            ErrorDialog(self.window, err_header, err_msg)
+            return False
+
         except Exception as e:
             ErrorDialog(self.window, "Error parsing '%s'" % file_path, str(e))
             if len(self.window.notebook) < 1:
@@ -72,6 +83,37 @@ class EditorTab(object):
         self.window.registry.add(self.document)
         self.window._info_bar.show_info("Loading of %s done!" % (os.path.basename(file_path)))
         return True
+
+    def convert(self, uri):
+        """
+        Convert a previous odML version to the current one. If the file can be
+        successfully converted, it is saved with the old filename and the
+        postfix '_converted' in the xml format and immediately loaded into a new tab.
+
+        :param uri: uri of the conversion candidate file.
+        :return: True if loading worked, False if any conversion or loading errors occur.
+        """
+        file_path = uri_to_path(uri)
+        parser = get_parser_for_uri(file_path)
+        vconv = VersionConverter(file_path)
+
+        # Currently we can only convert to xml out of the box,
+        # so don't bother about the extension.
+        file_name = os.path.basename(file_path)
+        new_file_name = "%s_converted.xml" % os.path.splitext(file_name)[0]
+        new_file_path = os.path.join(os.path.dirname(file_path), new_file_name)
+
+        try:
+            vconv.write_to_file(new_file_path, parser)
+        except Exception as err:
+            err_header = "Error converting file '%s'." % file_name
+            ErrorDialog(self.window, err_header, str(err))
+            return False
+
+        # TODO display conversion warnings
+
+        # When we have written, we can load!
+        return self.load(new_file_path)
 
     def reset(self):
         self.edited = 0  # initialize the edit stack position

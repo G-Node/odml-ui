@@ -1,6 +1,6 @@
 {
-  "VERSION": "1.3.1",
-  "AUTHOR": "Shubham Dighe, Hagen Fritsch, Christian Kellner, Jan Grewe, Achilleas Koutsou, Michael Sonntag",
+  "VERSION": "1.3.2",
+  "AUTHOR": "Shubham Dighe, Hagen Fritsch, Jan Grewe, Christian Kellner, Achilleas Koutsou, Michael Sonntag",
   "COPYRIGHT": "(c) 2011-2018, German Neuroinformatics Node",
   "CONTACT": "dev@g-node.org",
   "HOMEPAGE": "https://github.com/G-Node/odml-ui",

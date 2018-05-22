@@ -14,6 +14,10 @@ versions of odML. Files saved in a previous format version can be automatically
 converted into the new format via "File - Import". The import will create a new file
 and will not overwrite the original file.
 
+Be aware that the value dtype :code:`binary` has been removed. Incorporating binary
+data into odML files is discouraged, provide references to the original files using the
+:code:`URL` dtype instead.
+
 
 Dependencies
 ------------

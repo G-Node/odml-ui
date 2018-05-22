@@ -6,6 +6,15 @@ The Python odML library is available on `GitHub <https://github.com/G-Node/pytho
 If you are not familiar with the version control system **git**, but still want to use it, 
 have a look at the documentation available on the `git-scm website <https://git-scm.com/>`_.
 
+Breaking changes
+----------------
+
+odML Version 1.4 introduced breaking format and API changes compared to the previous
+versions of odML. Files saved in a previous format version can be automatically
+converted into the new format via "File - Import". The import will create a new file
+and will not overwrite the original file.
+
+
 Dependencies
 ------------
 

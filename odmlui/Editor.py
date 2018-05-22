@@ -9,6 +9,8 @@ pygtkcompat.enable_gtk(version='3.0')
 import gtk
 import gobject
 
+from distutils.version import LooseVersion as CheckVer
+
 import odml
 # Currently odml.terminology does not longer support CACHE_DIR
 # but might again in the future.
@@ -326,8 +328,8 @@ class EditorWindow(gtk.Window):
         self.odml_tables_available = False
         try:
             from odmltables import gui
-            from odmltables import VERSION as OTVERSION
-            if OTVERSION == ODMLTABLES_VERSION:
+            from odmltables import VERSION as OT_VERSION
+            if CheckVer(OT_VERSION) >= ODMLTABLES_VERSION:
                 self.odml_tables_available = True
         except (ImportError, AttributeError) as e:
             print("[Info] odMLTables not available: %s" % e)

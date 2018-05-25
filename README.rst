@@ -60,7 +60,21 @@ Anaconda environments require only the following packages before installing the 
     $ conda install -c conda-forge gdk-pixbuf
     $ conda install -c pkgw-forge adwaita-icon-theme
 
-These dependencies currently only work on Linux, MacOS is not supported!
+NOTE: These dependencies currently only work on Linux out of the box!
+
+The MacOS installation of these 3rd party dependencies contain a bug which causes
+the opening of any window selecting files to crash the application.
+
+If you still want to use odmlui with conda on MacOS, you currently need to
+apply a manual fix at the start of you session in your activate conda environment
+to avert this crash:
+
+:code:`export GSETTINGS_SCHEMA_DIR=$CONDA_PREFIX/share/glib-2.0/schemas`
+
+You can also add scripts to your conda environment that always automatically sets up the
+required environment variable at the start of a conda session as described in the `conda documentation
+<https://conda.io/docs/user-guide/tasks/manage-environments.html#macos-linux-save-env-variables>`_.
+
 
 MacOS using homebrew:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

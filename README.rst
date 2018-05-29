@@ -109,8 +109,10 @@ required GObject introspection library.
 
 Documentation
 -------------
-odML related documentation can be found at the
-`Python-odML <http://g-node.github.io/python-odml>`_ tutorial page.
+
+More information about the project including related projects as well as tutorials and
+examples can be found at our `odML project page <https://g-node.github.io/python-odml>`_
+
 
 Bugs & Questions
 ----------------

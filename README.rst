@@ -22,6 +22,20 @@ For details regarding the introduced changes please check the `github release no
 <https://github.com/G-Node/odml-ui/releases>`_.
 
 
+Release Versions
+----------------
+All released versions are distributed via the `Python Package Index`_ and can
+be installed using pip_::
+
+    $ pip install odml-ui
+
+Once installed, the program can be activated via the command line:
+
+    $ odmlui
+
+Note: It might be required to install the external GTK3 dependencies first.
+
+
 Dependencies
 ------------
 
@@ -62,10 +76,10 @@ Anaconda environments require only the following packages before installing the 
 
 NOTE: These packages currently only work on Linux out of the box!
 
-The MacOS installation of these 3rd party dependencies contain a bug which causes
+The macOS installation of these 3rd party dependencies contain a bug which causes
 the opening of any window selecting files to crash the application.
 
-If you still want to use odmlui with conda on MacOS, you currently need to
+If you still want to use odmlui with conda on macOS, you currently need to
 apply a manual fix at the start of your session in your active conda environment
 to avert this crash:
 
@@ -76,8 +90,8 @@ required environment variable at the start of a conda session as described in th
 <https://conda.io/docs/user-guide/tasks/manage-environments.html#macos-linux-save-env-variables>`_.
 
 
-MacOS using homebrew:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+macOS using homebrew:
+~~~~~~~~~~~~~~~~~~~~~
 For Python 2 (Python 3)
 
 * :code:`brew install gtk+ (gtk+3)`
@@ -86,8 +100,8 @@ For Python 2 (Python 3)
 * :code:`brew install gobject-introspection`
 
 
-Installation
-------------
+Installation from source
+------------------------
 
 To download the odML-Editor, please either use git and clone the 
 repository from GitHub::

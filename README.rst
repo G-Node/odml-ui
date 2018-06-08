@@ -103,8 +103,9 @@ For Python 2 (Python 3)
 Installation from source
 ------------------------
 
-To download the odML-Editor, please either use git and clone the 
-repository from GitHub::
+The most straightforward way to get to the odML-Editor source from
+the command line is to use git and clone the repository from GitHub
+into your directory of choice::
 
   $ cd /home/usr/toolbox/
   $ git clone https://github.com/G-Node/odml-ui.git

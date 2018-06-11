@@ -1088,12 +1088,15 @@ def get_img_path(icon_name):
 
 
 def register_stock_icons():
-    # conda environments might not have access to the system stock items.
-    # Therefore update the IconTheme search path.
-    if conda_env_root:
-        print("[Info] Updating IconTheme search path")
-        icon_theme = gtk.icon_theme_get_default()
-        icon_theme.prepend_search_path(os.path.join(conda_env_root, "share", "icons"))
+
+    # virtual or conda environments as well as local installs might
+    # not have access to the system stock items so we update the IconTheme search path.
+    print("[Info] Updating IconTheme search paths")
+    icon_theme = gtk.icon_theme_get_default()
+
+    icon_paths = lookup_resource_paths(os.path.join('share', 'icons'))
+    for ipath in icon_paths:
+        icon_theme.prepend_search_path(ipath)
 
     ctrlshift = gtk.gdk.CONTROL_MASK | gtk.gdk.SHIFT_MASK
     icons = [('odml-logo', '_odML', 0, 0, ''),

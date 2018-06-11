@@ -22,6 +22,20 @@ For details regarding the introduced changes please check the `github release no
 <https://github.com/G-Node/odml-ui/releases>`_.
 
 
+Release Versions
+----------------
+All released versions are distributed via the `Python Package Index`_ and can
+be installed using pip_::
+
+    $ pip install odml-ui
+
+Once installed, the program can be activated via the command line:
+
+    $ odmlui
+
+Note: It might be required to install the external GTK3 dependencies first.
+
+
 Dependencies
 ------------
 
@@ -60,10 +74,24 @@ Anaconda environments require only the following packages before installing the 
     $ conda install -c conda-forge gdk-pixbuf
     $ conda install -c pkgw-forge adwaita-icon-theme
 
-These dependencies currently only work on Linux, MacOS is not supported!
+NOTE: These packages currently only work on Linux out of the box!
 
-MacOS using homebrew:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The macOS installation of these 3rd party dependencies contain a bug which causes
+the opening of any window selecting files to crash the application.
+
+If you still want to use odmlui with conda on macOS, you currently need to
+apply a manual fix at the start of your session in your active conda environment
+to avert this crash:
+
+:code:`export GSETTINGS_SCHEMA_DIR=$CONDA_PREFIX/share/glib-2.0/schemas`
+
+You can also add scripts to your conda environment that always automatically sets up the
+required environment variable at the start of a conda session as described in the `conda documentation
+<https://conda.io/docs/user-guide/tasks/manage-environments.html#macos-linux-save-env-variables>`_.
+
+
+macOS using homebrew:
+~~~~~~~~~~~~~~~~~~~~~
 For Python 2 (Python 3)
 
 * :code:`brew install gtk+ (gtk+3)`
@@ -72,11 +100,12 @@ For Python 2 (Python 3)
 * :code:`brew install gobject-introspection`
 
 
-Installation
-------------
+Installation from source
+------------------------
 
-To download the odML-Editor, please either use git and clone the 
-repository from GitHub::
+The most straightforward way to get to the odML-Editor source from
+the command line is to use git and clone the repository from GitHub
+into your directory of choice::
 
   $ cd /home/usr/toolbox/
   $ git clone https://github.com/G-Node/odml-ui.git
@@ -95,8 +124,10 @@ required GObject introspection library.
 
 Documentation
 -------------
-odML related documentation can be found at the
-`Python-odML <http://g-node.github.io/python-odml>`_ tutorial page.
+
+More information about the project including related projects as well as tutorials and
+examples can be found at our `odML project page <https://g-node.github.io/python-odml>`_
+
 
 Bugs & Questions
 ----------------

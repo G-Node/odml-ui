@@ -3,6 +3,10 @@
 Used to document all changes from previous releases and collect changes 
 until the next release.
 
+# Latest changes in master
+
+- Icon search path update. See #130
+
 
 # Version 1.4.0
 ## Breaking changes

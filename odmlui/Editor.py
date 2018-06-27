@@ -499,6 +499,14 @@ class EditorWindow(gtk.Window):
 
         return True
 
+    def set_welcome(self):
+        """
+        Run the welcome action in case there is no open tab.
+        Required when cancelling or failing on a wizard or an open file dialog.
+        """
+        if len(self.notebook) < 1:
+            self.welcome()
+
     @gui_action("About", tooltip="About odML editor", stock_id=gtk.STOCK_ABOUT)
     def about(self, action):
         logo = self.render_icon("odml-logo", gtk.ICON_SIZE_DIALOG)

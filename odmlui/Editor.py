@@ -536,6 +536,7 @@ class EditorWindow(gtk.Window):
         if wizard:
             wiz = DocumentWizard()
             wiz.finish = lambda doc: self.new_file(wizard=False, doc=doc)
+            wiz.cleanup = self.set_welcome
             return
 
         tab = EditorTab(self)

@@ -183,9 +183,9 @@ class EditorWindow(gtk.Window):
     odMLHomepage = HOMEPAGE
     registry = DocumentRegistry()
     editors = set()
-    welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty",
-                                "NewValue", "Delete", "CloneTab", "Validate",
-                                "odMLTablesCompare", "odMLTablesConvert",
+    welcome_disabled_actions = ["Save", "SaveAs", "Undo", "Redo", "NewSection",
+                                "NewProperty", "NewValue", "Delete", "CloneTab",
+                                "Validate", "odMLTablesCompare", "odMLTablesConvert",
                                 "odMLTablesFilter", "odMLTablesMerge"]
 
     def __init__(self, parent=None):

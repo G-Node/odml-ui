@@ -70,12 +70,12 @@ class EditorTab(object):
                        "\n\nUse 'File .. import' to convert and open files of "
                        "a previous odML format.")
             ErrorDialog(self.window, err_header, err_msg)
+            self.window.set_welcome()
             return False
 
         except Exception as e:
             ErrorDialog(self.window, "Error parsing '%s'" % file_path, str(e))
-            if len(self.window.notebook) < 1:
-                self.window.welcome()
+            self.window.set_welcome()
             return False
 
         self.document.finalize()

@@ -183,9 +183,9 @@ class EditorWindow(gtk.Window):
     odMLHomepage = HOMEPAGE
     registry = DocumentRegistry()
     editors = set()
-    welcome_disabled_actions = ["Save", "SaveAs", "NewSection", "NewProperty",
-                                "NewValue", "Delete", "CloneTab", "Validate",
-                                "odMLTablesCompare", "odMLTablesConvert",
+    welcome_disabled_actions = ["Save", "SaveAs", "Undo", "Redo", "NewSection",
+                                "NewProperty", "NewValue", "Delete", "CloneTab",
+                                "Validate", "odMLTablesCompare", "odMLTablesConvert",
                                 "odMLTablesFilter", "odMLTablesMerge"]
 
     def __init__(self, parent=None):
@@ -499,6 +499,14 @@ class EditorWindow(gtk.Window):
 
         return True
 
+    def set_welcome(self):
+        """
+        Run the welcome action in case there is no open tab.
+        Required when cancelling or failing on a wizard or an open file dialog.
+        """
+        if len(self.notebook) < 1:
+            self.welcome()
+
     @gui_action("About", tooltip="About odML editor", stock_id=gtk.STOCK_ABOUT)
     def about(self, action):
         logo = self.render_icon("odml-logo", gtk.ICON_SIZE_DIALOG)
@@ -528,6 +536,7 @@ class EditorWindow(gtk.Window):
         if wizard:
             wiz = DocumentWizard()
             wiz.finish = lambda doc: self.new_file(wizard=False, doc=doc)
+            wiz.cleanup = self.set_welcome
             return
 
         tab = EditorTab(self)

@@ -228,7 +228,14 @@ class DocumentWizard:
         return page.prepare(self, prev_page)
 
     def cancel(self, assistant):
+        self.cleanup()
         assistant.destroy()
+
+    def cleanup(self):
+        """
+        Placeholder to reset the main window view in case there is no open tab.
+        """
+        raise NotImplementedError
 
     def apply(self, assistant):
         """

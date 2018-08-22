@@ -5,7 +5,21 @@ until the next release.
 
 # Latest changes in master
 
-- Icon search path update. See #130
+
+# Version 1.4.1
+
+## Icons fixes
+
+- The Icon search path is now updated for system wide, local, virtualenv and conda installs as well. See #128, #130.
+- "Undo" and "Redo" are added to the list of inactive icons when no document is available. See #131. 
+
+## Missing welcome page fix
+
+- The welcome page now is always displayed when there is no open tab. See #131.
+
+## Other
+
+- The README now contains a notice how to properly use odmlui with conda on macOS as well as updated documentation. See #130.
 
 
 # Version 1.4.0

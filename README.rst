@@ -24,8 +24,8 @@ For details regarding the introduced changes please check the `github release no
 
 Release Versions
 ----------------
-All released versions are distributed via the `Python Package Index`_ and can
-be installed using pip_::
+All released versions are distributed via the `Python Package Index <https://pypi.org/project/odML-UI>`_ and can
+be installed using :code:`pip`
 
     $ pip install odml-ui
 

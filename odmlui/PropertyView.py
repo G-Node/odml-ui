@@ -174,7 +174,6 @@ class PropertyView(TerminologyPopupTreeView):
             #  - Else, edit the property object
             if column_name == 'pseudo_values' and first_row:
                 prop = prop.pseudo_values[0]
-            if column_name == "pseudo_values" and first_row:
                 column_name = [column_name, "value"]  # backup the value attribute too
             cmd = commands.ChangeValue(
                     object=prop,

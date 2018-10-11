@@ -79,7 +79,12 @@ class EditorTab(object):
             return False
 
         self.document.finalize()
-        self.parse_properties(self.document.sections)
+
+        # Make sure all Properties within all sections are properly
+        # initialized with the "pseudo_values" attribute.
+        for sec in self.document.sections:
+            handle_section_import(sec)
+
         self.window.registry.add(self.document)
         self.window._info_bar.show_info("Loading of %s done!" % (os.path.basename(file_path)))
         return True

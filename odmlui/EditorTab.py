@@ -51,11 +51,6 @@ class EditorTab(object):
         self.document = doc
         self.file_uri = None
 
-    def parse_properties(self, odml_sections):
-        for i in odml_sections:
-            create_pseudo_values(i.properties)
-            self.parse_properties(i.sections)
-
     def load(self, uri):
         self.file_uri = uri
         file_path = uri_to_path(uri)

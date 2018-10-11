@@ -43,7 +43,10 @@ class PropIter(GenericIter.GenericIter):
 
     @property
     def n_children(self):
-        return len(self._obj.pseudo_values)
+        n_children = 0
+        if hasattr(self._obj, "pseudo_values"):
+            n_children = len(self._obj.pseudo_values)
+        return n_children
 
     @property
     def parent(self):

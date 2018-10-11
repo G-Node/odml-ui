@@ -32,7 +32,7 @@ class PropIter(GenericIter.GenericIter):
 
     def get_singlevalue(self, name):
         #here we proxy the value object
-        if len(self._obj.pseudo_values) == 0:
+        if not hasattr(self._obj, "pseudo_values") or len(self._obj.pseudo_values) == 0:
             return ""
 
         return ValueIter(self._obj.pseudo_values[0]).get_value(name)

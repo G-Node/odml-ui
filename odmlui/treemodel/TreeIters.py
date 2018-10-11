@@ -1,7 +1,7 @@
-import sys
 from . import GenericIter
 from . import nodes
 from .ValueModel import Value
+
 
 class PropIter(GenericIter.GenericIter):
     """
@@ -27,11 +27,11 @@ class PropIter(GenericIter.GenericIter):
     def get_mulitvalue(self, name):
         # Most of the stuff is empty and handled by the ValueIter
         if name == "pseudo_values":
-                return self.escape("<multi>")
+            return self.escape("<multi>")
         return ""
 
     def get_singlevalue(self, name):
-        #here we proxy the value object
+        # here we proxy the value object
         if not hasattr(self._obj, "pseudo_values") or len(self._obj.pseudo_values) == 0:
             return ""
 
@@ -51,6 +51,7 @@ class PropIter(GenericIter.GenericIter):
     @property
     def parent(self):
         return None
+
 
 class ValueIter(GenericIter.GenericIter):
     """
@@ -77,7 +78,7 @@ class ValueIter(GenericIter.GenericIter):
 
             return value
 
-        # Return an empty string for anything lese
+        # Return an empty string for anything else
         return ""
 
 
@@ -86,16 +87,18 @@ class SectionIter(GenericIter.GenericIter):
     def parent(self):
         if not self._obj.parent:
             return None
-        if not self._obj.parent.parent: # the parent is the document root
+        if not self._obj.parent.parent:  # the parent is the document root
             return None
         return super(SectionIter, self).parent
+
 
 class SectionPropertyIter(GenericIter.GenericIter):
     @property
     def n_children(self):
         return len(self._obj.properties)
 
+
 # associate the odml-classes to the corresponding iter-classes
-nodes.Section.IterClass  = SectionIter
+nodes.Section.IterClass = SectionIter
 nodes.Property.IterClass = PropIter
-Value.IterClass          = ValueIter
+Value.IterClass = ValueIter

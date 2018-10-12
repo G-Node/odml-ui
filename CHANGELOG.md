@@ -5,6 +5,13 @@ until the next release.
 
 # Latest changes in master
 
+## Edit terminology values fixes
+
+In some cases the values of terminology loaded Properties could not
+be edited anymore, since the required "pseudo_value" attribute was
+missing. Now every time a document is loaded or saved, all Properties
+are checked and modified in case the "pseudo_value" attribute is missing.
+
 
 # Version 1.4.1
 

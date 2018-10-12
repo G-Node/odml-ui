@@ -13,7 +13,7 @@ from odml.tools.version_converter import VersionConverter
 
 from .CommandManager import CommandManager
 from .Helpers import uri_to_path, get_parser_for_uri, get_extension, \
-    create_pseudo_values, get_parser_for_file_type
+    create_pseudo_values, get_parser_for_file_type, handle_section_import
 from .MessageDialog import ErrorDialog
 from .treemodel import event
 from .ValidationWindow import ValidationWindow
@@ -51,11 +51,6 @@ class EditorTab(object):
         self.document = doc
         self.file_uri = None
 
-    def parse_properties(self, odml_sections):
-        for i in odml_sections:
-            create_pseudo_values(i.properties)
-            self.parse_properties(i.sections)
-
     def load(self, uri):
         self.file_uri = uri
         file_path = uri_to_path(uri)
@@ -79,7 +74,12 @@ class EditorTab(object):
             return False
 
         self.document.finalize()
-        self.parse_properties(self.document.sections)
+
+        # Make sure all Properties within all sections are properly
+        # initialized with the "pseudo_values" attribute.
+        for sec in self.document.sections:
+            handle_section_import(sec)
+
         self.window.registry.add(self.document)
         self.window._info_bar.show_info("Loading of %s done!" % (os.path.basename(file_path)))
         return True
@@ -191,7 +191,15 @@ class EditorTab(object):
             self.window._info_bar.show_info("Save failed: %s" % e)
             return
 
-        self.document.finalize()  # undo the clean
+        # undo the clean
+        self.document.finalize()
+
+        # Finalize also removes all pseudo_values for any unchanged terminology
+        # entries, rendering these Properties unmodifiable. Re-initialize
+        # the pseudo_values for these Properties.
+        for sec in self.document.sections:
+            handle_section_import(sec)
+
         self.window._info_bar.show_info("%s was saved" % (os.path.basename(file_path)))
         self.edited = len(self.command_manager)
         return True  # TODO return false on any error and notify the user

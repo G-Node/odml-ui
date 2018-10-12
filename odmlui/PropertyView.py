@@ -173,9 +173,18 @@ class PropertyView(TerminologyPopupTreeView):
             #  - Only if the 'value' column is edited, edit the pseudo-value object.
             #  - Else, edit the property object
             if column_name == 'pseudo_values' and first_row:
-                prop = prop.pseudo_values[0]
-            if column_name == "pseudo_values" and first_row:
                 column_name = [column_name, "value"]  # backup the value attribute too
+                # If the list of pseudovalues was empty, we need to initialize a new
+                # empty PseudoValue and add it properly to enable undo.
+                if not prop.pseudo_values:
+                    val = ValueModel.Value(prop)
+                    cmd = commands.AppendValue(obj=prop.pseudo_values,
+                                               attr=column_name,
+                                               val=val)
+                    self.execute(cmd)
+
+                prop = prop.pseudo_values[0]
+
             cmd = commands.ChangeValue(
                     object=prop,
                     attr=column_name,

@@ -663,6 +663,9 @@ class EditorWindow(gtk.Window):
         else:
             # Reset property treeview model in case of empty document
             self._property_tv.model = None
+            # Select document root in case of empty document to ensure
+            # root is selected and all Icons are in their proper activation state.
+            self.on_object_select(tab.document)
 
     @property
     def current_tab(self):

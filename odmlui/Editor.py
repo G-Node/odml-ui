@@ -987,6 +987,22 @@ class EditorWindow(gtk.Window):
 
         # Save the parent, after the obj is removed its too late
         parent = obj.parent
+
+        # In case of the last Section of a Document the PropertyView
+        # needs to be cleaned up before we can remove the Section itself.
+        # Otherwise the PropertyView will still contain stale Properties
+        # that are connected to nothing at all, wreaking havoc in the lands of odmlui.
+        # This slightly screws up the undo, but better than having a stale View...
+        if isinstance(obj, odmlui.treemodel.nodes.Section) and \
+                isinstance(parent, odmlui.treemodel.nodes.Document) and \
+                len(parent.sections) == 1:
+            # Something is screwed up with the iterator. When using a
+            # for loop, only every second property is removed; so we
+            # are using a while loop for now.
+            while len(obj.properties) > 0:
+                curr_prop = obj.properties[0]
+                widget.on_delete(None, curr_prop)
+
         widget.on_delete(None, obj)
 
         # If we have removed a property and it was the last property of a section,

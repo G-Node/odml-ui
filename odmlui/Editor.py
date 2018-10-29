@@ -984,7 +984,17 @@ class EditorWindow(gtk.Window):
         obj = widget.get_selected_object()
         if obj is None:
             return False
+
+        # Save the parent, after the obj is removed its too late
+        parent = obj.parent
         widget.on_delete(None, obj)
+
+        # If we have removed a property and it was the last property of a section,
+        # select the parent section to ensure proper selection and inactivation
+        # of icons.
+        if isinstance(obj, odmlui.treemodel.nodes.Property) and not parent.properties:
+            self.on_object_select(parent)
+
         return True
 
     # TODO should we save a navigation history here?

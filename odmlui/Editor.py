@@ -995,6 +995,12 @@ class EditorWindow(gtk.Window):
         if isinstance(obj, odmlui.treemodel.nodes.Property) and not parent.properties:
             self.on_object_select(parent)
 
+        # If we have removed a Section and it was the last Section of a Section
+        # (or a Document), select the parent to ensure proper selection and inactivation
+        # of icons.
+        if isinstance(obj, odmlui.treemodel.nodes.Section) and not parent.sections:
+            self.on_object_select(parent)
+
         return True
 
     # TODO should we save a navigation history here?

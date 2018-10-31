@@ -189,7 +189,11 @@ class TreeModel(gtk.GenericTreeModel):
         """
         self.row_deleted(old_path)
         iter = self.get_node_iter(parent)
-        if iter is not None:
+
+        # We need to check if the old path is already the very root.
+        # In this case we don't need to check any child toggles, since
+        # there are no toggleable children.
+        if iter is not None and len(old_path) > 1:
             path = self.get_path(iter)
             if path:
                 self.row_has_child_toggled(path, iter)

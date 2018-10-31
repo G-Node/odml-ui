@@ -663,6 +663,9 @@ class EditorWindow(gtk.Window):
         else:
             # Reset property treeview model in case of empty document
             self._property_tv.model = None
+            # Select document root in case of empty document to ensure
+            # root is selected and all Icons are in their proper activation state.
+            self.on_object_select(tab.document)
 
     @property
     def current_tab(self):
@@ -984,7 +987,39 @@ class EditorWindow(gtk.Window):
         obj = widget.get_selected_object()
         if obj is None:
             return False
+
+        # Save the parent, after the obj is removed its too late
+        parent = obj.parent
+
+        # In case of the last Section of a Document the PropertyView
+        # needs to be cleaned up before we can remove the Section itself.
+        # Otherwise the PropertyView will still contain stale Properties
+        # that are connected to nothing at all, wreaking havoc in the lands of odmlui.
+        # This slightly screws up the undo, but better than having a stale View...
+        if isinstance(obj, odmlui.treemodel.nodes.Section) and \
+                isinstance(parent, odmlui.treemodel.nodes.Document) and \
+                len(parent.sections) == 1:
+            # Something is screwed up with the iterator. When using a
+            # for loop, only every second property is removed; so we
+            # are using a while loop for now.
+            while len(obj.properties) > 0:
+                curr_prop = obj.properties[0]
+                widget.on_delete(None, curr_prop)
+
         widget.on_delete(None, obj)
+
+        # If we have removed a property and it was the last property of a section,
+        # select the parent section to ensure proper selection and inactivation
+        # of icons.
+        if isinstance(obj, odmlui.treemodel.nodes.Property) and not parent.properties:
+            self.on_object_select(parent)
+
+        # If we have removed a Section and it was the last Section of a Section
+        # (or a Document), select the parent to ensure proper selection and inactivation
+        # of icons.
+        if isinstance(obj, odmlui.treemodel.nodes.Section) and not parent.sections:
+            self.on_object_select(parent)
+
         return True
 
     # TODO should we save a navigation history here?

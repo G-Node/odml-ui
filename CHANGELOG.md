@@ -12,6 +12,13 @@ be edited anymore, since the required "pseudo_value" attribute was
 missing. Now every time a document is loaded or saved, all Properties
 are checked and modified in case the "pseudo_value" attribute is missing.
 
+## Fixes
+
+- Fixes background errors when deleting Properties or Document root Sections. See #99.
+- Fixes various occasions where the "Add Property" and "Add Value" icons were not 
+    properly deactivated. See #90.
+- The PropertyView is now properly reset when the last Section is removed from a
+    Document making sure there are no stale leftover Properties on display.
 
 # Version 1.4.1
 

@@ -32,7 +32,7 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
     A list of objects from this class is added as an additional attribute to
     the original `odml.Property` node, as `pseudo_values`. All interactions
     from the Editor interact with these pseudo_values, and internally, these
-    pseudo-values update the original property._value list.
+    pseudo-values update the original property.values list.
 
     """
     _Changed = event.Event("value")
@@ -43,15 +43,15 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
 
         self._property = parent
         if index is None:  # Instantiate a new odML value
-            index = len(self._property.value)
+            index = len(self._property.values)
             dtype = self.parent.dtype
             default_value = dtypes.default_values(dtype)
-            # property.value returns a copy: we therefore need an in between step
+            # property.values returns a copy: we therefore need an in between step
             # to append a new value and reassign the modified value to the parent
-            # property.value.
-            val_cp = self.parent.value
+            # property.values.
+            val_cp = self.parent.values
             val_cp.append(default_value)
-            self.parent.value = val_cp
+            self.parent.values = val_cp
 
         assert(isinstance(index, int))
         self._index = index
@@ -76,7 +76,7 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
         """
             Return a single element from the parent property's value list.
         """
-        return self.parent._value[self._index]
+        return self.parent._values[self._index]
 
     @pseudo_values.setter
     def pseudo_values(self, new_string):
@@ -86,7 +86,7 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
         """
         prop_dtype = self.parent.dtype
         new_value = dtypes.get(new_string, prop_dtype)
-        self.parent._value[self._index] = new_value
+        self.parent._values[self._index] = new_value
 
     @property
     def value(self):
@@ -132,7 +132,7 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
         return "(%d bytes)" % len(self._value)
 
     def reorder(self, new_index):
-        return self._reorder(self.parent.value, new_index)
+        return self._reorder(self.parent.values, new_index)
 
     def clone(self):
         obj = BaseObject.clone(self)

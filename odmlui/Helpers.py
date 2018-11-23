@@ -93,18 +93,18 @@ def handle_property_import(prop):
 
     :param prop: imported odml.BaseProperty
     """
-    if len(prop._value) < 1:
+    if len(prop.values) < 1:
         if prop.dtype:
-            prop._value = [default_values(prop.dtype)]
+            prop.values = [default_values(prop.dtype)]
         else:
-            prop._value = [default_values('string')]
+            prop.values = [default_values('string')]
 
     create_pseudo_values([prop])
 
 
 def create_pseudo_values(odml_properties):
     for prop in odml_properties:
-        values = prop.value
+        values = prop.values
         new_values = []
         for index in range(len(values)):
             val = ValueModel.Value(prop, index)

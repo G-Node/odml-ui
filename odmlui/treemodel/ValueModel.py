@@ -59,6 +59,24 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
     def __repr__(self):
         return "PseudoValue <%s>" % str(self.pseudo_values)
 
+    def __eq__(self, obj):
+        """
+        Make sure all relevant attributes are properly compared.
+        :param obj: odmlui PseudoValue
+
+        :return: Boolean
+        """
+        if not isinstance(obj, self.__class__):
+            return False
+
+        if not self.parent == obj.parent:
+            return False
+
+        if not self.pseudo_values == obj.pseudo_values:
+            return False
+
+        return True
+
     @property
     def parent(self):
         """the property containing this value"""

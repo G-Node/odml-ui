@@ -86,7 +86,10 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
         """
         prop_dtype = self.parent.dtype
         new_value = dtypes.get(new_string, prop_dtype)
-        self.parent._values[self._index] = new_value
+
+        set_values = self.parent.values
+        set_values[self._index] = new_value
+        self.parent.values = set_values
 
     @property
     def value(self):

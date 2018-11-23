@@ -11,6 +11,8 @@ import odml.terminology as terminology
 from odml import DType
 from odml.property import BaseProperty
 
+from odmlui.treemodel.nodes import Property as TreeModelProperty
+
 from . import commands
 from . import TextEditor
 from .DragProvider import DragProvider
@@ -314,6 +316,20 @@ class PropertyView(TerminologyPopupTreeView):
 
         cmd = commands.AppendValue(obj=obj, val=prop)
         self.execute(cmd)
+
+    def reset_value_view(self, widget):
+        """
+        Reset the view if the value model has changed e.g. after an undo or a redo.
+        """
+        obj = self.get_selected_object()
+        if obj is None or not isinstance(obj, TreeModelProperty):
+            return
+
+        self.model.destroy()
+        self.model = PropertyModel.PropertyModel(obj.parent)
+
+        # Reselect updated object to update view.
+        self.select_object(obj)
 
     # Maybe define a generic Combo Box column creator ?
     def create_odml_types_col(self, id, name, propname):

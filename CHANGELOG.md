@@ -5,6 +5,15 @@ until the next release.
 
 # Latest changes in master
 
+...
+
+# Version 1.4.2
+
+## Implementing core odml library changes
+The core odml library deprecated `Property.value` in favor of
+the newly added attribute `Property.values`. These changes
+have been introduced in odml-ui as well.
+
 ## Edit terminology values fixes
 
 In some cases the values of terminology loaded Properties could not
@@ -19,6 +28,7 @@ are checked and modified in case the "pseudo_value" attribute is missing.
     properly deactivated. See #90.
 - The PropertyView is now properly reset when the last Section is removed from a
     Document making sure there are no stale leftover Properties on display.
+- Fixes errors on 'Undo' and 'Redo' when adding or removing Values.
 
 # Version 1.4.1
 

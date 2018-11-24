@@ -1099,10 +1099,18 @@ class EditorWindow(gtk.Window):
     def undo(self, action):
         self.current_tab.command_manager.undo()
 
+        # Reset model and view in case a value has been tampered with
+        # to avoid Model and View being out of sync.
+        self._property_tv.reset_value_view(None)
+
     @gui_action("Redo", tooltip="Redo an undone editing action", stock_id=gtk.STOCK_REDO,
                 label="_Redo", accelerator="<control>Y")
     def redo(self, action):
         self.current_tab.command_manager.redo()
+
+        # Reset model and view in case a value has been tampered with
+        # to avoid Model and View being out of sync.
+        self._property_tv.reset_value_view(None)
 
     def command_error(self, cmd, error):
         self._info_bar.show_info("Editing failed: %s" % error)

@@ -11,6 +11,8 @@ import odml.terminology as terminology
 from odml import DType
 from odml.property import BaseProperty
 
+from odmlui.treemodel.nodes import Property as TreeModelProperty
+
 from . import commands
 from . import TextEditor
 from .DragProvider import DragProvider
@@ -116,7 +118,7 @@ class PropertyView(TerminologyPopupTreeView):
         self.on_property_select(obj)
 
         # Always expand multi value properties when selected
-        is_multi_value = isinstance(obj, BaseProperty) and len(obj.value) > 1
+        is_multi_value = isinstance(obj, BaseProperty) and len(obj.values) > 1
         if is_multi_value:
             tree_selection.get_tree_view().expand_row(model.get_path(tree_iter), False)
 
@@ -204,12 +206,12 @@ class PropertyView(TerminologyPopupTreeView):
             if hasattr(obj, "_property"):  # we care about the properties only
                 prop = obj._property
 
-            value_filter = lambda prop: [val for val in prop.values if val.value is not None and val.value != ""]
+            value_filter = lambda prop: [val for val in prop.values if val.values is not None and val.values != ""]
             for item in self.create_popup_menu_items("Add Value", "Empty Value", prop, self.add_value,
-                                                     value_filter, lambda val: val.value, stock="odml-add-Value"):
+                                                     value_filter, lambda val: val.values, stock="odml-add-Value"):
                 menu_items.append(item)
             for item in self.create_popup_menu_items("Set Value", "Empty Value", prop, self.set_value,
-                                                     value_filter, lambda val: val.value):
+                                                     value_filter, lambda val: val.values):
                 if item.get_submenu() is None:
                     continue  # don't want a sole Set Value item
                 menu_items.append(item)
@@ -286,7 +288,7 @@ class PropertyView(TerminologyPopupTreeView):
         self.execute(cmd)
 
         # Reset model if the Value changes from "normal" to MultiValue.
-        if self.model and len(obj.value) > 1:
+        if self.model and len(obj.values) > 1:
             self.model.destroy()
             self.model = PropertyModel.PropertyModel(obj.parent)
 
@@ -304,7 +306,7 @@ class PropertyView(TerminologyPopupTreeView):
             name = self.get_new_obj_name(obj.properties, prefix='Unnamed Property')
             prop = odml.Property(name=name, dtype='string')
             # The default value part should be put in odML core library
-            prop._value = [dtypes.default_values('string')]
+            prop.values = [dtypes.default_values('string')]
             create_pseudo_values([prop])
         else:
             prefix = prop.name
@@ -314,6 +316,20 @@ class PropertyView(TerminologyPopupTreeView):
 
         cmd = commands.AppendValue(obj=obj, val=prop)
         self.execute(cmd)
+
+    def reset_value_view(self, widget):
+        """
+        Reset the view if the value model has changed e.g. after an undo or a redo.
+        """
+        obj = self.get_selected_object()
+        if obj is None or not isinstance(obj, TreeModelProperty):
+            return
+
+        self.model.destroy()
+        self.model = PropertyModel.PropertyModel(obj.parent)
+
+        # Reselect updated object to update view.
+        self.select_object(obj)
 
     # Maybe define a generic Combo Box column creator ?
     def create_odml_types_col(self, id, name, propname):

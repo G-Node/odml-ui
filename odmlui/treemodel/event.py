@@ -247,11 +247,11 @@ def remove_value(prop, pseudo):
     for pval in prop.pseudo_values[pseudo._index:]:
         pval._index = pval._index - 1
     # Finally remove the actual value from the property value list.
-    # Property.value always returns a copy so we need to modify and reassign
+    # Property.values always returns a copy so we need to modify and reassign
     # the affected values.
-    cp_val = prop.value
+    cp_val = prop.values
     del cp_val[pseudo._index]
-    prop._value = cp_val
+    prop.values = cp_val
 
 # create a separate global Event listeners for each class
 # and provide ModificationNotifier Capabilities

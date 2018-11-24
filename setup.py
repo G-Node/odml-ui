@@ -54,7 +54,7 @@ packages = [
     'odmlui.treemodel'
 ]
 
-install_req = ["odml>=1.4.*"]
+install_req = ["odml>=1.4.2"]
 
 data_files = [('share/pixmaps', glob.glob(os.path.join("images", "*"))),
               ('share/odmlui', ['LICENSE'])]

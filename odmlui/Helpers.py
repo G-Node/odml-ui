@@ -26,6 +26,10 @@ def uri_to_path(uri):
     net_locator = urlparse(uri).netloc
     curr_path = unquote(urlparse(uri).path)
     file_path = os.path.abspath(os.path.join(net_locator, curr_path))
+    # Windows specific file_path handling
+    if os.name == "nt" and file_path.startswith("/"):
+        file_path = file_path[1:]
+
     return file_path
 
 

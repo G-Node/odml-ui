@@ -18,8 +18,14 @@ except ImportError:  # Python 2
 
 
 def uri_to_path(uri):
-    file_path = urlparse(uri).path
-    file_path = unquote(file_path)
+    """
+    uri_to_path parses a uri into a OS specific file path.
+    :param uri: string containing a uri.
+    :return: OS specific file path.
+    """
+    net_locator = urlparse(uri).netloc
+    curr_path = unquote(urlparse(uri).path)
+    file_path = os.path.abspath(os.path.join(net_locator, curr_path))
     return file_path
 
 

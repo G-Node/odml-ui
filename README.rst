@@ -100,6 +100,33 @@ For Python 2 (Python 3)
 * :code:`brew install gobject-introspection`
 
 
+Windows with Anaconda:
+~~~~~~~~~~~~~~~~~~~~~~~
+Dependencies
+------------
+* `PyGObject for Windows <https://sourceforge.net/projects/pygobjectwin32/files>`_.  (tested with 3.24.1rev1)
+* Python 2.7+
+* odml v1.4  :code:`(pip install odml)`
+
+
+Installation
+------------
+* Install Anaconda
+* Create new enviroment with Python 2.7+
+* Install PyGObject for Windows - base package and GTK+ 3.18.9 package
+
+Select portable python installation -> add path to virtual env python default: C:\Users\userName\Anacaonda\envs\nameOfEnv\
+
+* Start Anaconda prompt
+* install odml :code:`(pip install odml)`
+* install odml-ui :code:`(python setup.py install)`
+* run with :code:`(odmlui)`
+
+Windows Warning
+-----------------
+Windows of odml-ui channot be moved (only maximized) - movement or resize of the windows results crash of application
+
+
 Installation from source
 ------------------------
 

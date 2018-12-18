@@ -5,7 +5,8 @@ until the next release.
 
 # Latest changes in master
 
-...
+## Fixes
+- Fixes saving and loading of files using Windows.
 
 # Version 1.4.2
 

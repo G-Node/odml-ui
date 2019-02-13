@@ -231,20 +231,18 @@ class EditorWindow(gtk.Window):
         table = gtk.Table(n_rows=2, n_columns=6, homogeneous=False)
         self.add(table)
 
+        # Every line of arguments addresses first the X and then the Y direction
         table.attach(bar,
-                     # X direction #          # Y direction
-                     0, 2,                      0, 1,
-                     gtk.EXPAND | gtk.FILL,     0,
-                     0,                         0)
+                     0, 2, 0, 1,
+                     gtk.EXPAND | gtk.FILL, 0,
+                     0, 0)
 
         bar = merge.get_widget("/ToolBar")
-        # bar.set_tooltips(True) -->  Not needed
         bar.show()
         table.attach(bar,
-                     # X direction #       # Y direction
-                     0, 2,                   1, 2,
-                     gtk.EXPAND | gtk.FILL,  0,
-                     0,                      0)
+                     0, 2, 1, 2,
+                     gtk.EXPAND | gtk.FILL, 0,
+                     0, 0)
 
         tool_button = merge.get_widget("/ToolBar/Open")
         tool_button.connect("clicked", self.open_file)
@@ -337,24 +335,23 @@ class EditorWindow(gtk.Window):
 
         self.Tab = Tab
 
-        notebook = gtk.Notebook()  # we want tabs
+        notebook = gtk.Notebook()
         notebook.connect("switch-page", self.on_tab_select)
         notebook.connect("create-window", self.on_new_tab_window)
         notebook.show()
         self.notebook = notebook
 
+        # Every line of arguments addresses first the X and then the Y direction
         table.attach(notebook,
-                     # X direction           Y direction
-                     0, 2,                   3, 4,
-                     gtk.EXPAND | gtk.FILL,  gtk.EXPAND | gtk.FILL,
-                     0,                      0)
+                     0, 2, 3, 4,
+                     gtk.EXPAND | gtk.FILL, gtk.EXPAND | gtk.FILL,
+                     0, 0)
 
         statusbar = gtk.Statusbar()
         table.attach(statusbar,
-                     # X direction           Y direction
-                     0, 2,                   5, 6,
-                     gtk.EXPAND | gtk.FILL,  0,
-                     0,                      0)
+                     0, 2, 5, 6,
+                     gtk.EXPAND | gtk.FILL, 0,
+                     0, 0)
         self._statusbar = statusbar
         statusbar.show()
 
@@ -378,10 +375,8 @@ class EditorWindow(gtk.Window):
         # TODO this does not work on unity at least
         tooltip = action.get_property('tooltip')
         if isinstance(widget, gtk.MenuItem) and tooltip:
-            cid = widget.connect(
-             'select', self.on_menu_item__select, tooltip)
-            cid2 = widget.connect(
-             'deselect', self.on_menu_item__deselect)
+            cid = widget.connect('select', self.on_menu_item__select, tooltip)
+            cid2 = widget.connect('deselect', self.on_menu_item__deselect)
             widget.connect_ids = (cid, cid2)
 
     def on_uimanager__disconnect_proxy(self, uimgr, action, widget):
@@ -394,12 +389,11 @@ class EditorWindow(gtk.Window):
 
     def __create_action_group(self):
         # entry: name, stock id, label
-        entries = [
-              ("FileMenu", None, "_File"),
-              ("EditMenu", None, "_Edit"),
-              ("AddMenu",  gtk.STOCK_ADD),
-              ("HelpMenu", gtk.STOCK_HELP),
-              ]
+        entries = [("FileMenu", None, "_File"),
+                   ("EditMenu", None, "_Edit"),
+                   ("AddMenu", gtk.STOCK_ADD),
+                   ("HelpMenu", gtk.STOCK_HELP), ]
+
         for (k, v) in self.__class__.__dict__.items():
             if hasattr(v, "stock_id"):
                 entries.append(
@@ -593,7 +587,7 @@ class EditorWindow(gtk.Window):
                                      "your document before starting odMLTables.")
         elif self.odml_tables_available:
             run_odmltables(self.current_tab.file_uri, CACHE_DIR,
-                            self.current_tab.document, wizard)
+                           self.current_tab.document, wizard)
         else:
             self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %
@@ -1153,8 +1147,7 @@ def register_stock_icons():
              ('INM6-compare-table', 'Compare_entities', ctrlshift, ord("E"), ''),
              ('INM6-convert-odml', 'Convert_document', ctrlshift, ord("C"), ''),
              ('INM6-filter-odml', 'Filter_document', ctrlshift, ord("F"), ''),
-             ('INM6-merge-odml', 'Merge_documents', ctrlshift, ord("M"), '')
-             ]
+             ('INM6-merge-odml', 'Merge_documents', ctrlshift, ord("M"), '')]
 
     # This method is failing (silently) in registering the stock icons.
     # Passing a list of Gtk.StockItem also has no effects.

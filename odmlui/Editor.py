@@ -225,21 +225,21 @@ class EditorWindow(gtk.Window):
             mergeid = merge.add_ui_from_string(ui_info)
         except gobject.GError as msg:
             print("building menus failed: %s" % msg)
-        bar = merge.get_widget("/MenuBar")
-        bar.show()
+        menu_bar = merge.get_widget("/MenuBar")
+        menu_bar.show()
 
         table = gtk.Table(n_rows=2, n_columns=6, homogeneous=False)
         self.add(table)
 
         # Every line of arguments addresses first the X and then the Y direction
-        table.attach(bar,
+        table.attach(menu_bar,
                      0, 2, 0, 1,
                      gtk.EXPAND | gtk.FILL, 0,
                      0, 0)
 
-        bar = merge.get_widget("/ToolBar")
-        bar.show()
-        table.attach(bar,
+        tool_bar = merge.get_widget("/ToolBar")
+        tool_bar.show()
+        table.attach(tool_bar,
                      0, 2, 1, 2,
                      gtk.EXPAND | gtk.FILL, 0,
                      0, 0)

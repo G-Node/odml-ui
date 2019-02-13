@@ -98,13 +98,15 @@ if hasattr(sys, 'prefix'):
     ENV_ROOT = sys.prefix
 
 
-# See CACHE_DIR comment in the import section.
+# Currently "odml.terminology" does no longer support CACHE_DIR
+# but might again in the future.
 CACHE_DIR = os.path.join(tempfile.gettempdir(), "odml.cache")
 
 if not os.path.exists(CACHE_DIR):
     try:
         os.makedirs(CACHE_DIR)
-    except OSError:  # might happen due to concurrency
+    except OSError:
+        # might happen due to concurrency
         if not os.path.exists(CACHE_DIR):
             raise
 
@@ -933,7 +935,8 @@ class EditorWindow(gtk.Window):
     def quit(self, action, extra=None):
         for win in self.editors:
             if not win.save_if_changed():
-                return True  # the event is handled and won't be passed to the window.
+                # The event is handled and won't be passed to the window.
+                return True
         gtk.main_quit()
 
     @gui_action("NewSection", label="Add Section",

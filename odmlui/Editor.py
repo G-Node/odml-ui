@@ -34,7 +34,7 @@ pygtkcompat.enable_gtk(version='3.0')
 
 gtk.gdk.threads_init()
 
-ui_info = \
+UI_INFO = \
     '''
 <ui>
   <menubar name='MenuBar'>
@@ -93,9 +93,9 @@ ui_info = \
 </ui>'''
 
 # Handle loading from python virtual environments
-env_root = ""
+ENV_ROOT = ""
 if hasattr(sys, 'prefix'):
-    env_root = sys.prefix
+    ENV_ROOT = sys.prefix
 
 
 # See CACHE_DIR comment in the import section.
@@ -110,25 +110,26 @@ if not os.path.exists(CACHE_DIR):
 
 # Quick and dirty to find out if Anaconda is being used and where it installed
 # all the goodies we need. Not robust but good enough for now.
-conda_env_root = get_conda_root()  # root of the currently active Anaconda environment
+# Root of the currently active Anaconda environment.
+CONDA_ENV_ROOT = get_conda_root()
 
 
 # Finding package root for license file and custom icons
-package_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+PACKAGE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
 
 def lookup_resource_paths(const_path):
     res = [const_path,
-           os.path.join(package_root, const_path),
-           os.path.join(env_root, const_path),
+           os.path.join(PACKAGE_ROOT, const_path),
+           os.path.join(ENV_ROOT, const_path),
            os.path.join('usr', const_path),
            os.path.join('usr', 'local', const_path)]
 
-    if env_root:
-        res.append(os.path.join(env_root, const_path))
+    if ENV_ROOT:
+        res.append(os.path.join(ENV_ROOT, const_path))
 
-    if conda_env_root:
-        res.append(os.path.join(conda_env_root, const_path))
+    if CONDA_ENV_ROOT:
+        res.append(os.path.join(CONDA_ENV_ROOT, const_path))
 
     if os.getenv('HOME'):
         res.append(os.path.join(os.getenv('HOME'), '.local', const_path))
@@ -140,18 +141,18 @@ def lookup_resource_paths(const_path):
 
 
 # Loading text from license file
-lic_name = "LICENSE"
+LIC_NAME = "LICENSE"
 
-lic_paths = lookup_resource_paths(os.path.join('share', 'odmlui', lic_name))
+LIC_PATHS = lookup_resource_paths(os.path.join('share', 'odmlui', LIC_NAME))
 
-lic_paths.append(os.path.join(os.path.dirname(__file__), lic_name))
-lic_paths.append(os.path.join(package_root, lic_name))
+LIC_PATHS.append(os.path.join(os.path.dirname(__file__), LIC_NAME))
+LIC_PATHS.append(os.path.join(PACKAGE_ROOT, LIC_NAME))
 
-license = ""
-for lic in lic_paths:
+LICENSE_TEXT = ""
+for lic in LIC_PATHS:
     if os.path.isfile(lic):
         with open(lic) as f:
-            license = f.read()
+            LICENSE_TEXT = f.read()
             break
 
 
@@ -222,7 +223,7 @@ class EditorWindow(gtk.Window):
         self.add_accel_group(merge.get_accel_group())
 
         try:
-            mergeid = merge.add_ui_from_string(ui_info)
+            mergeid = merge.add_ui_from_string(UI_INFO)
         except gobject.GError as msg:
             print("building menus failed: %s" % msg)
         menu_bar = merge.get_widget("/MenuBar")
@@ -505,7 +506,7 @@ class EditorWindow(gtk.Window):
         dialog.set_copyright(COPYRIGHT)
         dialog.set_authors(AUTHOR.split(", "))
         dialog.set_website(self.odMLHomepage)
-        dialog.set_license(license)
+        dialog.set_license(LICENSE_TEXT)
         dialog.set_logo(logo)
         dialog.set_version(VERSION)
         dialog.set_comments("Contact <%s>" % CONTACT)
@@ -1114,7 +1115,7 @@ def get_img_path(icon_name):
     share_pixmaps = os.path.join('share', 'pixmaps')
 
     paths = lookup_resource_paths(share_pixmaps)
-    paths.append(os.path.join(package_root, 'images'))
+    paths.append(os.path.join(PACKAGE_ROOT, 'images'))
 
     found = None
     for check_path in paths:

@@ -1,8 +1,8 @@
 class Command(object):
     def __init__(self, *args, **kwargs):
         self.args = args
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+        for key, val in kwargs.items():
+            setattr(self, key, val)
 
     def __call__(self):
         self._execute()
@@ -22,7 +22,9 @@ class Command(object):
         pass
 
     def __repr__(self):
-        return "<%s %s>" % (self.__class__.__name__, ', '.join(["%s=%s" % (k,v) for k,v in self.__dict__.items()]))
+        return "<%s %s>" % (self.__class__.__name__, ', '.join(
+            ["%s=%s" % (k, v) for k, v in self.__dict__.items()]))
+
 
 class Multiple(Command):
     """
@@ -38,6 +40,7 @@ class Multiple(Command):
         for cmd in self.cmds:
             cmd.undo()
 
+
 class ChangeValue(Command):
     """
     ChangeValue(object=, attr=, new_value=)
@@ -52,7 +55,7 @@ class ChangeValue(Command):
     # fix1:
     #   use the format description and save all attributes
     # fix2:
-    #   clone the object and restore it later (needs treemanipulation or stuff from fix1)
+    #   clone the object and restore it later (needs tree manipulation or stuff from fix1)
     # hack:
     #   save the value as well for Value objects
     def _execute(self):
@@ -72,6 +75,7 @@ class ChangeValue(Command):
 
         for attr in self.attr:
             setattr(self.object, attr, self.old_value[attr])
+
 
 class AppendValue(Command):
     """
@@ -98,6 +102,7 @@ class AppendValue(Command):
             self.obj.append(val)
         self.obj.remove(self.val)
 
+
 class DeleteObject(Command):
     """
     DeleteObject(obj=)
@@ -106,8 +111,7 @@ class DeleteObject(Command):
     """
     def __init__(self, *args, **kwargs):
         super(DeleteObject, self).__init__(*args, **kwargs)
-        # use an AppendCommand for the actual operation
-        # but use it reversed
+        # use an AppendCommand for the actual operation but use it reversed
         self.append_cmd = AppendValue(obj=self.obj.parent, val=self.obj)
         self.append_cmd.index = self.obj.position
 
@@ -118,6 +122,7 @@ class DeleteObject(Command):
     def _undo(self):
         """append obj (append_cmd.val) to its original parent (append_cmd.obj)"""
         self.append_cmd._execute()
+
 
 class ReorderObject(Command):
     """
@@ -131,6 +136,7 @@ class ReorderObject(Command):
 
     def _undo(self):
         self.obj.reorder(self.old_index)
+
 
 class CopyObject(Command):
     """
@@ -153,6 +159,7 @@ class CopyObject(Command):
         parent = self.new_obj.parent
         if parent is not None:
             parent.remove(self.new_obj)
+
 
 class MoveObject(CopyObject):
     """
@@ -182,6 +189,7 @@ class MoveObject(CopyObject):
         except:
             self.parent.append(self.obj)
 
+
 class ReplaceObject(MoveObject):
     """
     ReplaceObject(obj=, repl=)
@@ -194,10 +202,13 @@ class ReplaceObject(MoveObject):
         self.new_obj = self.get_new_object()
         self.obj = self.repl
         self.repl = self.new_obj
-        super(ReplaceObject, self)._undo() # insert self.obj (=repl) into self.parent (=obj.parent)
+        # insert self.obj (=repl) into self.parent (=obj.parent)
+        super(ReplaceObject, self)._undo()
 
     def _undo(self):
-        self._execute() # exchange the objects again and execute in reverse
+        # exchange the objects again and execute in reverse
+        self._execute()
+
 
 class CopyOrMoveObject(Command):
     """

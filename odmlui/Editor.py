@@ -160,18 +160,18 @@ def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
     """
     function decorator indicating and providing info for a gui Action
     """
-    def func(f):
-        f.name = name
-        f.tooltip = tooltip
-        f.stock_id = stock_id
-        f.label = label
-        f.accelerator = accelerator
+    def func(handler):
+        handler.name = name
+        handler.tooltip = tooltip
+        handler.stock_id = stock_id
+        handler.label = label
+        handler.accelerator = accelerator
 
         # For Mac, replace 'control' modifier with 'primary' modifier
-        if f.accelerator is not None and platform.system() == 'Darwin':
-            f.accelerator = f.accelerator.replace('control', 'primary')
+        if handler.accelerator is not None and platform.system() == 'Darwin':
+            handler.accelerator = handler.accelerator.replace('control', 'primary')
 
-        return f
+        return handler
     return func
 
 
@@ -428,8 +428,8 @@ class EditorWindow(gtk.Window):
         # welcome text
         text = """<span size="x-large" weight="bold">Welcome to odML-Editor</span>\n\n
                    Now go ahead and <a href="#new">create a new document</a>."""
-        for action in self.welcome_disabled_actions:
-            self.enable_action(action, False)
+        for curr_action in self.welcome_disabled_actions:
+            self.enable_action(curr_action, False)
 
         # display recently used files
         recent_filter = gtk.RecentFilter()
@@ -1210,9 +1210,9 @@ def load_icon_pixbufs(prefix):
     img_dir = get_img_path(get_icon)
     if img_dir:
         files = os.listdir(img_dir)
-        for f in files:
-            if f.startswith(prefix):
-                abs_path = os.path.join(img_dir, f)
+        for curr in files:
+            if curr.startswith(prefix):
+                abs_path = os.path.join(img_dir, curr)
                 icon = load_pixbuf(abs_path)
                 if icon:
                     icons.append(icon)

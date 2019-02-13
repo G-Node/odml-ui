@@ -1,25 +1,17 @@
 import os
 import platform
 import sys
-
-import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import gtk
-import gobject
+import tempfile
 
 from distutils.version import LooseVersion as CheckVer
 
-import odml
-# Currently odml.terminology does not longer support CACHE_DIR
-# but might again in the future.
-# from odml.terminology import CACHE_DIR
-import tempfile
-import odmlui.treemodel.mixin
+import pygtkcompat
+import gtk
+import gobject
 
 from odml.property import BaseProperty
 
+import odmlui.treemodel.mixin
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
 from odmlui.treemodel import SectionModel, ValueModel
 
@@ -30,12 +22,15 @@ from .EditorTab import EditorTab
 from .Helpers import uri_to_path, get_extension, get_parser_for_file_type, \
         get_parser_for_uri, get_conda_root, run_odmltables
 from .InfoBar import EditorInfoBar
-from .MessageDialog import ErrorDialog, DecisionDialog
+from .MessageDialog import DecisionDialog
 from .NavigationBar import NavigationBar
 from .PropertyView import PropertyView
 from .ScrolledWindow import ScrolledWindow
 from .SectionView import SectionView
 from .Wizard import DocumentWizard
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 gtk.gdk.threads_init()
 
@@ -1140,7 +1135,6 @@ def get_img_path(icon_name):
 
 
 def register_stock_icons():
-
     # virtual or conda environments as well as local installs might
     # not have access to the system stock items so we update the IconTheme search path.
     print("[Info] Updating IconTheme search paths")
@@ -1199,7 +1193,6 @@ def register_stock_icons():
 
         except gobject.GError as error:
             print('[Warning] Failed to load icon', icon_name, error)
-
 
 
 def load_pixbuf(path):

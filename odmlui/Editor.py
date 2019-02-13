@@ -325,8 +325,8 @@ class EditorWindow(gtk.Window):
             from odmltables import VERSION as OT_VERSION
             if CheckVer(OT_VERSION) >= ODMLTABLES_VERSION:
                 self.odml_tables_available = True
-        except (ImportError, AttributeError) as e:
-            print("[Info] odMLTables not available: %s" % e)
+        except (ImportError, AttributeError) as err:
+            print("[Info] odMLTables not available: %s" % err)
 
         class Tab(gtk.HBox):
             """
@@ -359,10 +359,10 @@ class EditorWindow(gtk.Window):
         self.show_all()
 
     def mktab(self, tab):
-        t = self.Tab()
-        t.tab = tab
-        t.show()
-        return t
+        new_tab = self.Tab()
+        new_tab.tab = tab
+        new_tab.show()
+        return new_tab
 
     def on_menu_item__select(self, menuitem, tooltip):
         context_id = self._statusbar.get_context_id('menu_tooltip')
@@ -395,11 +395,11 @@ class EditorWindow(gtk.Window):
                    ("AddMenu", gtk.STOCK_ADD),
                    ("HelpMenu", gtk.STOCK_HELP), ]
 
-        for (k, v) in self.__class__.__dict__.items():
-            if hasattr(v, "stock_id"):
+        for (key, val) in self.__class__.__dict__.items():
+            if hasattr(val, "stock_id"):
                 entries.append(
-                    (v.name, v.stock_id, v.label, v.accelerator,
-                     v.tooltip, getattr(self, k)))
+                    (val.name, val.stock_id, val.label, val.accelerator,
+                     val.tooltip, getattr(self, key)))
 
         recent_action = gtk.RecentAction(name="OpenRecent",
                                          label="Open Recent",
@@ -440,7 +440,7 @@ class EditorWindow(gtk.Window):
         # recent_filter.filter() method. If the 'filter' return True,
         # the file is included, else not included.
         recent_odml_files = []
-        MAX_RECENT_ITEMS = 12
+        max_recent_items = 12
 
         all_recent_files = gtk.RecentManager.get_default().get_items()
         filter_info = gtk.RecentFilterInfo()
@@ -456,7 +456,7 @@ class EditorWindow(gtk.Window):
                 recent_odml_files.append(i)
 
         recent_odml_files.sort(key=lambda x: x.get_age())
-        recent_odml_files = recent_odml_files[:MAX_RECENT_ITEMS]
+        recent_odml_files = recent_odml_files[:max_recent_items]
 
         if recent_odml_files:
             text += "\n\nOr open a <b>recently used file</b>:\n"
@@ -967,9 +967,9 @@ class EditorWindow(gtk.Window):
                 stock_id="odml_Dustbin", accelerator="<shift>Delete", label="Delete")
     def delete_object(self, action):
         widget = self.get_focus()
-        for w in [self._section_tv, self._property_tv]:
-            if widget is w._treeview:
-                widget = w
+        for curr in [self._section_tv, self._property_tv]:
+            if widget is curr._treeview:
+                widget = curr
                 break
         else:
             return False
@@ -1019,10 +1019,10 @@ class EditorWindow(gtk.Window):
 
     def on_object_select(self, obj):
         """an object has been selected, now fix the current property_view"""
-        for name, tv in (
+        for name, tree_view in (
                 ("NewProperty", self._section_tv), ("NewValue", self._property_tv)):
             self.enable_action(name,
-                               tv._treeview.get_selection().count_selected_rows() > 0)
+                               tree_view._treeview.get_selection().count_selected_rows() > 0)
         self.set_navigation_object(obj)
 
     def set_navigation_object(self, obj):
@@ -1119,9 +1119,9 @@ def get_img_path(icon_name):
 
     found = None
     for check_path in paths:
-        for dp, dn, fn in os.walk(check_path):
-            for fname in [f for f in fn if f == icon_name]:
-                found = dp
+        for dirpath, _, filename in os.walk(check_path):
+            for fname in [curr for curr in filename if curr == icon_name]:
+                found = dirpath
                 break
         if found:
             break

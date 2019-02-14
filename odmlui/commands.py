@@ -32,6 +32,10 @@ class Multiple(Command):
 
     aggregator for multiple command, args: cmds=[]
     """
+    def __init__(self, *args, **kwargs):
+        self.cmds = []
+        super(Multiple, self).__init__(*args, **kwargs)
+
     def _execute(self):
         for cmd in self.cmds:
             cmd()

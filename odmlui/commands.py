@@ -80,8 +80,8 @@ class ChangeValue(Command):
             if req not in kwargs:
                 raise TypeError("Missing positional argument %s" % req)
 
-        self.object = None
-        self.attr = None
+        self.object = {}
+        self.attr = []
         self.new_value = None
 
         super(ChangeValue, self).__init__(*args, **kwargs)
@@ -156,7 +156,15 @@ class DeleteObject(Command):
 
     Removes *obj* from its parent.
     """
+    _required = ['obj']
+
     def __init__(self, *args, **kwargs):
+        for req in self._required:
+            if req not in kwargs:
+                raise TypeError("Missing positional argument %s" % req)
+
+        self.obj = None
+
         super(DeleteObject, self).__init__(*args, **kwargs)
         # use an AppendCommand for the actual operation but use it reversed
         self.append_cmd = AppendValue(obj=self.obj.parent, val=self.obj)

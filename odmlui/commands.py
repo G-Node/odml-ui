@@ -119,6 +119,18 @@ class AppendValue(Command):
 
     Appends value *val* to an append capable object *obj*.
     """
+    _required = ['obj', 'val']
+
+    def __init__(self, *args, **kwargs):
+        for req in self._required:
+            if req not in kwargs:
+                raise TypeError("Missing positional argument %s" % req)
+
+        self.obj = None
+        self.val = None
+
+        super(AppendValue, self).__init__(*args, **kwargs)
+
     def _execute(self):
         self.index = len(self.obj)
         self.obj.append(self.val)

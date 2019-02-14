@@ -1,4 +1,14 @@
+"""
+Collection of Command classes with execute and undo methods to be used
+together with the CommandManager class to enable execute and undo
+actions within the Application.
+"""
+
+
 class Command(object):
+    """
+    Command is the base class for execute and undo capable commands.
+    """
     def __init__(self, *args, **kwargs):
         self.args = args
         for key, val in kwargs.items():
@@ -12,9 +22,15 @@ class Command(object):
         pass
 
     def on_action(self, undo=False):
+        """
+        Placeholder method for any command specific execution code
+        """
         pass
 
     def undo(self):
+        """
+        Execute the undo specific method of a command
+        """
         self._undo()
         self.on_action(undo=True)
 
@@ -30,7 +46,9 @@ class Multiple(Command):
     """
     Multiple(cmds=[])
 
-    aggregator for multiple command, args: cmds=[]
+    Supported kwargs: *cmds* list of 'Command' objects.
+
+    Aggregator of multiple 'odmlui.commands.Command' objects.
     """
     def __init__(self, *args, **kwargs):
         self.cmds = []
@@ -49,10 +67,11 @@ class ChangeValue(Command):
     """
     ChangeValue(object=, attr=, new_value=)
 
-    params: *object* object, *attr* (an attribute of the object), *new_value* text
+    Supported kwargs: *object* object, *attr* (an attribute of the object),
+                      *new_value* text
 
-    if *attr* is a list, only the first attribute is changed, but all other attributes
-    are stored for the undo mechanism
+    If *attr* is a list, only the first attribute is changed, but all other attributes
+    are stored for the undo mechanism.
     """
     # TODO known bug: if the data type of a Value is edited, other properties
     # are affected as well (i.e. the value) which is not undone in undo
@@ -85,14 +104,13 @@ class AppendValue(Command):
     """
     AppendValue(obj=, val=)
 
-    appends value *val* to object *obj*
+    Appends value *val* to an append capable object *obj*.
     """
     def _execute(self):
         self.index = len(self.obj)
         self.obj.append(self.val)
 
     def _undo(self):
-        """try to remove the object again"""
         try:
             if self.obj[self.index] == self.val:
                 del self.obj[self.index]
@@ -111,7 +129,7 @@ class DeleteObject(Command):
     """
     DeleteObject(obj=)
 
-    removes *obj* from its parent
+    Removes *obj* from its parent.
     """
     def __init__(self, *args, **kwargs):
         super(DeleteObject, self).__init__(*args, **kwargs)
@@ -120,11 +138,15 @@ class DeleteObject(Command):
         self.append_cmd.index = self.obj.position
 
     def _execute(self):
-        """remove obj (append_cmd.val) from its parent"""
+        """
+        Remove *obj* (append_cmd.val) from its parent
+        """
         self.append_cmd._undo()
 
     def _undo(self):
-        """append obj (append_cmd.val) to its original parent (append_cmd.obj)"""
+        """
+        Append *obj* (append_cmd.val) to its original parent (append_cmd.obj)
+        """
         self.append_cmd._execute()
 
 
@@ -132,8 +154,8 @@ class ReorderObject(Command):
     """
     ReorderObject(obj=, new_index=)
 
-    calls obj.reorder(new_index) to move obj to new position *new_index* in its
-    parent list
+    Calls obj.reorder(new_index) to move *obj* to new position *new_index*
+    in its parent list.
     """
     def _execute(self):
         self.old_index = self.obj.reorder(self.new_index)
@@ -146,19 +168,21 @@ class CopyObject(Command):
     """
     CopyObject(obj=, dst=)
 
-    appends a clone of *obj* to *dst*
+    Appends a clone of *obj* to destination object *dst*.
     """
     def get_new_object(self):
         return self.obj.clone()
 
     def _execute(self):
-        """clone the obj and append it to dst"""
+        """
+        Clone obj and append it to dst.
+        """
         self.new_obj = self.get_new_object()
         self.dst.append(self.new_obj)
 
     def _undo(self):
         """
-        remove the clone from its parent
+        Remove the clone from its parent.
         """
         parent = self.new_obj.parent
         if parent is not None:
@@ -169,7 +193,7 @@ class MoveObject(CopyObject):
     """
     MoveObject(obj=, dst=)
 
-    removes *obj* from *obj.parent* and appends it to *dst*
+    Removes *obj* from *obj.parent* and appends it to destination object *dst*.
     """
     def get_new_object(self):
         try:
@@ -184,8 +208,7 @@ class MoveObject(CopyObject):
 
     def _undo(self):
         """
-        move the object back to its original parent
-        and try to insert it at its old position
+        Move obj back to its original parent and try to insert it at its old position.
         """
         super(MoveObject, self)._undo()
         try:
@@ -198,9 +221,8 @@ class ReplaceObject(MoveObject):
     """
     ReplaceObject(obj=, repl=)
 
-    removes *obj* from *obj.parent* and appends *repl* to its *obj.parent*
-    however, does not previously remove *repl* from its parent!
-    so only use this with repl=obj.clone()
+    Removes *obj* from *obj.parent* and appends object *repl* to *obj.parent*.
+    It does not remove *repl* from *repl.parent*, use only with a cloned *repl* object.
     """
     def _execute(self):
         self.new_obj = self.get_new_object()
@@ -217,6 +239,10 @@ class ReplaceObject(MoveObject):
 class CopyOrMoveObject(Command):
     """
     CopyOrMoveObject(obj=, dst=, copy=True/False)
+
+    Depending on the value of *copy*, a CopyObject or a MoveObject
+    will be initialised.
+    Object *obj* will be copied or moved to destination object *dst*.
     """
     def __init__(self, *args, **kwargs):
         super(CopyOrMoveObject, self).__init__(*args, **kwargs)

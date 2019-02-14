@@ -73,6 +73,19 @@ class ChangeValue(Command):
     If *attr* is a list, only the first attribute is changed, but all other attributes
     are stored for the undo mechanism.
     """
+    _required = ['object', 'attr', 'new_value']
+
+    def __init__(self, *args, **kwargs):
+        for req in self._required:
+            if req not in kwargs:
+                raise TypeError("Missing positional argument %s" % req)
+
+        self.object = None
+        self.attr = None
+        self.new_value = None
+
+        super(ChangeValue, self).__init__(*args, **kwargs)
+
     # TODO known bug: if the data type of a Value is edited, other properties
     # are affected as well (i.e. the value) which is not undone in undo
     # fix1:

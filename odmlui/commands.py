@@ -115,7 +115,7 @@ class AppendValue(Command):
             if self.obj[self.index] == self.val:
                 del self.obj[self.index]
                 return
-        except:
+        except IndexError:
             pass
 
         if hasattr(self.obj, "pop"):
@@ -198,7 +198,7 @@ class MoveObject(CopyObject):
     def get_new_object(self):
         try:
             self.index = self.obj.position
-        except:
+        except AttributeError:
             self.index = self.obj.parent.index(self.obj)
         self.parent = self.obj.parent
         self.parent.remove(self.obj)
@@ -213,7 +213,7 @@ class MoveObject(CopyObject):
         super(MoveObject, self)._undo()
         try:
             self.parent.insert(self.index, self.obj)
-        except:
+        except TypeError:
             self.parent.append(self.obj)
 
 

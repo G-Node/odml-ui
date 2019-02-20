@@ -83,6 +83,7 @@ class ChangeValue(Command):
         self.object = {}
         self.attr = []
         self.new_value = None
+        self.old_value = None
 
         super(ChangeValue, self).__init__(*args, **kwargs)
 
@@ -231,6 +232,7 @@ class CopyObject(Command):
 
         self.obj = None
         self.dst = None
+        self.new_obj = None
         super(CopyObject, self).__init__(*args, **kwargs)
 
     def get_new_object(self):

@@ -1,10 +1,12 @@
+import heapq
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
-import heapq
+
 from . import commands
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 
 class TreeView(object):

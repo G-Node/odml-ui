@@ -1,8 +1,6 @@
 import pygtkcompat
-import odml
 
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
+import odml
 
 from odml.section import BaseSection
 
@@ -13,6 +11,9 @@ from .dnd.targets import PropertyDrop, SectionDrop
 from .dnd.text import TextDrag, TextDrop, TextGenericDropForSectionTV
 from .Helpers import handle_section_import
 from .TreeView import TerminologyPopupTreeView
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 
 class SectionView(TerminologyPopupTreeView):

@@ -1,18 +1,22 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import gtk
 
 import odml.tools.xmlparser as xmlparser
 
 from odml.property import BaseProperty
 from odml.section import BaseSection
 
+import gtk
+
 from . import odmldrop
 from . import tree
-from .targets import *
+from .targets import SectionDrop, PropertyDrop, ValueDrop
+from .. import commands
 from ..treemodel import ValueModel
+
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 
 class TextDrop(odmldrop.OdmlTreeDropTarget):
     """

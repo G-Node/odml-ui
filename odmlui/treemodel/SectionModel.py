@@ -1,15 +1,18 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import gtk, gobject
-import odmlui
 
 from odml.base import Sectionable
 from odml.doc import BaseDocument
 
+import odmlui
+
+import gtk
+
 from .TreeIters import SectionIter
 from .TreeModel import TreeModel, ColumnMapper
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 debug = lambda x: 0
 # to enable tree debugging:
 #import sys

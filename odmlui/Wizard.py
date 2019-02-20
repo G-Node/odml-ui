@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 from collections import OrderedDict
-import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
-import gtk
+import pygtkcompat
+
 import odml
 import odml.terminology as terminology
+
+import gtk
 
 from .Helpers import handle_property_import
 from .treemodel.SectionModel import SectionModel
 from .SectionView import SectionView
 from .ScrolledWindow import ScrolledWindow
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 
 class Table(object):

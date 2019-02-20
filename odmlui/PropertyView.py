@@ -1,17 +1,14 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import gtk
 
 import odml
 import odml.dtypes as dtypes
-import odml.terminology as terminology
 
 from odml import DType
 from odml.property import BaseProperty
 
 from odmlui.treemodel.nodes import Property as TreeModelProperty
+
+import gtk
 
 from . import commands
 from . import TextEditor
@@ -22,6 +19,9 @@ from .treemodel import PropertyModel, ValueModel
 from .dnd.odmldrop import OdmlDrag, OdmlDrop
 from .dnd.targets import ValueDrop, PropertyDrop, SectionDrop
 from .dnd.text import TextDrag, TextDrop, TextGenericDropForPropertyTV
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 COL_KEY = 0
 COL_VALUE = 1

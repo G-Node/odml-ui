@@ -1,14 +1,18 @@
 #!/usr/bin/env python
+import os
+
 import pygtkcompat
+
+import gtk
+
+import odmlui
+
+from . import Editor
+from . import Helpers
+
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-import gtk
-import os
-
-import odmlui
-from . import Editor
-from . import Helpers
 
 def main(filenames=[], debug=False):
     """

@@ -1,11 +1,14 @@
+import sys
+
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
-import sys
+
 from .ScrolledWindow import ScrolledWindow
 from .TreeView import TreeView
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 COL_PATH = 0
 COL_INDEX = 1

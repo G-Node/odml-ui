@@ -1,13 +1,14 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
 import gtk
 
 from . import tree
-from ..DocumentRegistry import DocumentRegistry
-from .. import commands
 from .targets import ActionDrop
+from .. import commands
+from ..DocumentRegistry import DocumentRegistry
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 
 class OdmlTreeDropTarget(tree.TreeDropTarget):
     """

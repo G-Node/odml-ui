@@ -1,11 +1,12 @@
 import pygtkcompat
+
+import gtk
+
+import odmlui
+
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-import gtk
-import gobject
-
-import odmlui
 
 class NavigationBar(gtk.Label):
     def __init__(self, *args, **kargs):

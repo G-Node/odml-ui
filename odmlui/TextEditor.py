@@ -1,11 +1,12 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
 
-from . import commands
 from .ScrolledWindow import ScrolledWindow
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 
 class TextEditor(gtk.Window):
     def __init__(self, obj, attr):

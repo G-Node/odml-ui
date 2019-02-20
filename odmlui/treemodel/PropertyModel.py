@@ -1,8 +1,4 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import odml
 
 from odml.property import BaseProperty
 from odml.section import BaseSection
@@ -10,6 +6,9 @@ from odml.section import BaseSection
 from .TreeIters import PropIter, ValueIter, SectionPropertyIter
 from .TreeModel import TreeModel, ColumnMapper
 from . import ValueModel
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 
 ColMapper = ColumnMapper({"Name":        (0, "name"),

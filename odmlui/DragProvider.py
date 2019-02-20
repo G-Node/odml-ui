@@ -1,10 +1,11 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
 import gtk
+
 from .dnd.drag import DragTarget
 from .dnd.drop import DropTarget
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 
 #TODO build a GenericDragProvider and a TreeDragProvider

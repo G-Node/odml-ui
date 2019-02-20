@@ -1,22 +1,25 @@
-import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import gtk
 import os.path
+
+import pygtkcompat
 
 import odml
 import odml.validation
+
 from odml.tools.odmlparser import ODMLReader, ODMLWriter
 from odml.tools.parser_utils import InvalidVersionException
 from odml.tools.version_converter import VersionConverter
 
+import gtk
+
 from .CommandManager import CommandManager
 from .Helpers import uri_to_path, get_parser_for_uri, get_extension, \
-    create_pseudo_values, get_parser_for_file_type, handle_section_import
+        get_parser_for_file_type, handle_section_import
 from .MessageDialog import ErrorDialog
 from .treemodel import event
 from .ValidationWindow import ValidationWindow
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 
 class EditorTab(object):

@@ -6,14 +6,15 @@ import tempfile
 from distutils.version import LooseVersion as CheckVer
 
 import pygtkcompat
-import gtk
-import gobject
 
 from odml.property import BaseProperty
 
 import odmlui.treemodel.mixin
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
 from odmlui.treemodel import SectionModel, ValueModel
+
+import gtk
+import gobject
 
 from .AttributeView import AttributeView
 from .ChooserDialog import odMLChooserDialog

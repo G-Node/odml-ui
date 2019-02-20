@@ -1,8 +1,8 @@
 import pygtkcompat
+import gtk
+
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
-
-import gtk
 
 
 class ChooserDialog(gtk.FileChooserDialog):

@@ -1,11 +1,11 @@
-import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import gtk
-import gobject
 import sys
 
+import pygtkcompat
+import gtk
+import gobject
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 debug = lambda x: 0
 

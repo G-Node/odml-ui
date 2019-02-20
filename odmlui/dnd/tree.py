@@ -1,11 +1,13 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
 
 from . import drag
 from . import drop
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 
 class Action(object):
     """

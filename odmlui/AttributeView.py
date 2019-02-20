@@ -1,13 +1,16 @@
 import cgi
+
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
+
+from odml import format as ofmt
 
 import gtk
-from odml import format as ofmt
 
 from . import commands
 from .TreeView import TreeView
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 COL_KEY = 0
 COL_VALUE = 1

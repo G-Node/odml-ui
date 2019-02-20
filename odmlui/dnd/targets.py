@@ -1,5 +1,3 @@
-import odml
-
 from odml.base import Sectionable
 from odml.property import BaseProperty
 from odml.section import BaseSection

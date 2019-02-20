@@ -193,11 +193,24 @@ class ReorderObject(Command):
     Calls obj.reorder(new_index) to move *obj* to new position *new_index*
     in its parent list.
     """
+    _required = ['obj', 'new_index']
+
+    def __init__(self, *args, **kwargs):
+        for req in self._required:
+            if req not in kwargs:
+                raise TypeError("Missing positional argument %s" % req)
+
+        self.obj = None
+        self.new_index = None
+        self.old_index = None
+        super(ReorderObject, self).__init__(*args, **kwargs)
+
     def _execute(self):
         self.old_index = self.obj.reorder(self.new_index)
 
     def _undo(self):
-        self.obj.reorder(self.old_index)
+        if self.old_index:
+            self.obj.reorder(self.old_index)
 
 
 class CopyObject(Command):

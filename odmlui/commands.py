@@ -280,7 +280,17 @@ class CopyOrMoveObject(Command):
     will be initialised.
     Object *obj* will be copied or moved to destination object *dst*.
     """
+    _required = ['obj', 'dst']
+
     def __init__(self, *args, **kwargs):
+        for req in self._required:
+            if req not in kwargs:
+                raise TypeError("Missing positional argument %s" % req)
+
+        self.obj = None
+        self.dst = None
+        self.copy = None
+
         super(CopyOrMoveObject, self).__init__(*args, **kwargs)
         cmd_class = CopyObject if self.copy else MoveObject
         self.cmd = cmd_class(obj=self.obj, dst=self.dst)

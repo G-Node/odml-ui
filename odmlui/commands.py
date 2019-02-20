@@ -87,14 +87,6 @@ class ChangeValue(Command):
 
         super(ChangeValue, self).__init__(*args, **kwargs)
 
-    # TODO known bug: if the data type of a Value is edited, other properties
-    # are affected as well (i.e. the value) which is not undone in undo
-    # fix1:
-    #   use the format description and save all attributes
-    # fix2:
-    #   clone the object and restore it later (needs tree manipulation or stuff from fix1)
-    # hack:
-    #   save the value as well for Value objects
     def _execute(self):
         if not isinstance(self.attr, list):
             self.attr = [self.attr]
@@ -236,6 +228,9 @@ class CopyObject(Command):
         super(CopyObject, self).__init__(*args, **kwargs)
 
     def get_new_object(self):
+        """
+        Clone handed in object
+        """
         return self.obj.clone()
 
     def _execute(self):
@@ -272,12 +267,19 @@ class MoveObject(CopyObject):
         super(MoveObject, self).__init__(*args, **kwargs)
 
     def get_new_object(self):
+        """
+        Used in the inherited Copy.Object._execute method.
+        Removes the handed in object from its parent and
+        returns the object.
+        """
         try:
             self.index = self.obj.position
         except AttributeError:
             self.index = self.obj.parent.index(self.obj)
+
         self.parent = self.obj.parent
         self.parent.remove(self.obj)
+
         return self.obj
 
     # _execute is inherited from CopyObject

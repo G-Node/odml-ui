@@ -258,6 +258,17 @@ class MoveObject(CopyObject):
 
     Removes *obj* from *obj.parent* and appends it to destination object *dst*.
     """
+    _required = ['dst']
+
+    def __init__(self, *args, **kwargs):
+        for req in self._required:
+            if req not in kwargs:
+                raise TypeError("Missing positional argument %s" % req)
+
+        self.parent = None
+        self.index = None
+        super(MoveObject, self).__init__(*args, **kwargs)
+
     def get_new_object(self):
         try:
             self.index = self.obj.position

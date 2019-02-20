@@ -140,13 +140,16 @@ class AppendValue(Command):
             if self.obj[self.index] == self.val:
                 del self.obj[self.index]
                 return
-        except IndexError:
+        except (IndexError, TypeError):
+            # Document or Section deletion raise a TypeError at this point.
             pass
 
         if hasattr(self.obj, "pop"):
             val = self.obj.pop()
-            if val == self.val: return
+            if val == self.val:
+                return
             self.obj.append(val)
+
         self.obj.remove(self.val)
 
 

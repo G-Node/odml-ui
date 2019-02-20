@@ -4,6 +4,24 @@ dist: trusty
 language: python
 
 matrix:
+  allow_failures:
+    - os: linux
+      python: "3.5"
+      sudo: required
+      env: CONDA=N
+
+    - os: osx
+      language: generic
+      env: OSXENV=2.7 CONDA=N
+
+    - os: osx
+      language: generic
+      env: OSXENV=3.5 CONDA=N CONDAPY=3.5
+
+    - os: osx
+      language: generic
+      env: OSXENV=3.5 CONDA=Y CONDAPY=3.5
+
   include:
     - os: linux
       python: "2.7_with_system_site_packages"
@@ -22,24 +40,6 @@ matrix:
       sudo: required
       env:
         - CONDA=Y
-        - CONDAPY=3.5
-  allow_failures:
-    - os: linux
-      python: "3.5"
-      sudo: required
-      env: CONDA=N
-
-    - os: osx
-      language: generic
-      env:
-        - OSXENV=2.7
-        - CONDA=N
-
-    - os: osx
-      language: generic
-      env:
-        - OSXENV=3.5
-        - CONDA=N
         - CONDAPY=3.5
 
 #    Keep only one osx branch active for now

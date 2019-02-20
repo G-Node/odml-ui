@@ -287,6 +287,17 @@ class ReplaceObject(MoveObject):
     Removes *obj* from *obj.parent* and appends object *repl* to *obj.parent*.
     It does not remove *repl* from *repl.parent*, use only with a cloned *repl* object.
     """
+    _required = ['repl']
+
+    def __init__(self, *args, **kwargs):
+        for req in self._required:
+            if req not in kwargs:
+                raise TypeError("Missing positional argument %s" % req)
+
+        self.repl = None
+        self.new_obj = None
+        super(ReplaceObject, self).__init__(*args, **kwargs)
+
     def _execute(self):
         self.new_obj = self.get_new_object()
         self.obj = self.repl

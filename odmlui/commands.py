@@ -213,12 +213,26 @@ class ReorderObject(Command):
             self.obj.reorder(self.old_index)
 
 
+# So far, the application is not actually using this class
 class CopyObject(Command):
     """
     CopyObject(obj=, dst=)
 
     Appends a clone of *obj* to destination object *dst*.
     """
+    # Cannot add 'dst' as required attribute, since ReplaceObject inherits
+    # from CopyObject and does not feature the 'dst' attribute.
+    _required = ['obj']
+
+    def __init__(self, *args, **kwargs):
+        for req in self._required:
+            if req not in kwargs:
+                raise TypeError("Missing positional argument %s" % req)
+
+        self.obj = None
+        self.dst = None
+        super(CopyObject, self).__init__(*args, **kwargs)
+
     def get_new_object(self):
         return self.obj.clone()
 

@@ -37,11 +37,13 @@ def main(filenames=[], debug=False):
         editor.welcome()
     return tabs
 
+
 def run():
     """
     handle all initialisation and start main() and gtk.main()
     """
-    try: # this works only on linux
+    try:
+        # this works only on linux
         from ctypes import cdll
         libc = cdll.LoadLibrary("libc.so.6")
         libc.prctl(15, 'odMLEditor', 0, 0, 0)
@@ -55,5 +57,6 @@ def run():
     main(filenames=args.files, debug=args.debug)
     gtk.main()
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     run()

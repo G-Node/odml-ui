@@ -230,7 +230,8 @@ class TerminologyPopupTreeView(TreeView):
         item.show()
         return item
 
-    def create_popup_menu_items(self, add_name, empty_name, obj, func, terminology_func, name_func, stock=None):
+    def create_popup_menu_items(self, add_name, empty_name, obj, func,
+                                terminology_func, name_func, stock=None):
         """
         create menu items for a popup menu
 
@@ -239,9 +240,11 @@ class TerminologyPopupTreeView(TreeView):
         * *obj* is the parent object to which to add the data
         * *func* is the target function that is called upon click action:
             func(widget, (obj, val)) where *val* is the template value or None
-        * *terminology_func* is passed to *get_terminology_suggestions* and used to extract the relevant
-          suggestions of a terminology object (e.g. lambda section: section.properties)
-        * *name_func* is a function the create a menu-item label from an object (e.g. lambda prop: prop.name)
+        * *terminology_func* is passed to *get_terminology_suggestions* and used
+          to extract the relevant suggestions of a terminology object
+          (e.g. lambda section: section.properties)
+        * *name_func* is a function the create a menu-item label from an object
+          (e.g. lambda prop: prop.name)
         * *stock* is the stock-id of the resource to use
 
         returns an array of gtk.MenuItem

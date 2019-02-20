@@ -1,5 +1,5 @@
-
 import odmlui
+
 
 class CommandManager(object):
     def __init__(self):
@@ -63,6 +63,7 @@ class CommandManager(object):
         return bool(self.undo_stack)
 
     can_undo = is_modified
+
     @property
     def can_redo(self):
         return bool(self.redo_stack)
@@ -72,4 +73,3 @@ class CommandManager(object):
 
     def enable_redo(self, enable=True):
         pass
-

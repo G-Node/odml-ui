@@ -48,6 +48,7 @@ class TextDrop(odmldrop.OdmlTreeDropTarget):
     def text_receive_data(self, action, dst, position, obj):
         return self.drop_object(action, dst, position, obj)
 
+
 class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
     """
     Can drop objects if they parse to an class contained in self.targets
@@ -57,10 +58,10 @@ class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
 
     def drop_object(self, action, dst, position, obj):
         for kls, tkls in [
-            (ValueModel.Value, ValueDrop),
-            (BaseProperty, PropertyDrop),
-            (BaseSection, SectionDrop)
-            ]:
+                (ValueModel.Value, ValueDrop),
+                (BaseProperty, PropertyDrop),
+                (BaseSection, SectionDrop)]:
+
             if not kls in self.targets:
                 continue
             if isinstance(obj, kls):
@@ -69,8 +70,11 @@ class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
 
     def text_can_drop(self, action, dst, position, obj):
         for kls in self.targets:
-            if isinstance(obj, kls): return True
+            if isinstance(obj, kls):
+                return True
+
         return False
+
 
 class TextGenericDropForPropertyTV(TextGenericDrop):
     """
@@ -78,8 +82,10 @@ class TextGenericDropForPropertyTV(TextGenericDrop):
     and Properties into Sections
     """
     targets = [BaseProperty, ValueModel.Value]
+
     def text_can_drop(self, action, dst, position, obj):
-        if not super(TextGenericDropForPropertyTV, self).text_can_drop(action, dst, position, obj):
+        if not super(TextGenericDropForPropertyTV, self).text_can_drop(action, dst,
+                                                                       position, obj):
             return False
         # can't drop values to anything but properties
         if isinstance(obj, ValueModel.Value) and not isinstance(dst, BaseProperty):
@@ -89,12 +95,14 @@ class TextGenericDropForPropertyTV(TextGenericDrop):
             return False
         return True
 
+
 class TextGenericDropForSectionTV(TextGenericDropForPropertyTV):
     """
     can drop Properties and Section, inherited is the capability to only drop
     Properties into Sections (not into Documents)
     """
     targets = [BaseProperty, BaseSection]
+
 
 class TextDrag(odmldrop.OdmlDrag):
     """

@@ -61,24 +61,28 @@ class PropertyView(TerminologyPopupTreeView):
         pd = PropertyDrop(exec_func=_exec)
         sd = SectionDrop(exec_func=_exec)
         for target in [
-            OdmlDrag(mime="odml/property-ref", inst=BaseProperty),
-            TextDrag(mime="odml/property", inst=BaseProperty),
-            OdmlDrag(mime="odml/value-ref", inst=ValueModel.Value),
-            TextDrag(mime="odml/value", inst=ValueModel.Value),
-            TextDrag(mime="TEXT"),
-            OdmlDrop(mime="odml/value-ref", target=vd, registry=registry, exec_func=_exec),
-            OdmlDrop(mime="odml/property-ref", target=pd, registry=registry, exec_func=_exec),
-            OdmlDrop(mime="odml/section-ref", target=sd, registry=registry, exec_func=_exec),
-            TextDrop(mime="odml/value", target=vd),
-            TextDrop(mime="odml/property", target=pd),
-            TextDrop(mime="odml/section", target=sd),
-            TextGenericDropForPropertyTV(exec_func=_exec),
-            ]:
+                OdmlDrag(mime="odml/property-ref", inst=BaseProperty),
+                TextDrag(mime="odml/property", inst=BaseProperty),
+                OdmlDrag(mime="odml/value-ref", inst=ValueModel.Value),
+                TextDrag(mime="odml/value", inst=ValueModel.Value),
+                TextDrag(mime="TEXT"),
+                OdmlDrop(mime="odml/value-ref", target=vd,
+                         registry=registry, exec_func=_exec),
+                OdmlDrop(mime="odml/property-ref", target=pd,
+                         registry=registry, exec_func=_exec),
+                OdmlDrop(mime="odml/section-ref", target=sd,
+                         registry=registry, exec_func=_exec),
+                TextDrop(mime="odml/value", target=vd),
+                TextDrop(mime="odml/property", target=pd),
+                TextDrop(mime="odml/section", target=sd),
+                TextGenericDropForPropertyTV(exec_func=_exec), ]:
+
             dp.append(target)
         dp.execute = _exec
         dp.connect()
 
-    def dtype_renderer_function(self, tv_column, cell_combobox, tree_model, tree_iter, data):
+    def dtype_renderer_function(self, tv_column, cell_combobox,
+                                tree_model, tree_iter, data):
         """
             Defines a custom cell renderer function, which is executed for
             every cell of the column, and sets the DType value from the underlying model.
@@ -153,12 +157,14 @@ class PropertyView(TerminologyPopupTreeView):
         if not first_row and column_name != "pseudo_values":
             return
         # Do not replace multiple values with pseudo_value placeholder text.
-        if first_row_of_multi and column_name == "pseudo_values" and new_text == "<multi>":
+        if first_row_of_multi and column_name == "pseudo_values" and \
+                new_text == "<multi>":
             return
 
         cmd = None
-        # if we edit another attribute (e.g. unit), set this for all values of this property
 
+        # if we edit another attribute (e.g. unit), set this
+        # for all values of this property.
         if first_row_of_multi and column_name == "pseudo_values":
             # editing multiple values of a property at once
             cmds = []
@@ -187,31 +193,39 @@ class PropertyView(TerminologyPopupTreeView):
 
                 prop = prop.pseudo_values[0]
 
-            cmd = commands.ChangeValue(
-                    object=prop,
-                    attr=column_name,
-                    new_value=new_text)
+            cmd = commands.ChangeValue(object=prop,
+                                       attr=column_name,
+                                       new_value=new_text)
 
         if cmd:
             self.execute(cmd)
 
     def get_popup_menu_items(self):
         model, path, obj = self.popup_data
-        menu_items = self.create_popup_menu_items("Add Property", "Empty Property", model.section,
-                                                  self.add_property, lambda sec: sec.properties,
-                                                  lambda prop: prop.name, stock="odml-add-Property")
-        if obj is not None:  # can also add value
+        menu_items = self.create_popup_menu_items("Add Property", "Empty Property",
+                                                  model.section, self.add_property,
+                                                  lambda sec: sec.properties,
+                                                  lambda prop: prop.name,
+                                                  stock="odml-add-Property")
+        # can also add value
+        if obj is not None:
             prop = obj
 
-            if hasattr(obj, "_property"):  # we care about the properties only
+            # we care about the properties only
+            if hasattr(obj, "_property"):
                 prop = obj._property
 
-            value_filter = lambda prop: [val for val in prop.values if val.values is not None and val.values != ""]
-            for item in self.create_popup_menu_items("Add Value", "Empty Value", prop, self.add_value,
-                                                     value_filter, lambda val: val.values, stock="odml-add-Value"):
+            value_filter = lambda prop: [val for val in
+                                         prop.values if val.values is not None and
+                                         val.values != ""]
+            for item in self.create_popup_menu_items("Add Value", "Empty Value", prop,
+                                                     self.add_value, value_filter,
+                                                     lambda val: val.values,
+                                                     stock="odml-add-Value"):
                 menu_items.append(item)
-            for item in self.create_popup_menu_items("Set Value", "Empty Value", prop, self.set_value,
-                                                     value_filter, lambda val: val.values):
+            for item in self.create_popup_menu_items("Set Value", "Empty Value", prop,
+                                                     self.set_value, value_filter,
+                                                     lambda val: val.values):
                 if item.get_submenu() is None:
                     continue  # don't want a sole Set Value item
                 menu_items.append(item)
@@ -222,13 +236,16 @@ class PropertyView(TerminologyPopupTreeView):
                 val = prop.pseudo_values[0] if len(prop.pseudo_values) == 1 else None
 
             if val is not None and val.dtype == "text":
-                menu_items.append(self.create_menu_item("Edit text in larger window", self.edit_text, val))
+                menu_items.append(self.create_menu_item("Edit text in larger window",
+                                                        self.edit_text, val))
 
-            # cannot delete properties that are linked (they'd be override on next load), instead allow to reset them
+            # Cannot delete properties that are linked (they'd be override on next load),
+            # instead allow to reset them.
             merged = prop.get_merged_equivalent()
             if prop is obj and merged is not None:
                 if merged != obj:
-                    menu_items.append(self.create_menu_item("Reset to merged default", self.reset_property, obj))
+                    menu_items.append(self.create_menu_item("Reset to merged default",
+                                                            self.reset_property, obj))
             else:
                 menu_items.append(self.create_popup_menu_del_item(obj))
         return menu_items
@@ -266,10 +283,8 @@ class PropertyView(TerminologyPopupTreeView):
 
         # first append, then remove to keep the constraint that a property
         # will always hold at least one value
-        cmd = commands.Multiple(cmds=[
-                commands.AppendValue(obj=prop, val=val),
-                commands.DeleteObject(obj=obj)
-                ])
+        cmd = commands.Multiple(cmds=[commands.AppendValue(obj=prop, val=val),
+                                      commands.DeleteObject(obj=obj)])
         self.execute(cmd)
 
     def add_value(self, widget, obj_value_pair):
@@ -335,7 +350,8 @@ class PropertyView(TerminologyPopupTreeView):
     def create_odml_types_col(self, id, name, propname):
 
         # Get all the members of odml.DType, which are not callable and are not `private`.
-        dtypes_list = [x for x in dir(DType) if not callable(getattr(DType, x)) and not x.startswith('__')]
+        dtypes_list = [x for x in dir(DType) if not callable(getattr(DType, x)) and
+                       not x.startswith('__')]
         dtypes_combo_list = gtk.ListStore(str)
         for i in dtypes_list:
             dtypes_combo_list.append([i])

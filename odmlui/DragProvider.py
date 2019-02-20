@@ -8,7 +8,6 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 
-#TODO build a GenericDragProvider and a TreeDragProvider
 class DragProvider(object):
     """
     A DragProvider handles complicated Drag&Drop interactions with multiple sources
@@ -43,29 +42,29 @@ class DragProvider(object):
         this method is implicitly called by append()
         """
         tv = self.widget
-        # TODO make this customizeable, allow LINK action
 
         # stuff that gtk shall do automatically
         GTK_HANDLERS = gtk.DEST_DEFAULT_HIGHLIGHT | gtk.DEST_DEFAULT_DROP
 
         drag_targets = []
         for i, target in enumerate(self.drag_targets):
-            t = gtk.TargetEntry.new(target.atom.name(), target.app | target.widget, 1500 + i)        
+            t = gtk.TargetEntry.new(target.atom.name(),
+                                    target.app | target.widget, 1500 + i)
             drag_targets.append(t)
 
         # first enable tree model drag/drop (to get the actual row as drag_icon)
         # however this alone will only work for TreeStore/ListStore,
         # so we need to manage drag and drop by hand due to the GenericTreeModel
         tv.enable_model_drag_source(gtk.gdk.BUTTON1_MASK,
-                                    drag_targets,
-                                    self.SOURCE_ACTIONS)
+                                    drag_targets, self.SOURCE_ACTIONS)
+
         tv.drag_source_set(gtk.gdk.BUTTON1_MASK,
-                                    drag_targets,
-                                    self.SOURCE_ACTIONS)
+                           drag_targets, self.SOURCE_ACTIONS)
+
         tv.enable_model_drag_dest([], self.DEST_ACTIONS)
-        tv.drag_dest_set(0, # gtk.DEST_DEFAULT_ALL, # if DEFAULT_ALL is set, data preview won't work
-                         [],
-                         self.DEST_ACTIONS)
+
+        # gtk.DEST_DEFAULT_ALL, # if DEFAULT_ALL is set, data preview won't work
+        tv.drag_dest_set(0, [], self.DEST_ACTIONS)
 
     def append(self, obj):
         """
@@ -97,9 +96,10 @@ class DragProvider(object):
 
         drag_targets = []
         for i, target in enumerate(self.drag_targets):
-            t = gtk.TargetEntry.new(target.atom.name(), target.app | target.widget, 1600 + i)        
+            t = gtk.TargetEntry.new(target.atom.name(),
+                                    target.app | target.widget, 1600 + i)
             drag_targets.append(t)
-        
+
         # first enable tree model drag/drop (to get the actual row as drag_icon)
         # however this alone will only work for TreeStore/ListStore,
         # so we need to manage drag and drop by hand due to the GenericTreeModel
@@ -196,7 +196,6 @@ class DragProvider(object):
         if context.get_suggested_action() & target.actions != 0:
             gtk.gdk.drag_status(context, context.get_suggested_action(), time)
         else:
-            # TODO or do i have to select one explicitly?
             gtk.gdk.drag_status(context, target.actions, time)
         return True
 
@@ -213,8 +212,7 @@ class DragProvider(object):
         # widget.drag_dest_set(0, [], 0)
         widget.drag_get_data(context, mime, etime)
 
-    def _on_drag_received_data(self, widget, context, x, y, selection,
-                                target_id, etime):
+    def _on_drag_received_data(self, widget, context, x, y, selection, target_id, etime):
         """callback function for received data upon dnd-completion"""
 
         data = selection.get_data().decode()
@@ -275,13 +273,11 @@ class DragProvider(object):
             gtk.gdk.drag_status(context, 0, time)
             return False
 
-        # do the highlighting
-        # TODO: this is treeview dependent, move it to TreeDropTarget
         try:
             path, pos = widget.get_dest_row_at_pos(x, y)
             widget.set_drag_dest_row(path, pos)
         except TypeError:
-                last_row = gtk.TreePath.new_from_indices([len(widget.get_model()) - 1])
-                widget.set_drag_dest_row(last_row, gtk.TREE_VIEW_DROP_AFTER)
+            last_row = gtk.TreePath.new_from_indices([len(widget.get_model()) - 1])
+            widget.set_drag_dest_row(last_row, gtk.TREE_VIEW_DROP_AFTER)
 
         return True

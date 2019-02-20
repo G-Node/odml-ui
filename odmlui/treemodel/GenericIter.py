@@ -12,7 +12,7 @@ class GenericIter(object):
     need to have a IterClass attribute. If it is missing a GenericIter
     will be used.
     """
-    is_python2 = (sys.version_info < (3,0))
+    is_python2 = (sys.version_info < (3, 0))
 
     def __init__(self, obj):
         """
@@ -87,4 +87,3 @@ class GenericIter(object):
             repr(self._obj),
             repr(self._obj.parent),
             self._obj.position)
-

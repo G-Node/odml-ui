@@ -43,8 +43,8 @@ class SectionView(TerminologyPopupTreeView):
                          exec_func=_exec),
                 TextDrop(mime="odml/property", target=pd),
                 TextDrop(mime="odml/section", target=sd),
-                TextGenericDropForSectionTV(exec_func=_exec),
-                ]:
+                TextGenericDropForSectionTV(exec_func=_exec), ]:
+
             dp.append(target)
         dp.execute = _exec
         dp.connect()

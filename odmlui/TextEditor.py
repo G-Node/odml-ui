@@ -21,8 +21,6 @@ class TextEditor(gtk.Window):
         buffer = self.text.get_buffer()
         buffer.set_text(getattr(obj, attr))
 
-        #buffer.connect_object("changed", self.on_text_updated)
-        #buffer.connect_object("mark_set", self.on_cursor_moved)
         self.add(ScrolledWindow(self.text))
         self.show_all()
 
@@ -37,13 +35,16 @@ class TextEditor(gtk.Window):
     def execute(self, cmd):
         cmd()
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     class A(object):
         _a = "no text"
+
         @property
         def a(self):
             print("read prop a")
             return self._a
+
         @a.setter
         def a(self, new_value):
             print("set a to ", repr(new_value))

@@ -9,9 +9,8 @@ class ChooserDialog(gtk.FileChooserDialog):
     def __init__(self, title, save):
         default_button = gtk.STOCK_SAVE if save else gtk.STOCK_OPEN
         default_action = gtk.FILE_CHOOSER_ACTION_SAVE if save else gtk.FILE_CHOOSER_ACTION_OPEN
-        super(ChooserDialog, self).__init__(
-                title=title,
-                action=default_action)
+        super(ChooserDialog, self).__init__(title=title, action=default_action)
+
         self.add_button(default_button, gtk.RESPONSE_OK)
         self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
 

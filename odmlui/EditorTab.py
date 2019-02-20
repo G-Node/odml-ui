@@ -113,13 +113,12 @@ class EditorTab(object):
             ErrorDialog(self.window, err_header, str(err))
             return False
 
-        # TODO display conversion warnings
-
         # When we have written, we can load!
         return self.load(new_file_path)
 
     def reset(self):
-        self.edited = 0  # initialize the edit stack position
+        # initialize the edit stack position
+        self.edited = 0
         self.command_manager.reset()
         self.enable_undo(enable=False)
         self.enable_redo(enable=False)
@@ -168,7 +167,8 @@ class EditorTab(object):
 
         for e in self.document.validation_result.errors:
             if e.is_error:
-                self.window._info_bar.show_info("Invalid document. Please fix errors (red) before saving.")
+                self.window._info_bar.show_info(
+                    "Invalid document. Please fix errors (red) before saving.")
                 self.validate()
                 return
 
@@ -205,7 +205,7 @@ class EditorTab(object):
 
         self.window._info_bar.show_info("%s was saved" % (os.path.basename(file_path)))
         self.edited = len(self.command_manager)
-        return True  # TODO return false on any error and notify the user
+        return True
 
     def enable_undo(self, enable=True):
         for tab in self._clones:

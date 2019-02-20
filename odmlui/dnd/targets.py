@@ -15,6 +15,7 @@ class ActionDrop(object):
         super(ActionDrop, self).__init__(*args, **kwargs)
         self.execute = exec_func
 
+
 class GenericDrop(ActionDrop):
     """
     A Generic ActionDrop that allows to drop any object using the
@@ -30,27 +31,37 @@ class GenericDrop(ActionDrop):
         cmd = commands.CopyOrMoveObject(obj=obj, dst=dst, copy=action.copy)
         return self.execute(cmd)
 
+
 class ValueDrop(GenericDrop):
     def odml_can_drop(self, action, dst, position, obj):
         """
         can only move/copy into Properties
         """
-        if action.link: return False
+        if action.link:
+            return False
+
         return isinstance(dst, BaseProperty)
+
 
 class PropertyDrop(GenericDrop):
     def get_drop_dest(self, dst, action):
-        if action.link: return None
+        if action.link:
+            return None
+
         while not isinstance(dst, BaseSection):
             dst = dst.parent
+
         return dst
 
     def odml_can_drop(self, action, dst, position, obj):
         """
         can only move/copy into Sections
         """
-        if action.link: return False
+        if action.link:
+            return False
+
         return isinstance(dst, BaseSection)
+
 
 class SectionDrop(GenericDrop):
     def drop_object(self, action, dst, position, obj):
@@ -59,15 +70,14 @@ class SectionDrop(GenericDrop):
         """
         if action.link:
             if dst.document is obj.document:
-                cmd = commands.ChangeValue(
-                        object=dst,
-                        attr="link",
-                        new_value=dst.get_relative_path(obj))
+                cmd = commands.ChangeValue(object=dst,
+                                           attr="link",
+                                           new_value=dst.get_relative_path(obj))
             else:
-                cmd = commands.ChangeValue(
-                        object=dst,
-                        attr="include",
-                        new_value=dst.filename + "#" + dst.document.get_relative_path(obj))
+                new_val = dst.filename + "#" + dst.document.get_relative_path(obj)
+                cmd = commands.ChangeValue(object=dst,
+                                           attr="include",
+                                           new_value=new_val)
         else:
             return super(SectionDrop, self).drop_object(action, dst, position, obj)
         return self.execute(cmd)
@@ -77,7 +87,7 @@ class SectionDrop(GenericDrop):
         * can only establish links to Sections
         * can only move/copy into Sections/Documents
         """
-        if action.link: return isinstance(dst, BaseSection)
-        return isinstance(dst, Sectionable)
+        if action.link:
+            return isinstance(dst, BaseSection)
 
-# TODO make links / include from other apps work
+        return isinstance(dst, Sectionable)

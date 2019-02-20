@@ -16,8 +16,7 @@ ColMapper = ColumnMapper({"Name":        (0, "name"),
                           "Type":        (2, "dtype"),
                           "Unit":        (3, "unit"),
                           "Uncertainty": (4, "uncertainty"),
-                          "Definition":  (5, "definition"),
-                          })
+                          "Definition":  (5, "definition"), })
 
 
 class PropertyModel(TreeModel):

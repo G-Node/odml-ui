@@ -2,7 +2,7 @@ import sys
 import odml
 
 
-class Event (object):
+class Event(object):
     def __init__(self, name):
         self.handlers = []
         self.name = name
@@ -127,8 +127,9 @@ class ChangeContext(object):
         after handling obj is removed from the stack again
         """
         self._obj.append(obj)
-        if obj._change_handler is not None: #hasattr(obj, "_change_handler"):
+        if obj._change_handler is not None:
             obj._change_handler(self)
+
         obj._Changed(self)
         self._obj.remove(obj)
 
@@ -137,8 +138,10 @@ class ChangeContext(object):
 
     def __repr__(self):
         v = ""
-        if self.pre_change: v = "Pre"
-        if self.post_change: v = "Post"
+        if self.pre_change:
+            v = "Pre"
+        if self.post_change:
+            v = "Post"
         return "<%sChange %s.%s(%s)>" % (v, repr(self.obj), self.action, repr(self.val))
 
     def dump(self):
@@ -253,6 +256,7 @@ def remove_value(prop, pseudo):
     del cp_val[pseudo._index]
     prop.values = cp_val
 
+
 # create a separate global Event listeners for each class
 # and provide ModificationNotifier Capabilities
 name = "event"
@@ -293,8 +297,11 @@ def pass_on_change_section(context):
     if document is not None:
         context.pass_on(document)
 
-# Value._Changed.finish    = pass_on_change
+
 Property._Changed.finish = pass_on_change
-Section._Changed.finish  = pass_on_change_section
+
+
+Section._Changed.finish = pass_on_change_section
+
 
 odml.addImplementation(sys.modules[__name__])

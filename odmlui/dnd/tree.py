@@ -18,15 +18,15 @@ class Action(object):
 
     @property
     def move(self):
-        return (self.action & gtk.gdk.ACTION_MOVE)
+        return self.action & gtk.gdk.ACTION_MOVE
 
     @property
     def copy(self):
-        return (self.action == gtk.gdk.ACTION_COPY)
+        return self.action == gtk.gdk.ACTION_COPY
 
     @property
     def link(self):
-        return (self.action == gtk.gdk.ACTION_LINK)
+        return self.action == gtk.gdk.ACTION_LINK
 
 
 class TreeDropTarget(drop.DropTarget):
@@ -67,6 +67,7 @@ class TreeDropTarget(drop.DropTarget):
 
     def tree_receive_data(self, action, data, model, iter, position):
         raise NotImplementedError
+
 
 class TreeDragTarget(drag.DragTarget):
     """

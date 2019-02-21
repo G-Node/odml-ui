@@ -60,6 +60,12 @@ class AttributeView(TreeView):
         return self._model
 
     def fill(self):
+        """
+        The *fill* method resets the current attribute view store,
+        walks over all attributes of the currently selected odML entity object.
+        Any value is converted to string, escaped for proper viewing and
+        added as a store entry.
+        """
         self._store.clear()
 
         for k in self._fmt._args:
@@ -89,8 +95,8 @@ class AttributeView(TreeView):
 
     def on_object_change(self, context):
         """
-        this change listener is attached to the current object class
-        and updates the GUI elements upon relevant change events
+        This change listener is attached to the current object class
+        and updates the GUI elements upon relevant change events.
         """
         if context.cur is self._model and context.post_change:
             self.fill()

@@ -11,24 +11,24 @@ from odml.property import BaseProperty
 
 import odmlui.treemodel.mixin
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
-from odmlui.treemodel import SectionModel, ValueModel
+from odmlui.treemodel import section_model, value_model
 
 import gtk
 import gobject
 
-from .AttributeView import AttributeView
-from .ChooserDialog import odMLChooserDialog
-from .DocumentRegistry import DocumentRegistry
-from .EditorTab import EditorTab
-from .Helpers import uri_to_path, get_extension, get_parser_for_file_type, \
+from .attribute_view import AttributeView
+from .chooser_dialog import odMLChooserDialog
+from .document_registry import DocumentRegistry
+from .editor_tab import EditorTab
+from .helpers import uri_to_path, get_extension, get_parser_for_file_type, \
         get_parser_for_uri, get_conda_root, run_odmltables
-from .InfoBar import EditorInfoBar
-from .MessageDialog import DecisionDialog
-from .NavigationBar import NavigationBar
-from .PropertyView import PropertyView
-from .ScrolledWindow import ScrolledWindow
-from .SectionView import SectionView
-from .Wizard import DocumentWizard
+from .info_bar import EditorInfoBar
+from .message_dialog import DecisionDialog
+from .navigation_bar import NavigationBar
+from .property_view import PropertyView
+from .scrolled_window import ScrolledWindow
+from .section_view import SectionView
+from .wizard import DocumentWizard
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
@@ -826,7 +826,7 @@ class EditorWindow(gtk.Window):
         """updates the models if a different tab is selected changed"""
         model = None
         if tab.document is not None:
-            model = SectionModel.SectionModel(tab.document)
+            model = section_model.SectionModel(tab.document)
 
         self._section_tv.set_model(model)
         self._navigation_bar.document = tab.document
@@ -963,7 +963,7 @@ class EditorWindow(gtk.Window):
         obj = self._property_tv.get_selected_object()
         if obj is None:
             return
-        if isinstance(obj, ValueModel.Value):
+        if isinstance(obj, value_model.Value):
             obj = obj.parent
         self._property_tv.add_value(None, (obj, None))
 

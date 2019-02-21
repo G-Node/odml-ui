@@ -4,8 +4,8 @@ import pygtkcompat
 
 import gtk
 
-from .ScrolledWindow import ScrolledWindow
-from .TreeView import TreeView
+from .scrolled_window import ScrolledWindow
+from .tree_view import TreeView
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')

@@ -4,7 +4,7 @@ import gtk
 from . import tree
 from .targets import ActionDrop
 from .. import commands
-from ..DocumentRegistry import DocumentRegistry
+from ..document_registry import DocumentRegistry
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')

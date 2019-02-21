@@ -7,7 +7,7 @@ from odml import format as ofmt
 import gtk
 
 from . import commands
-from .TreeView import TreeView
+from .tree_view import TreeView
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')

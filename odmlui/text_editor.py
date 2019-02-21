@@ -2,7 +2,7 @@ import pygtkcompat
 
 import gtk
 
-from .ScrolledWindow import ScrolledWindow
+from .scrolled_window import ScrolledWindow
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')

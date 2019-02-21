@@ -5,12 +5,12 @@ import odml
 from odml.section import BaseSection
 
 from . import commands
-from .DragProvider import DragProvider
+from .drag_provider import DragProvider
 from .dnd.odmldrop import OdmlDrag, OdmlDrop
 from .dnd.targets import PropertyDrop, SectionDrop
 from .dnd.text import TextDrag, TextDrop, TextGenericDropForSectionTV
-from .Helpers import handle_section_import
-from .TreeView import TerminologyPopupTreeView
+from .helpers import handle_section_import
+from .tree_view import TerminologyPopupTreeView
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')

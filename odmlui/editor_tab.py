@@ -11,12 +11,12 @@ from odml.tools.version_converter import VersionConverter
 
 import gtk
 
-from .CommandManager import CommandManager
-from .Helpers import uri_to_path, get_parser_for_uri, get_extension, \
+from .command_manager import CommandManager
+from .helpers import uri_to_path, get_parser_for_uri, get_extension, \
         get_parser_for_file_type, handle_section_import
-from .MessageDialog import ErrorDialog
+from .message_dialog import ErrorDialog
 from .treemodel import event
-from .ValidationWindow import ValidationWindow
+from .validation_window import ValidationWindow
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')

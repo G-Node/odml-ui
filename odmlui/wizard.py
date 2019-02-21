@@ -8,10 +8,10 @@ import odml.terminology as terminology
 
 import gtk
 
-from .Helpers import handle_property_import
-from .treemodel.SectionModel import SectionModel
-from .SectionView import SectionView
-from .ScrolledWindow import ScrolledWindow
+from .helpers import handle_property_import
+from .treemodel.section_model import SectionModel
+from .section_view import SectionView
+from .scrolled_window import ScrolledWindow
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')

@@ -3,9 +3,9 @@ import pygtkcompat
 from odml.property import BaseProperty
 from odml.section import BaseSection
 
-from .TreeIters import PropIter, ValueIter, SectionPropertyIter
-from .TreeModel import TreeModel, ColumnMapper
-from . import ValueModel
+from .tree_iters import PropIter, ValueIter, SectionPropertyIter
+from .tree_model import TreeModel, ColumnMapper
+from . import value_model
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
@@ -76,7 +76,7 @@ class PropertyModel(TreeModel):
     def _get_node_iter(self, node):
         if isinstance(node, BaseProperty):
             return PropIter(node)
-        if isinstance(node, ValueModel.Value):
+        if isinstance(node, value_model.Value):
             return ValueIter(node)
         return SectionPropertyIter(node)
 

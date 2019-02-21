@@ -7,8 +7,8 @@ import gtk
 
 import odmlui
 
-from . import Editor
-from . import Helpers
+from .editor import register_stock_icons, EditorWindow
+from . import helpers
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
@@ -22,15 +22,15 @@ def main(filenames=[], debug=False):
     returns the tab object
     """
     odmlui.DEBUG = debug
-    Editor.register_stock_icons()
-    editor = Editor.EditorWindow()
+    register_stock_icons()
+    editor = EditorWindow()
 
     # Convert relative path to absolute path, if any
     for i, file in enumerate(filenames):
         if not os.path.isabs(file):
             filenames[i] = os.path.abspath(file)
 
-    file_uris = list(map(Helpers.path_to_uri, filenames))
+    file_uris = list(map(helpers.path_to_uri, filenames))
     tabs = list(map(editor.load_document, file_uris))
 
     if len(filenames) == 0:

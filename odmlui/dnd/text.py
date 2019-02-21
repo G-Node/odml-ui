@@ -11,7 +11,7 @@ from . import odmldrop
 from . import tree
 from .targets import SectionDrop, PropertyDrop, ValueDrop
 from .. import commands
-from ..treemodel import ValueModel
+from ..treemodel import value_model
 
 
 pygtkcompat.enable()
@@ -58,7 +58,7 @@ class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
 
     def drop_object(self, action, dst, position, obj):
         for kls, tkls in [
-                (ValueModel.Value, ValueDrop),
+                (value_model.Value, ValueDrop),
                 (BaseProperty, PropertyDrop),
                 (BaseSection, SectionDrop)]:
 
@@ -81,14 +81,14 @@ class TextGenericDropForPropertyTV(TextGenericDrop):
     can drop Properties and Values, but only Values into Properties
     and Properties into Sections
     """
-    targets = [BaseProperty, ValueModel.Value]
+    targets = [BaseProperty, value_model.Value]
 
     def text_can_drop(self, action, dst, position, obj):
         if not super(TextGenericDropForPropertyTV, self).text_can_drop(action, dst,
                                                                        position, obj):
             return False
         # can't drop values to anything but properties
-        if isinstance(obj, ValueModel.Value) and not isinstance(dst, BaseProperty):
+        if isinstance(obj, value_model.Value) and not isinstance(dst, BaseProperty):
             return False
         # can't drop properties to anything but sections
         if isinstance(obj, BaseProperty) and not isinstance(dst, BaseSection):

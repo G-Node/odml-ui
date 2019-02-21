@@ -11,11 +11,11 @@ from odmlui.treemodel.nodes import Property as TreeModelProperty
 import gtk
 
 from . import commands
-from . import TextEditor
-from .DragProvider import DragProvider
-from .Helpers import create_pseudo_values
-from .TreeView import TerminologyPopupTreeView
-from .treemodel import PropertyModel, ValueModel
+from . import text_editor
+from .drag_provider import DragProvider
+from .helpers import create_pseudo_values
+from .tree_view import TerminologyPopupTreeView
+from .treemodel import property_model, value_model
 from .dnd.odmldrop import OdmlDrag, OdmlDrop
 from .dnd.targets import ValueDrop, PropertyDrop, SectionDrop
 from .dnd.text import TextDrag, TextDrop, TextGenericDropForPropertyTV
@@ -38,7 +38,7 @@ class PropertyView(TerminologyPopupTreeView):
         super(PropertyView, self).__init__()
         tv = self._treeview
 
-        for name, (id, propname) in PropertyModel.ColMapper.sort_iteritems():
+        for name, (id, propname) in property_model.ColMapper.sort_iteritems():
             if name == "Type":
                 combo_col = self.create_odml_types_col(id, name, propname)
                 tv.append_column(combo_col)
@@ -63,8 +63,8 @@ class PropertyView(TerminologyPopupTreeView):
         for target in [
                 OdmlDrag(mime="odml/property-ref", inst=BaseProperty),
                 TextDrag(mime="odml/property", inst=BaseProperty),
-                OdmlDrag(mime="odml/value-ref", inst=ValueModel.Value),
-                TextDrag(mime="odml/value", inst=ValueModel.Value),
+                OdmlDrag(mime="odml/value-ref", inst=value_model.Value),
+                TextDrag(mime="odml/value", inst=value_model.Value),
                 TextDrag(mime="TEXT"),
                 OdmlDrop(mime="odml/value-ref", target=vd,
                          registry=registry, exec_func=_exec),
@@ -104,7 +104,7 @@ class PropertyView(TerminologyPopupTreeView):
         self._section = section
         if self.model:
             self.model.destroy()
-        self.model = PropertyModel.PropertyModel(section)
+        self.model = property_model.PropertyModel(section)
 
     @property
     def model(self):
@@ -185,7 +185,7 @@ class PropertyView(TerminologyPopupTreeView):
                 # If the list of pseudovalues was empty, we need to initialize a new
                 # empty PseudoValue and add it properly to enable undo.
                 if not prop.pseudo_values:
-                    val = ValueModel.Value(prop)
+                    val = value_model.Value(prop)
                     cmd = commands.AppendValue(obj=prop.pseudo_values,
                                                attr=column_name,
                                                val=val)
@@ -254,7 +254,7 @@ class PropertyView(TerminologyPopupTreeView):
         """
         popup menu action: edit text in larger window
         """
-        t = TextEditor.TextEditor(val, "value")
+        t = text_editor.TextEditor(val, "value")
         t.execute = self.execute
 
     def reset_property(self, widget, prop):
@@ -272,7 +272,7 @@ class PropertyView(TerminologyPopupTreeView):
         (prop, val) = prop_value_pair
         model, path, obj = self.popup_data
         if val is None:
-            val = ValueModel.Value(prop)
+            val = value_model.Value(prop)
         else:
             val = val.clone()
 
@@ -295,7 +295,7 @@ class PropertyView(TerminologyPopupTreeView):
         """
         (obj, val) = obj_value_pair
         if val is None:
-            val = ValueModel.Value(obj)
+            val = value_model.Value(obj)
         else:
             val = val.clone()
 
@@ -305,7 +305,7 @@ class PropertyView(TerminologyPopupTreeView):
         # Reset model if the Value changes from "normal" to MultiValue.
         if self.model and len(obj.values) > 1:
             self.model.destroy()
-            self.model = PropertyModel.PropertyModel(obj.parent)
+            self.model = property_model.PropertyModel(obj.parent)
 
         # Reselect updated object to update view.
         self.select_object(obj)
@@ -341,7 +341,7 @@ class PropertyView(TerminologyPopupTreeView):
             return
 
         self.model.destroy()
-        self.model = PropertyModel.PropertyModel(obj.parent)
+        self.model = property_model.PropertyModel(obj.parent)
 
         # Reselect updated object to update view.
         self.select_object(obj)

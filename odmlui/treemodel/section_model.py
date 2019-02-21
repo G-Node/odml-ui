@@ -7,8 +7,8 @@ import odmlui
 
 import gtk
 
-from .TreeIters import SectionIter
-from .TreeModel import TreeModel, ColumnMapper
+from .tree_iters import SectionIter
+from .tree_model import TreeModel, ColumnMapper
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')

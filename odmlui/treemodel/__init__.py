@@ -7,5 +7,5 @@ and a SectionModel class for a tree-view showing Sections and Subsections
 """
 
 from . import nodes
-from . import PropertyModel
-from . import SectionModel
+from . import property_model
+from . import section_model

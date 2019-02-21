@@ -137,12 +137,12 @@ class ChangeContext(object):
         self._obj = []
 
     def __repr__(self):
-        v = ""
+        pre_text = ""
         if self.pre_change:
-            v = "Pre"
+            pre_text = "Pre"
         if self.post_change:
-            v = "Post"
-        return "<%sChange %s.%s(%s)>" % (v, repr(self.obj), self.action, repr(self.val))
+            pre_text = "Post"
+        return "<%sChange %s.%s(%s)>" % (pre_text, repr(self.obj), self.action, repr(self.val))
 
     def dump(self):
         return repr(self) + "\nObject stack:\n\t" + "\n\t".join(map(repr, self._obj))
@@ -188,11 +188,11 @@ class ModificationNotifier(ChangeHandlable):
         fire = not name.startswith('_') and hasattr(self, name)
         func = lambda: super(ModificationNotifier, self).__setattr__(name, value)
         if fire:
-            self.__fireChange("set", (name, value), func)
+            self.__fire_change("set", (name, value), func)
         else:
             func()
 
-    def __fireChange(self, action, obj, func):
+    def __fire_change(self, action, obj, func):
         """
         create a ChangeContext and
 
@@ -200,19 +200,19 @@ class ModificationNotifier(ChangeHandlable):
         * call func
         * fire a post_change-event
         """
-        c = ChangeContext(obj)
-        c.action = action
-        c.pre_change = True
-        c.pass_on(self)
+        change_context = ChangeContext(obj)
+        change_context.action = action
+        change_context.pre_change = True
+        change_context.pass_on(self)
         res = func()
-        c.reset()
-        c.post_change = True
-        c.pass_on(self)
+        change_context.reset()
+        change_context.post_change = True
+        change_context.pass_on(self)
         return res
 
     def append(self, obj, *args, **kwargs):
         func = lambda: super(ModificationNotifier, self).append(obj, *args, **kwargs)
-        self.__fireChange("append", obj, func)
+        self.__fire_change("append", obj, func)
 
     def remove(self, obj):
         func = lambda: super(ModificationNotifier, self).remove(obj)
@@ -224,15 +224,15 @@ class ModificationNotifier(ChangeHandlable):
         if hasattr(self, "pseudo_values") and hasattr(obj, "pseudo_values"):
             func = lambda: remove_value(self, obj)
 
-        self.__fireChange("remove", obj, func)
+        self.__fire_change("remove", obj, func)
 
     def insert(self, position, obj):
         func = lambda: super(ModificationNotifier, self).insert(position, obj)
-        self.__fireChange("insert", obj, func)
+        self.__fire_change("insert", obj, func)
 
     def _reorder(self, childlist, new_index):
         func = lambda: super(ModificationNotifier, self)._reorder(childlist, new_index)
-        return self.__fireChange("reorder", (childlist, new_index), func)
+        return self.__fire_change("reorder", (childlist, new_index), func)
 
 
 def remove_value(prop, pseudo):

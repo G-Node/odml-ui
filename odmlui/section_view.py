@@ -29,25 +29,25 @@ class SectionView(TerminologyPopupTreeView):
         self._treeview.show()
 
         # set up our drag provider
-        dp = DragProvider(self._treeview)
+        drager = DragProvider(self._treeview)
         _exec = lambda cmd: self.execute(cmd)
-        pd = PropertyDrop(exec_func=_exec)
-        sd = SectionDrop(exec_func=_exec)
+        p_drop = PropertyDrop(exec_func=_exec)
+        s_drop = SectionDrop(exec_func=_exec)
         for target in [
                 OdmlDrag(mime="odml/section-ref", inst=BaseSection),
                 TextDrag(mime="odml/section", inst=BaseSection),
                 TextDrag(mime="TEXT"),
-                OdmlDrop(mime="odml/property-ref", target=pd, registry=registry,
+                OdmlDrop(mime="odml/property-ref", target=p_drop, registry=registry,
                          exec_func=_exec),
-                OdmlDrop(mime="odml/section-ref", target=sd, registry=registry,
+                OdmlDrop(mime="odml/section-ref", target=s_drop, registry=registry,
                          exec_func=_exec),
-                TextDrop(mime="odml/property", target=pd),
-                TextDrop(mime="odml/section", target=sd),
+                TextDrop(mime="odml/property", target=p_drop),
+                TextDrop(mime="odml/section", target=s_drop),
                 TextGenericDropForSectionTV(exec_func=_exec), ]:
 
-            dp.append(target)
-        dp.execute = _exec
-        dp.connect()
+            drager.append(target)
+        drager.execute = _exec
+        drager.connect()
 
     def set_model(self, model):
         self._treeview.set_model(model)
@@ -117,9 +117,9 @@ class SectionView(TerminologyPopupTreeView):
 
         # Expand tree if the parent object is a section
         if isinstance(obj, BaseSection):
-            tv = self._treeview
-            (model, tree_iter) = tv.get_selection().get_selected()
-            tv.expand_row(model.get_path(tree_iter), False)
+            curr_view = self._treeview
+            (model, tree_iter) = curr_view.get_selection().get_selected()
+            curr_view.expand_row(model.get_path(tree_iter), False)
 
     def on_selection_change(self, tree_selection):
         """

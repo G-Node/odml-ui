@@ -71,8 +71,8 @@ class EditorTab(object):
             self.window.set_welcome()
             return False
 
-        except Exception as e:
-            ErrorDialog(self.window, "Error parsing '%s'" % file_path, str(e))
+        except Exception as exc:
+            ErrorDialog(self.window, "Error parsing '%s'" % file_path, str(exc))
             self.window.set_welcome()
             return False
 
@@ -165,8 +165,8 @@ class EditorTab(object):
         validation = odml.validation.Validation(self.document)
         self.document.validation_result = validation
 
-        for e in self.document.validation_result.errors:
-            if e.is_error:
+        for err in self.document.validation_result.errors:
+            if err.is_error:
                 self.window._info_bar.show_info(
                     "Invalid document. Please fix errors (red) before saving.")
                 self.validate()
@@ -190,8 +190,8 @@ class EditorTab(object):
 
         try:
             odml_writer.write_file(self.document, file_path)
-        except Exception as e:
-            self.window._info_bar.show_info("Save failed: %s" % e)
+        except Exception as exc:
+            self.window._info_bar.show_info("Save failed: %s" % exc)
             return
 
         # undo the clean
@@ -251,10 +251,10 @@ class EditorTab(object):
         so that the gui can refresh these
         """
         for err in errors:
-            c = event.ChangeContext(('_error', True))
-            c.post_change = True
-            c.action = "set"
-            c.pass_on(err.obj)
+            change_event = event.ChangeContext(('_error', True))
+            change_event.post_change = True
+            change_event.action = "set"
+            change_event.pass_on(err.obj)
 
     def remove_validation(self):
         """remove any dangling validation references"""

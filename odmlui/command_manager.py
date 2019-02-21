@@ -16,9 +16,9 @@ class CommandManager(object):
         failed = False
         try:
             cmd()
-        except Exception as e:
+        except Exception as err:
             failed = True
-            self.error_func(cmd, e)
+            self.error_func(cmd, err)
 
         self.undo_stack.append(cmd)
         self.enable_undo()
@@ -36,8 +36,8 @@ class CommandManager(object):
         failed = False
         try:
             cmd.undo()
-        except Exception as e:
-            self.error_func(cmd, e)
+        except Exception as err:
+            self.error_func(cmd, err)
             raise
 
         return True

@@ -25,10 +25,10 @@ class ValidationView(TreeView):
         super(ValidationView, self).__init__(self._store)
 
         for i, name in ((COL_PATH, "Path"), (COL_DESC, "Description")):
-            self.add_column(name=name, data=i, id=i)
+            self.add_column(name=name, data=i, col_id=i)
 
-        tv = self._treeview
-        tv.show()
+        curr_view = self._treeview
+        curr_view.show()
 
     def set_errors(self, errors):
         self.errors = errors
@@ -75,16 +75,16 @@ class ValidationWindow(gtk.Window):
 
         self.connect('delete_event', self.on_close)
 
-        self.tv = ValidationView()
-        self.tv.on_select_object = tab.window.navigate
-        self.tv.set_errors(tab.document.validation_result.errors)
+        self.curr_view = ValidationView()
+        self.curr_view.on_select_object = tab.window.navigate
+        self.curr_view.set_errors(tab.document.validation_result.errors)
 
-        self.add(ScrolledWindow(self.tv._treeview))
+        self.add(ScrolledWindow(self.curr_view._treeview))
         # required for updated size in 'treeview.size_request()'
-        self.tv._treeview.check_resize()
-        width, height = self.tv._treeview.size_request()
-        width = min(width+10, max(self.width, self.max_width))
-        height = min(height+10, max(self.height, self.max_height))
+        self.curr_view._treeview.check_resize()
+        width, height = self.curr_view._treeview.size_request()
+        width = min(width + 10, max(self.width, self.max_width))
+        height = min(height + 10, max(self.height, self.max_height))
         self.set_default_size(width, height)
 
         self.show_all()
@@ -132,10 +132,10 @@ if __name__ == "__main__":
         class Window:
             navigate = None
 
-    tab = Tab()
-    tab.document.validation_result = Validation(tab.document)
-    for err in tab.document.validation_result.errors:
+    TAB = Tab()
+    TAB.document.validation_result = Validation(TAB.document)
+    for err in TAB.document.validation_result.errors:
         print(err.path, err.msg)
 
-    x = ValidationWindow(tab)
+    _ = ValidationWindow(TAB)
     gtk.mainloop()

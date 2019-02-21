@@ -16,16 +16,16 @@ class TreeView(object):
     popup = None
 
     def __init__(self, store=None):
-        tv = gtk.TreeView(model=store)
-        tv.set_headers_visible(False)
+        curr_view = gtk.TreeView(model=store)
+        curr_view.set_headers_visible(False)
 
         if self.on_selection_change is not None:
-            selection = tv.get_selection()
+            selection = curr_view.get_selection()
             selection.set_mode(gtk.SELECTION_BROWSE)
             selection.connect("changed", self.on_selection_change)
 
         if self.on_button_press is not None:
-            tv.connect("button_press_event", self.on_button_press)
+            curr_view.connect("button_press_event", self.on_button_press)
 
         # The tooltip doesn't provide any new info in the current implementation,
         # and also, it messes up with the display of properties in the "Property
@@ -34,21 +34,21 @@ class TreeView(object):
         #     tv.connect('query-tooltip', self.on_query_tooltip)
         #     tv.props.has_tooltip = True
 
-        tv.set_headers_visible(True)
-        tv.set_rules_hint(True)
+        curr_view.set_headers_visible(True)
+        curr_view.set_rules_hint(True)
 
-        self._treeview = tv
+        self._treeview = curr_view
 
     def get_model(self):
         return self._treeview.get_model()
 
-    def add_column(self, name, edit_func=None, id=0, data=0):
+    def add_column(self, name, edit_func=None, col_id=0, data=0):
         renderer = gtk.CellRendererText()
         if edit_func:
             renderer.set_property("editable", True)
             renderer.connect("edited", edit_func, data)
 
-        column = gtk.TreeViewColumn(name, renderer, markup=id)
+        column = gtk.TreeViewColumn(name, renderer, markup=col_id)
         column.set_resizable(True)
         column.set_min_width(15)
         column.set_expand(True)

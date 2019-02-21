@@ -11,17 +11,17 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 
-ColMapper = ColumnMapper({"Name":        (0, "name"),
-                          "Value":       (1, "pseudo_values"),
-                          "Type":        (2, "dtype"),
-                          "Unit":        (3, "unit"),
-                          "Uncertainty": (4, "uncertainty"),
-                          "Definition":  (5, "definition"), })
+COL_MAPPER = ColumnMapper({"Name":        (0, "name"),
+                           "Value":       (1, "pseudo_values"),
+                           "Type":        (2, "dtype"),
+                           "Unit":        (3, "unit"),
+                           "Uncertainty": (4, "uncertainty"),
+                           "Definition":  (5, "definition"), })
 
 
 class PropertyModel(TreeModel):
     def __init__(self, section):
-        super(PropertyModel, self).__init__(ColMapper)
+        super(PropertyModel, self).__init__(COL_MAPPER)
         self._section = section
         self._section.add_change_handler(self.on_section_changed)
         self.offset = len(section.to_path())
@@ -52,15 +52,15 @@ class PropertyModel(TreeModel):
         """
         add some coloring to the value in certain cases
         """
-        v = super(PropertyModel, self).on_get_value(tree_iter, column)
-        if v is None:
-            return v
+        val = super(PropertyModel, self).on_get_value(tree_iter, column)
+        if val is None:
+            return val
 
         obj = tree_iter._obj
         if isinstance(tree_iter, ValueIter):
             obj = obj._property
 
-        return self.highlight(obj, v, column)
+        return self.highlight(obj, val, column)
 
     def on_iter_n_children(self, tree_iter):
         if tree_iter is None:
@@ -116,9 +116,9 @@ class PropertyModel(TreeModel):
             try:
                 curriter = self.get_iter(path)
                 self.row_changed(path, curriter)
-            except ValueError as e:
+            except ValueError as exc:
                 # an invalid tree path, that should never have reached us
-                print(repr(e))
+                print(repr(exc))
                 print(context.dump())
 
         # there was some reason we did this, however context.obj can

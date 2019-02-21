@@ -13,17 +13,17 @@ from .tree_model import TreeModel, ColumnMapper
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-debug = lambda x: 0
+DEBUG = lambda x: 0
 # to enable tree debugging:
 # import sys
-# debug = lambda x: sys.stdout.write(x + "\n")
+# DEBUG = lambda x: sys.stdout.write(x + "\n")
 
-ColMapper = ColumnMapper({"Name": (0, "name")})
+COL_MAPPER = ColumnMapper({"Name": (0, "name")})
 
 
 class SectionModel(TreeModel):
     def __init__(self, odml_document):
-        super(SectionModel, self).__init__(ColMapper)
+        super(SectionModel, self).__init__(COL_MAPPER)
 
         # otherwise bad things happen
         assert isinstance(odml_document, BaseDocument)
@@ -52,7 +52,7 @@ class SectionModel(TreeModel):
         return (path[0],) + path[2::2]
 
     def on_get_iter(self, path):
-        debug("+on_get_iter: %s" % repr(path))
+        DEBUG("+on_get_iter: %s" % repr(path))
         if path == gtk.TreePath.new_first() and len(self._section.sections) == 0:
             return None
 
@@ -64,19 +64,19 @@ class SectionModel(TreeModel):
             # section -> sub-section
             rpath += (0, i)
         section = self._section.from_path(rpath)
-        debug("-on_get_iter: %s" % section)
+        DEBUG("-on_get_iter: %s" % section)
         return SectionIter(section)
 
     def on_get_value(self, tree_iter, column):
         """
         add some coloring to the value in certain cases
         """
-        v = super(SectionModel, self).on_get_value(tree_iter, column)
-        if v is None:
-            return v
+        val = super(SectionModel, self).on_get_value(tree_iter, column)
+        if val is None:
+            return val
 
         obj = tree_iter._obj
-        return self.highlight(obj, v, column)
+        return self.highlight(obj, val, column)
 
     def on_iter_n_children(self, tree_iter):
         if tree_iter is None:

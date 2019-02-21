@@ -36,50 +36,50 @@ class PropertyView(TerminologyPopupTreeView):
     def __init__(self, registry):
 
         super(PropertyView, self).__init__()
-        tv = self._treeview
+        curr_view = self._treeview
 
-        for name, (id, propname) in property_model.ColMapper.sort_iteritems():
+        for name, (col_id, propname) in property_model.COL_MAPPER.sort_iteritems():
             if name == "Type":
-                combo_col = self.create_odml_types_col(id, name, propname)
-                tv.append_column(combo_col)
+                combo_col = self.create_odml_types_col(col_id, name, propname)
+                curr_view.append_column(combo_col)
             else:
                 renderer, column = self.add_column(
                     name=name,
                     edit_func=self.on_edited,
-                    id=id, data=propname)
+                    col_id=col_id, data=propname)
                 if name == "Value":
-                    tv.set_expander_column(column)
+                    curr_view.set_expander_column(column)
 
-        tv.set_headers_visible(True)
-        tv.set_rules_hint(True)
-        tv.show()
+        curr_view.set_headers_visible(True)
+        curr_view.set_rules_hint(True)
+        curr_view.show()
 
         # set up our drag provider
-        dp = DragProvider(self._treeview)
+        drager = DragProvider(self._treeview)
         _exec = lambda cmd: self.execute(cmd)
-        vd = ValueDrop(exec_func=_exec)
-        pd = PropertyDrop(exec_func=_exec)
-        sd = SectionDrop(exec_func=_exec)
+        v_drop = ValueDrop(exec_func=_exec)
+        p_drop = PropertyDrop(exec_func=_exec)
+        s_drop = SectionDrop(exec_func=_exec)
         for target in [
                 OdmlDrag(mime="odml/property-ref", inst=BaseProperty),
                 TextDrag(mime="odml/property", inst=BaseProperty),
                 OdmlDrag(mime="odml/value-ref", inst=value_model.Value),
                 TextDrag(mime="odml/value", inst=value_model.Value),
                 TextDrag(mime="TEXT"),
-                OdmlDrop(mime="odml/value-ref", target=vd,
+                OdmlDrop(mime="odml/value-ref", target=v_drop,
                          registry=registry, exec_func=_exec),
-                OdmlDrop(mime="odml/property-ref", target=pd,
+                OdmlDrop(mime="odml/property-ref", target=p_drop,
                          registry=registry, exec_func=_exec),
-                OdmlDrop(mime="odml/section-ref", target=sd,
+                OdmlDrop(mime="odml/section-ref", target=s_drop,
                          registry=registry, exec_func=_exec),
-                TextDrop(mime="odml/value", target=vd),
-                TextDrop(mime="odml/property", target=pd),
-                TextDrop(mime="odml/section", target=sd),
+                TextDrop(mime="odml/value", target=v_drop),
+                TextDrop(mime="odml/property", target=p_drop),
+                TextDrop(mime="odml/section", target=s_drop),
                 TextGenericDropForPropertyTV(exec_func=_exec), ]:
 
-            dp.append(target)
-        dp.execute = _exec
-        dp.connect()
+            drager.append(target)
+        drager.execute = _exec
+        drager.connect()
 
     def dtype_renderer_function(self, tv_column, cell_combobox,
                                 tree_model, tree_iter, data):
@@ -254,8 +254,8 @@ class PropertyView(TerminologyPopupTreeView):
         """
         popup menu action: edit text in larger window
         """
-        t = text_editor.TextEditor(val, "value")
-        t.execute = self.execute
+        t_edit = text_editor.TextEditor(val, "value")
+        t_edit.execute = self.execute
 
     def reset_property(self, widget, prop):
         """
@@ -346,8 +346,8 @@ class PropertyView(TerminologyPopupTreeView):
         # Reselect updated object to update view.
         self.select_object(obj)
 
-    # Maybe define a generic Combo Box column creator ?
-    def create_odml_types_col(self, id, name, propname):
+    # Maybe define a generic Combo Box column creator?
+    def create_odml_types_col(self, col_id, name, propname):
 
         # Get all the members of odml.DType, which are not callable and are not `private`.
         dtypes_list = [x for x in dir(DType) if not callable(getattr(DType, x)) and
@@ -366,6 +366,6 @@ class PropertyView(TerminologyPopupTreeView):
         combo_col = gtk.TreeViewColumn(name, combo_renderer)
         combo_col.set_min_width(40)
         combo_col.set_resizable(True)
-        combo_col.set_cell_data_func(combo_renderer, self.dtype_renderer_function, id)
+        combo_col.set_cell_data_func(combo_renderer, self.dtype_renderer_function, col_id)
 
         return combo_col

@@ -17,7 +17,7 @@ import gtk
 import gobject
 
 from .attribute_view import AttributeView
-from .chooser_dialog import odMLChooserDialog
+from .chooser_dialog import OdmlChooserDialog
 from .document_registry import DocumentRegistry
 from .editor_tab import EditorTab
 from .helpers import uri_to_path, get_extension, get_parser_for_file_type, \
@@ -411,7 +411,7 @@ class EditorWindow(gtk.Window):
         recent_action.connect("item-activated", self.open_recent)
 
         recent_filter = gtk.RecentFilter()
-        odMLChooserDialog._setup_file_filter(recent_filter)
+        OdmlChooserDialog._setup_file_filter(recent_filter)
 
         recent_action.set_sort_type(gtk.RECENT_SORT_MRU)
         recent_action.add_filter(recent_filter)
@@ -436,7 +436,7 @@ class EditorWindow(gtk.Window):
 
         # display recently used files
         recent_filter = gtk.RecentFilter()
-        odMLChooserDialog._setup_file_filter(recent_filter)
+        OdmlChooserDialog._setup_file_filter(recent_filter)
 
         # Now, we need to pass in a separate struct 'gtk.RecentFilterInfo',
         # for each recently used file, for the filtering process by the
@@ -805,7 +805,7 @@ class EditorWindow(gtk.Window):
         return True
 
     def chooser_dialog(self, title, callback, save=False):
-        chooser = odMLChooserDialog(title=title, save=save)
+        chooser = OdmlChooserDialog(title=title, save=save)
         chooser.set_transient_for(self)
         chooser.on_accept = callback
         chooser.show()

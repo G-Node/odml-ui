@@ -37,18 +37,18 @@ class TextEditor(gtk.Window):
 
 
 if __name__ == "__main__":
-    class A(object):
-        _a = "no text"
+    class StandAloneTextEditor(object):
+        _prop_a = "no text"
 
         @property
-        def a(self):
+        def prop_a(self):
             print("read prop a")
-            return self._a
+            return self._prop_a
 
-        @a.setter
-        def a(self, new_value):
+        @prop_a.setter
+        def prop_a(self, new_value):
             print("set a to ", repr(new_value))
-            self._a = new_value
+            self._prop_a = new_value
 
-    x = TextEditor(A(), "a")
+    _ = TextEditor(StandAloneTextEditor(), "prop_a")
     gtk.mainloop()

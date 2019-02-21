@@ -7,7 +7,7 @@ import gobject
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-debug = lambda x: 0
+DEBUG = lambda x: 0
 
 
 class ColumnMapper(object):
@@ -18,8 +18,8 @@ class ColumnMapper(object):
         """
         self._col_map = mapping_dictionary
         rev_map = {}
-        for k, v in self._col_map.items():
-            rev_map[v[0]] = k
+        for key, val in self._col_map.items():
+            rev_map[val[0]] = key
 
         self.rev_map = rev_map
 
@@ -115,33 +115,33 @@ class TreeModel(gtk.GenericTreeModel):
 
     def on_get_value(self, tree_iter, column):
         attr = self.col_mapper.name_by_column(column)
-        debug(":on_get_value [%d:%s]: %s" % (column, attr, tree_iter))
+        DEBUG(":on_get_value [%d:%s]: %s" % (column, attr, tree_iter))
         return tree_iter.get_value(attr)
 
     def on_iter_next(self, tree_iter):
         next = tree_iter.get_next()
-        debug(":on_iter_next [%s]: %s" % (tree_iter, next))
+        DEBUG(":on_iter_next [%s]: %s" % (tree_iter, next))
         return next
 
     def on_iter_children(self, tree_iter):
-        debug(":on_iter_children [%s]" % tree_iter)
+        DEBUG(":on_iter_children [%s]" % tree_iter)
         return tree_iter.get_children()
 
     def on_iter_has_child(self, tree_iter):
-        debug(":on_iter_has_child [%s,%s]" % (tree_iter, tree_iter.has_child))
+        DEBUG(":on_iter_has_child [%s,%s]" % (tree_iter, tree_iter.has_child))
         return tree_iter.has_child
 
     def on_iter_n_children(self, tree_iter):
         return tree_iter.n_children
 
     def on_iter_nth_child(self, tree_iter, n):
-        debug(":on_iter_nth_child [%d]: %s " % (n, tree_iter))
+        DEBUG(":on_iter_nth_child [%d]: %s " % (n, tree_iter))
         if tree_iter is None:
             return None
         return tree_iter.get_nth_child(n)
 
     def on_iter_parent(self, tree_iter):
-        debug(":on_iter_parent [%s]" % tree_iter)
+        DEBUG(":on_iter_parent [%s]" % tree_iter)
         return tree_iter.parent
 
     def _get_node_iter(self, node):

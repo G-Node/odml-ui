@@ -23,9 +23,9 @@ class ChooserDialog(gtk.FileChooserDialog):
 
             filter_selection = widget.get_filter().get_name()
             file_type = "XML"
-            if filter_selection == odMLChooserDialog.YAML:
+            if filter_selection == OdmlChooserDialog.YAML:
                 file_type = "YAML"
-            elif filter_selection == odMLChooserDialog.JSON:
+            elif filter_selection == OdmlChooserDialog.JSON:
                 file_type = "JSON"
 
             self.on_accept(self.get_uri(), file_type)
@@ -36,13 +36,13 @@ class ChooserDialog(gtk.FileChooserDialog):
         raise NotImplementedError
 
 
-class odMLChooserDialog(ChooserDialog):
+class OdmlChooserDialog(ChooserDialog):
     XML = "XML format (*.xml, *.odml)"
     YAML = "YAML format (*.yaml, *.odml)"
     JSON = "JSON format (*.json, *.odml)"
 
     def __init__(self, title, save):
-        super(odMLChooserDialog, self).__init__(title, save)
+        super(OdmlChooserDialog, self).__init__(title, save)
         self.add_filters()
 
     @staticmethod

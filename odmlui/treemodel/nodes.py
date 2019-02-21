@@ -34,8 +34,8 @@ def identity_index(obj, val):
     >>> [a,b].index(b)
     0
     """
-    for i, v in enumerate(obj):
-        if v is val:
+    for i, curr_val in enumerate(obj):
+        if curr_val is val:
             return i
 
     raise ValueError("%s does not contain the item %s" % (repr(obj), repr(val)))

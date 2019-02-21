@@ -1,25 +1,17 @@
 import os
 import platform
 import sys
-
-import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import gtk
-import gobject
+import tempfile
 
 from distutils.version import LooseVersion as CheckVer
 
-import odml
-# Currently odml.terminology does not longer support CACHE_DIR
-# but might again in the future.
-# from odml.terminology import CACHE_DIR
-import tempfile
-import odmlui.treemodel.mixin
+import pygtkcompat
+import gtk
+import gobject
 
 from odml.property import BaseProperty
 
+import odmlui.treemodel.mixin
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
 from odmlui.treemodel import SectionModel, ValueModel
 
@@ -30,16 +22,19 @@ from .EditorTab import EditorTab
 from .Helpers import uri_to_path, get_extension, get_parser_for_file_type, \
         get_parser_for_uri, get_conda_root, run_odmltables
 from .InfoBar import EditorInfoBar
-from .MessageDialog import ErrorDialog, DecisionDialog
+from .MessageDialog import DecisionDialog
 from .NavigationBar import NavigationBar
 from .PropertyView import PropertyView
 from .ScrolledWindow import ScrolledWindow
 from .SectionView import SectionView
 from .Wizard import DocumentWizard
 
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 gtk.gdk.threads_init()
 
-ui_info = \
+UI_INFO = \
     '''
 <ui>
   <menubar name='MenuBar'>
@@ -98,42 +93,45 @@ ui_info = \
 </ui>'''
 
 # Handle loading from python virtual environments
-env_root = ""
+ENV_ROOT = ""
 if hasattr(sys, 'prefix'):
-    env_root = sys.prefix
+    ENV_ROOT = sys.prefix
 
 
-# See CACHE_DIR comment in the import section.
+# Currently "odml.terminology" does no longer support CACHE_DIR
+# but might again in the future.
 CACHE_DIR = os.path.join(tempfile.gettempdir(), "odml.cache")
 
 if not os.path.exists(CACHE_DIR):
     try:
         os.makedirs(CACHE_DIR)
-    except OSError:  # might happen due to concurrency
+    except OSError:
+        # might happen due to concurrency
         if not os.path.exists(CACHE_DIR):
             raise
 
 # Quick and dirty to find out if Anaconda is being used and where it installed
 # all the goodies we need. Not robust but good enough for now.
-conda_env_root = get_conda_root()  # root of the currently active Anaconda environment
+# Root of the currently active Anaconda environment.
+CONDA_ENV_ROOT = get_conda_root()
 
 
 # Finding package root for license file and custom icons
-package_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+PACKAGE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
 
 def lookup_resource_paths(const_path):
     res = [const_path,
-           os.path.join(package_root, const_path),
-           os.path.join(env_root, const_path),
+           os.path.join(PACKAGE_ROOT, const_path),
+           os.path.join(ENV_ROOT, const_path),
            os.path.join('usr', const_path),
            os.path.join('usr', 'local', const_path)]
 
-    if env_root:
-        res.append(os.path.join(env_root, const_path))
+    if ENV_ROOT:
+        res.append(os.path.join(ENV_ROOT, const_path))
 
-    if conda_env_root:
-        res.append(os.path.join(conda_env_root, const_path))
+    if CONDA_ENV_ROOT:
+        res.append(os.path.join(CONDA_ENV_ROOT, const_path))
 
     if os.getenv('HOME'):
         res.append(os.path.join(os.getenv('HOME'), '.local', const_path))
@@ -145,18 +143,18 @@ def lookup_resource_paths(const_path):
 
 
 # Loading text from license file
-lic_name = "LICENSE"
+LIC_NAME = "LICENSE"
 
-lic_paths = lookup_resource_paths(os.path.join('share', 'odmlui', lic_name))
+LIC_PATHS = lookup_resource_paths(os.path.join('share', 'odmlui', LIC_NAME))
 
-lic_paths.append(os.path.join(os.path.dirname(__file__), lic_name))
-lic_paths.append(os.path.join(package_root, lic_name))
+LIC_PATHS.append(os.path.join(os.path.dirname(__file__), LIC_NAME))
+LIC_PATHS.append(os.path.join(PACKAGE_ROOT, LIC_NAME))
 
-license = ""
-for lic in lic_paths:
+LICENSE_TEXT = ""
+for lic in LIC_PATHS:
     if os.path.isfile(lic):
         with open(lic) as f:
-            license = f.read()
+            LICENSE_TEXT = f.read()
             break
 
 
@@ -164,18 +162,18 @@ def gui_action(name, tooltip=None, stock_id=None, label=None, accelerator=None):
     """
     function decorator indicating and providing info for a gui Action
     """
-    def func(f):
-        f.name = name
-        f.tooltip = tooltip
-        f.stock_id = stock_id
-        f.label = label
-        f.accelerator = accelerator
+    def func(handler):
+        handler.name = name
+        handler.tooltip = tooltip
+        handler.stock_id = stock_id
+        handler.label = label
+        handler.accelerator = accelerator
 
         # For Mac, replace 'control' modifier with 'primary' modifier
-        if f.accelerator is not None and platform.system() == 'Darwin':
-            f.accelerator = f.accelerator.replace('control', 'primary')
+        if handler.accelerator is not None and platform.system() == 'Darwin':
+            handler.accelerator = handler.accelerator.replace('control', 'primary')
 
-        return f
+        return handler
     return func
 
 
@@ -227,29 +225,27 @@ class EditorWindow(gtk.Window):
         self.add_accel_group(merge.get_accel_group())
 
         try:
-            mergeid = merge.add_ui_from_string(ui_info)
+            mergeid = merge.add_ui_from_string(UI_INFO)
         except gobject.GError as msg:
             print("building menus failed: %s" % msg)
-        bar = merge.get_widget("/MenuBar")
-        bar.show()
+        menu_bar = merge.get_widget("/MenuBar")
+        menu_bar.show()
 
         table = gtk.Table(n_rows=2, n_columns=6, homogeneous=False)
         self.add(table)
 
-        table.attach(bar,
-                     # X direction #          # Y direction
-                     0, 2,                      0, 1,
-                     gtk.EXPAND | gtk.FILL,     0,
-                     0,                         0)
+        # Every line of arguments addresses first the X and then the Y direction
+        table.attach(menu_bar,
+                     0, 2, 0, 1,
+                     gtk.EXPAND | gtk.FILL, 0,
+                     0, 0)
 
-        bar = merge.get_widget("/ToolBar")
-        # bar.set_tooltips(True) -->  Not needed
-        bar.show()
-        table.attach(bar,
-                     # X direction #       # Y direction
-                     0, 2,                   1, 2,
-                     gtk.EXPAND | gtk.FILL,  0,
-                     0,                      0)
+        tool_bar = merge.get_widget("/ToolBar")
+        tool_bar.show()
+        table.attach(tool_bar,
+                     0, 2, 1, 2,
+                     gtk.EXPAND | gtk.FILL, 0,
+                     0, 0)
 
         tool_button = merge.get_widget("/ToolBar/Open")
         tool_button.connect("clicked", self.open_file)
@@ -331,8 +327,8 @@ class EditorWindow(gtk.Window):
             from odmltables import VERSION as OT_VERSION
             if CheckVer(OT_VERSION) >= ODMLTABLES_VERSION:
                 self.odml_tables_available = True
-        except (ImportError, AttributeError) as e:
-            print("[Info] odMLTables not available: %s" % e)
+        except (ImportError, AttributeError) as err:
+            print("[Info] odMLTables not available: %s" % err)
 
         class Tab(gtk.HBox):
             """
@@ -342,34 +338,33 @@ class EditorWindow(gtk.Window):
 
         self.Tab = Tab
 
-        notebook = gtk.Notebook()  # we want tabs
+        notebook = gtk.Notebook()
         notebook.connect("switch-page", self.on_tab_select)
         notebook.connect("create-window", self.on_new_tab_window)
         notebook.show()
         self.notebook = notebook
 
+        # Every line of arguments addresses first the X and then the Y direction
         table.attach(notebook,
-                     # X direction           Y direction
-                     0, 2,                   3, 4,
-                     gtk.EXPAND | gtk.FILL,  gtk.EXPAND | gtk.FILL,
-                     0,                      0)
+                     0, 2, 3, 4,
+                     gtk.EXPAND | gtk.FILL, gtk.EXPAND | gtk.FILL,
+                     0, 0)
 
         statusbar = gtk.Statusbar()
         table.attach(statusbar,
-                     # X direction           Y direction
-                     0, 2,                   5, 6,
-                     gtk.EXPAND | gtk.FILL,  0,
-                     0,                      0)
+                     0, 2, 5, 6,
+                     gtk.EXPAND | gtk.FILL, 0,
+                     0, 0)
         self._statusbar = statusbar
         statusbar.show()
 
         self.show_all()
 
     def mktab(self, tab):
-        t = self.Tab()
-        t.tab = tab
-        t.show()
-        return t
+        new_tab = self.Tab()
+        new_tab.tab = tab
+        new_tab.show()
+        return new_tab
 
     def on_menu_item__select(self, menuitem, tooltip):
         context_id = self._statusbar.get_context_id('menu_tooltip')
@@ -383,10 +378,8 @@ class EditorWindow(gtk.Window):
         # TODO this does not work on unity at least
         tooltip = action.get_property('tooltip')
         if isinstance(widget, gtk.MenuItem) and tooltip:
-            cid = widget.connect(
-             'select', self.on_menu_item__select, tooltip)
-            cid2 = widget.connect(
-             'deselect', self.on_menu_item__deselect)
+            cid = widget.connect('select', self.on_menu_item__select, tooltip)
+            cid2 = widget.connect('deselect', self.on_menu_item__deselect)
             widget.connect_ids = (cid, cid2)
 
     def on_uimanager__disconnect_proxy(self, uimgr, action, widget):
@@ -399,17 +392,16 @@ class EditorWindow(gtk.Window):
 
     def __create_action_group(self):
         # entry: name, stock id, label
-        entries = [
-              ("FileMenu", None, "_File"),
-              ("EditMenu", None, "_Edit"),
-              ("AddMenu",  gtk.STOCK_ADD),
-              ("HelpMenu", gtk.STOCK_HELP),
-              ]
-        for (k, v) in self.__class__.__dict__.items():
-            if hasattr(v, "stock_id"):
+        entries = [("FileMenu", None, "_File"),
+                   ("EditMenu", None, "_Edit"),
+                   ("AddMenu", gtk.STOCK_ADD),
+                   ("HelpMenu", gtk.STOCK_HELP), ]
+
+        for (key, val) in self.__class__.__dict__.items():
+            if hasattr(val, "stock_id"):
                 entries.append(
-                    (v.name, v.stock_id, v.label, v.accelerator,
-                     v.tooltip, getattr(self, k)))
+                    (val.name, val.stock_id, val.label, val.accelerator,
+                     val.tooltip, getattr(self, key)))
 
         recent_action = gtk.RecentAction(name="OpenRecent",
                                          label="Open Recent",
@@ -438,8 +430,8 @@ class EditorWindow(gtk.Window):
         # welcome text
         text = """<span size="x-large" weight="bold">Welcome to odML-Editor</span>\n\n
                    Now go ahead and <a href="#new">create a new document</a>."""
-        for action in self.welcome_disabled_actions:
-            self.enable_action(action, False)
+        for curr_action in self.welcome_disabled_actions:
+            self.enable_action(curr_action, False)
 
         # display recently used files
         recent_filter = gtk.RecentFilter()
@@ -450,7 +442,7 @@ class EditorWindow(gtk.Window):
         # recent_filter.filter() method. If the 'filter' return True,
         # the file is included, else not included.
         recent_odml_files = []
-        MAX_RECENT_ITEMS = 12
+        max_recent_items = 12
 
         all_recent_files = gtk.RecentManager.get_default().get_items()
         filter_info = gtk.RecentFilterInfo()
@@ -466,7 +458,7 @@ class EditorWindow(gtk.Window):
                 recent_odml_files.append(i)
 
         recent_odml_files.sort(key=lambda x: x.get_age())
-        recent_odml_files = recent_odml_files[:MAX_RECENT_ITEMS]
+        recent_odml_files = recent_odml_files[:max_recent_items]
 
         if recent_odml_files:
             text += "\n\nOr open a <b>recently used file</b>:\n"
@@ -516,7 +508,7 @@ class EditorWindow(gtk.Window):
         dialog.set_copyright(COPYRIGHT)
         dialog.set_authors(AUTHOR.split(", "))
         dialog.set_website(self.odMLHomepage)
-        dialog.set_license(license)
+        dialog.set_license(LICENSE_TEXT)
         dialog.set_logo(logo)
         dialog.set_version(VERSION)
         dialog.set_comments("Contact <%s>" % CONTACT)
@@ -598,7 +590,7 @@ class EditorWindow(gtk.Window):
                                      "your document before starting odMLTables.")
         elif self.odml_tables_available:
             run_odmltables(self.current_tab.file_uri, CACHE_DIR,
-                            self.current_tab.document, wizard)
+                           self.current_tab.document, wizard)
         else:
             self._info_bar.show_info("You need odMLTables (v%s or newer) "
                                      "installed to run this feature." %
@@ -943,7 +935,8 @@ class EditorWindow(gtk.Window):
     def quit(self, action, extra=None):
         for win in self.editors:
             if not win.save_if_changed():
-                return True  # the event is handled and won't be passed to the window.
+                # The event is handled and won't be passed to the window.
+                return True
         gtk.main_quit()
 
     @gui_action("NewSection", label="Add Section",
@@ -977,9 +970,9 @@ class EditorWindow(gtk.Window):
                 stock_id="odml_Dustbin", accelerator="<shift>Delete", label="Delete")
     def delete_object(self, action):
         widget = self.get_focus()
-        for w in [self._section_tv, self._property_tv]:
-            if widget is w._treeview:
-                widget = w
+        for curr in [self._section_tv, self._property_tv]:
+            if widget is curr._treeview:
+                widget = curr
                 break
         else:
             return False
@@ -1029,10 +1022,10 @@ class EditorWindow(gtk.Window):
 
     def on_object_select(self, obj):
         """an object has been selected, now fix the current property_view"""
-        for name, tv in (
+        for name, tree_view in (
                 ("NewProperty", self._section_tv), ("NewValue", self._property_tv)):
             self.enable_action(name,
-                               tv._treeview.get_selection().count_selected_rows() > 0)
+                               tree_view._treeview.get_selection().count_selected_rows() > 0)
         self.set_navigation_object(obj)
 
     def set_navigation_object(self, obj):
@@ -1125,13 +1118,13 @@ def get_img_path(icon_name):
     share_pixmaps = os.path.join('share', 'pixmaps')
 
     paths = lookup_resource_paths(share_pixmaps)
-    paths.append(os.path.join(package_root, 'images'))
+    paths.append(os.path.join(PACKAGE_ROOT, 'images'))
 
     found = None
     for check_path in paths:
-        for dp, dn, fn in os.walk(check_path):
-            for fname in [f for f in fn if f == icon_name]:
-                found = dp
+        for dirpath, _, filename in os.walk(check_path):
+            for fname in [curr for curr in filename if curr == icon_name]:
+                found = dirpath
                 break
         if found:
             break
@@ -1140,7 +1133,6 @@ def get_img_path(icon_name):
 
 
 def register_stock_icons():
-
     # virtual or conda environments as well as local installs might
     # not have access to the system stock items so we update the IconTheme search path.
     print("[Info] Updating IconTheme search paths")
@@ -1159,8 +1151,7 @@ def register_stock_icons():
              ('INM6-compare-table', 'Compare_entities', ctrlshift, ord("E"), ''),
              ('INM6-convert-odml', 'Convert_document', ctrlshift, ord("C"), ''),
              ('INM6-filter-odml', 'Filter_document', ctrlshift, ord("F"), ''),
-             ('INM6-merge-odml', 'Merge_documents', ctrlshift, ord("M"), '')
-             ]
+             ('INM6-merge-odml', 'Merge_documents', ctrlshift, ord("M"), '')]
 
     # This method is failing (silently) in registering the stock icons.
     # Passing a list of Gtk.StockItem also has no effects.
@@ -1201,7 +1192,6 @@ def register_stock_icons():
             print('[Warning] Failed to load icon', icon_name, error)
 
 
-
 def load_pixbuf(path):
     try:
         pixbuf = gtk.gdk.pixbuf_new_from_file(path)
@@ -1223,9 +1213,9 @@ def load_icon_pixbufs(prefix):
     img_dir = get_img_path(get_icon)
     if img_dir:
         files = os.listdir(img_dir)
-        for f in files:
-            if f.startswith(prefix):
-                abs_path = os.path.join(img_dir, f)
+        for curr in files:
+            if curr.startswith(prefix):
+                abs_path = os.path.join(img_dir, curr)
                 icon = load_pixbuf(abs_path)
                 if icon:
                     icons.append(icon)

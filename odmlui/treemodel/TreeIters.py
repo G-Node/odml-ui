@@ -22,7 +22,10 @@ class PropIter(GenericIter.GenericIter):
                 return self.get_singlevalue(attr)
 
         else:
-            return self.escape(getattr(self._obj, attr))
+            val = getattr(self._obj, attr)
+            if not type(val) in (int, float, bool):
+                val = self.escape(val)
+            return val
 
     def get_mulitvalue(self, name):
         # Most of the stuff is empty and handled by the ValueIter

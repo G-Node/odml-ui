@@ -37,12 +37,10 @@ class AttributeView(TreeView):
 
         super(AttributeView, self).__init__(self._store)
 
-        for idx, name in ((COL_KEY, "Attribute"), (COL_VALUE, "Value")):
-            self.add_column(
-                name=name,
-                edit_func=self.on_edited if idx == COL_VALUE else None,
-                data=idx,
-                col_id=idx)
+        self.add_column(name="Attribute", edit_func=None,
+                        data=COL_KEY, col_id=COL_KEY)
+        self.add_column(name="Value", edit_func=self.on_edited,
+                        data=COL_VALUE, col_id=COL_VALUE)
 
         self._treeview.show()
 

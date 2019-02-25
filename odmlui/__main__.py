@@ -14,16 +14,19 @@ pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 
-def main(filenames=[], debug=False):
+def main(filenames=None, debug=False):
     """
-    start the editor, with a new empty document
-    or load all *filenames* as tabs
+    Start the editor, with a new empty document
+    or load all passed *filenames* as tabs.
 
-    returns the tab object
+    Returns the tab object.
     """
     odmlui.DEBUG = debug
     register_stock_icons()
     editor = EditorWindow()
+
+    if not filenames:
+        filenames = []
 
     # Convert relative path to absolute path, if any
     for i, file in enumerate(filenames):

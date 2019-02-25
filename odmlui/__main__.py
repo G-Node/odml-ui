@@ -28,15 +28,15 @@ def main(filenames=None, debug=False):
     if not filenames:
         filenames = []
 
-    # Convert relative path to absolute path, if any
-    for i, file in enumerate(filenames):
-        if not os.path.isabs(file):
-            filenames[i] = os.path.abspath(file)
+    # Convert relative path to absolute path
+    for i, file_path in enumerate(filenames):
+        if not os.path.isabs(file_path):
+            filenames[i] = os.path.abspath(file_path)
 
     file_uris = list(map(path_to_uri, filenames))
     tabs = list(map(editor.load_document, file_uris))
 
-    if len(filenames) == 0:
+    if not filenames:
         editor.welcome()
 
     return tabs

@@ -1,13 +1,16 @@
 import cgi
-import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
-import gtk
+import pygtkcompat
+
 from odml import format as ofmt
 
+import gtk
+
 from . import commands
-from .TreeView import TreeView
+from .tree_view import TreeView
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 COL_KEY = 0
 COL_VALUE = 1
@@ -34,15 +37,14 @@ class AttributeView(TreeView):
 
         super(AttributeView, self).__init__(self._store)
 
-        for i, name in ((COL_KEY, "Attribute"), (COL_VALUE, "Value")):
+        for idx, name in ((COL_KEY, "Attribute"), (COL_VALUE, "Value")):
             self.add_column(
                 name=name,
-                edit_func=self.on_edited if i == COL_VALUE else None,
-                data=i,
-                id=i)
+                edit_func=self.on_edited if idx == COL_VALUE else None,
+                data=idx,
+                col_id=idx)
 
-        tv = self._treeview
-        tv.show()
+        self._treeview.show()
 
     def set_model(self, obj):
         if self._model is not None:
@@ -57,37 +59,43 @@ class AttributeView(TreeView):
         return self._model
 
     def fill(self):
+        """
+        The *fill* method resets the current attribute view store,
+        walks over all attributes of the currently selected odML entity object.
+        Any value is converted to string, escaped for proper viewing and
+        added as a store entry.
+        """
         self._store.clear()
 
-        for k in self._fmt._args:
-            v = getattr(self._model, self._fmt.map(k))
-            if not isinstance(v, list):
-                if v is not None:
-                    v = cgi.escape(str(v))
+        for curr_attr in self._fmt._args:
+            val = getattr(self._model, self._fmt.map(curr_attr))
+            if not isinstance(val, list):
+                if val is not None:
+                    val = cgi.escape(str(val))
 
                 # Exclude property attributes that are displayed in the
                 # PropertyView window.
                 if isinstance(self._fmt, type(ofmt.Property)) and \
-                        k in self._property_exclude:
+                        curr_attr in self._property_exclude:
                     continue
 
-                self._store.append([k, v])
+                self._store.append([curr_attr, val])
 
     def on_edited(self, widget, row, new_value, col):
         store = self._store
         store_iter = store.get_iter(row)
-        k = store.get_value(store_iter, COL_KEY)
+        curr_val = store.get_value(store_iter, COL_KEY)
         cmd = commands.ChangeValue(
             object=self._model,
-            attr=self._fmt.map(k),
+            attr=self._fmt.map(curr_val),
             new_value=new_value)
 
         self.execute(cmd)
 
     def on_object_change(self, context):
         """
-        this change listener is attached to the current object class
-        and updates the GUI elements upon relevant change events
+        This change listener is attached to the current object class
+        and updates the GUI elements upon relevant change events.
         """
         if context.cur is self._model and context.post_change:
             self.fill()

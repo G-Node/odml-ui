@@ -1,11 +1,12 @@
 import pygtkcompat
+
+import gtk
+
+import odmlui
+
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-import gtk
-import gobject
-
-import odmlui
 
 class NavigationBar(gtk.Label):
     def __init__(self, *args, **kargs):
@@ -14,7 +15,8 @@ class NavigationBar(gtk.Label):
         self.show()
         self.set_use_markup(True)
         self.set_justify(gtk.JUSTIFY_RIGHT)
-        self.set_alignment(1, 0.9) # all free space left, and most top of widget
+        # all free space left, and most top of widget
+        self.set_alignment(1, 0.9)
         self.connect("activate-link", self.switch)
         self.possible_move = None
 
@@ -69,15 +71,14 @@ class NavigationBar(gtk.Label):
         names = []
         cur = self._current_object
         for obj in self._current_hierarchy:
-            name = "Document" #repr(obj).replace("<", "[")
+            name = "Document"
             if hasattr(obj, "name"):
                 name = obj.name
             elif hasattr(obj, "value"):
                 name = obj.get_display()
 
-            names.append(
-                ( ("<b>%s</b>" if obj is cur else "%s") % name,
-                  ":".join([str(i) for i in obj.to_path()])) )
+            names.append((("<b>%s</b>" if obj is cur else "%s") % name,
+                          ":".join([str(i) for i in obj.to_path()])))
 
         self.set_markup("Attributes | " + ": ".join(
             ['<a href="%s">%s</a>' % (path, name) for name, path in names[::-1]]
@@ -99,11 +100,13 @@ class NavigationBar(gtk.Label):
             print("change event(document): ", context)
 
         # we are only interested in changes on sections
-        if context.cur is not self._document: return
+        if context.cur is not self._document:
+            return
 
         if context.action == "set" and context.post_change:
             name, val = context.val
-            if name != "name": return
+            if name != "name":
+                return
 
             for obj in self._current_hierarchy:
                 if context.obj is obj:
@@ -111,17 +114,21 @@ class NavigationBar(gtk.Label):
 
         if context.action == "remove" and context.post_change:
             # an object is removed, two reasons possible:
-            # a) move (an append-action will take care of everything later, however we don't know yet)
+            # a) move (an append-action will take care of everything later,
+            #    however we don't know yet)
             # b) remove
             for obj in self._current_hierarchy:
                 if context.val is obj:
                     self.possible_move = (obj, self.current_object)
-                    self.set_model(context.obj) # set the view to the parent
+                    # set the view to the parent
+                    self.set_model(context.obj)
 
-        if (context.action == "append" or context.action == "insert") and context.post_change:
-            if self.possible_move is None: return
+        if (context.action == "append" or context.action == "insert") and \
+                context.post_change:
+            if self.possible_move is None:
+                return
             obj, cur = self.possible_move
+
             if context.val is obj:
                 self.set_model(cur)
             self.possible_move = None
-

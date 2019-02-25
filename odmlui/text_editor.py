@@ -1,11 +1,12 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 import gtk
 
-from . import commands
-from .ScrolledWindow import ScrolledWindow
+from .scrolled_window import ScrolledWindow
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 
 class TextEditor(gtk.Window):
     def __init__(self, obj, attr):
@@ -20,8 +21,6 @@ class TextEditor(gtk.Window):
         buffer = self.text.get_buffer()
         buffer.set_text(getattr(obj, attr))
 
-        #buffer.connect_object("changed", self.on_text_updated)
-        #buffer.connect_object("mark_set", self.on_cursor_moved)
         self.add(ScrolledWindow(self.text))
         self.show_all()
 
@@ -36,17 +35,20 @@ class TextEditor(gtk.Window):
     def execute(self, cmd):
         cmd()
 
-if __name__=="__main__":
-    class A(object):
-        _a = "no text"
-        @property
-        def a(self):
-            print("read prop a")
-            return self._a
-        @a.setter
-        def a(self, new_value):
-            print("set a to ", repr(new_value))
-            self._a = new_value
 
-    x = TextEditor(A(), "a")
+if __name__ == "__main__":
+    class StandAloneTextEditor(object):
+        _prop_a = "no text"
+
+        @property
+        def prop_a(self):
+            print("read prop a")
+            return self._prop_a
+
+        @prop_a.setter
+        def prop_a(self, new_value):
+            print("set a to ", repr(new_value))
+            self._prop_a = new_value
+
+    _ = TextEditor(StandAloneTextEditor(), "prop_a")
     gtk.mainloop()

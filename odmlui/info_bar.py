@@ -1,10 +1,9 @@
 import pygtkcompat
+import glib
+import gtk
+
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
-
-import glib
-import gobject
-import gtk
 
 
 class EditorInfoBar(gtk.InfoBar):

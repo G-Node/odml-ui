@@ -1,25 +1,29 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import gtk, gobject
-import odmlui
 
 from odml.base import Sectionable
 from odml.doc import BaseDocument
 
-from .TreeIters import SectionIter
-from .TreeModel import TreeModel, ColumnMapper
-debug = lambda x: 0
-# to enable tree debugging:
-#import sys
-#debug = lambda x: sys.stdout.write(x + "\n")
+import odmlui
 
-ColMapper = ColumnMapper({"Name"        : (0, "name")})
+import gtk
+
+from .tree_iters import SectionIter
+from .tree_model import TreeModel, ColumnMapper
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
+DEBUG = lambda x: 0
+# to enable tree debugging:
+# import sys
+# DEBUG = lambda x: sys.stdout.write(x + "\n")
+
+COL_MAPPER = ColumnMapper({"Name": (0, "name")})
+
 
 class SectionModel(TreeModel):
     def __init__(self, odml_document):
-        super(SectionModel, self).__init__(ColMapper)
+        super(SectionModel, self).__init__(COL_MAPPER)
 
         # otherwise bad things happen
         assert isinstance(odml_document, BaseDocument)
@@ -33,38 +37,46 @@ class SectionModel(TreeModel):
 
     def model_path_to_odml_path(self, path):
         # (a,b,c) -> (a,0,b,0,c)
-        rpath = (path[0],) # document -> section
+        # document -> section
+        rpath = (path[0],)
         for i in path[1:]:
-            rpath += (0,i) # section -> sub-section
+            # section -> sub-section
+            rpath += (0, i)
         return rpath
 
     def odml_path_to_model_path(self, path):
         # (a,0,b,0,c) -> (a,b,c)
         if not path:
-            return () # this cannot be converted to a path, but it's fine
+            # this cannot be converted to a path, but it's fine
+            return ()
         return (path[0],) + path[2::2]
 
     def on_get_iter(self, path):
-        debug("+on_get_iter: %s" % repr(path))
-        if path == gtk.TreePath.new_first() and len(self._section.sections) == 0: return None
+        DEBUG("+on_get_iter: %s" % repr(path))
+        if path == gtk.TreePath.new_first() and len(self._section.sections) == 0:
+            return None
+
         # we get the path from the treemodel which does not show the properties
         # therefore adjust the path to always select the sections
-        rpath = (path[0],) # document -> section
+        # document -> section
+        rpath = (path[0],)
         for i in path[1:]:
-            rpath += (0,i) # section -> sub-section
+            # section -> sub-section
+            rpath += (0, i)
         section = self._section.from_path(rpath)
-        debug("-on_get_iter: %s" % (section))
+        DEBUG("-on_get_iter: %s" % section)
         return SectionIter(section)
 
     def on_get_value(self, tree_iter, column):
         """
         add some coloring to the value in certain cases
         """
-        v = super(SectionModel, self).on_get_value(tree_iter, column)
-        if v is None: return v
+        val = super(SectionModel, self).on_get_value(tree_iter, column)
+        if val is None:
+            return val
 
         obj = tree_iter._obj
-        return self.highlight(obj, v, column)
+        return self.highlight(obj, val, column)
 
     def on_iter_n_children(self, tree_iter):
         if tree_iter is None:
@@ -77,17 +89,14 @@ class SectionModel(TreeModel):
         return super(SectionModel, self).on_iter_nth_child(tree_iter, n)
 
     def _get_node_iter(self, node):
-        # no safety checks here, always return a section iter
-        # even for the root node (this is required to make n_children work when reordering)
+        # no safety checks here, always return a section iter even for the root node
+        # (this is required to make n_children work when reordering)
         return SectionIter(node)
 
     def destroy(self):
         self._section.remove_change_handler(self.on_section_changed)
 
-    def on_section_changed(self, context): # document=None, section=None, prop=None, value=None,
-       # prop_pos=None, value_pos=None,
-       # attr=None, remove=None, append=None, pre_change=False, post_change=False,
-       # *args, **kargs):
+    def on_section_changed(self, context):
         """
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh the corresponding cells
@@ -96,8 +105,11 @@ class SectionModel(TreeModel):
             print("change event(section): ", context)
 
         # we are only interested in changes on sections
-        if not isinstance(context.obj, Sectionable): return
-        if not context.cur.document is self.document: return
+        if not isinstance(context.obj, Sectionable):
+            return
+
+        if not context.cur.document is self.document:
+            return
 
         if context.action == "set" and context.post_change:
             name, value = context.val
@@ -109,10 +121,12 @@ class SectionModel(TreeModel):
             self.event_reorder(context)
 
         obj = context.val
-        if not isinstance(obj, Sectionable): return
+        if not isinstance(obj, Sectionable):
+            return
 
         if context.action == "remove":
             self.event_remove(context)
 
-        if (context.action == "append" or context.action == "insert") and context.post_change:
+        if (context.action == "append" or context.action == "insert") and \
+                context.post_change:
             self.event_insert(context)

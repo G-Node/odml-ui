@@ -1,5 +1,5 @@
-
 import odmlui
+
 
 class CommandManager(object):
     def __init__(self):
@@ -16,9 +16,9 @@ class CommandManager(object):
         failed = False
         try:
             cmd()
-        except Exception as e:
+        except Exception as err:
             failed = True
-            self.error_func(cmd, e)
+            self.error_func(cmd, err)
 
         self.undo_stack.append(cmd)
         self.enable_undo()
@@ -36,8 +36,8 @@ class CommandManager(object):
         failed = False
         try:
             cmd.undo()
-        except Exception as e:
-            self.error_func(cmd, e)
+        except Exception as err:
+            self.error_func(cmd, err)
             raise
 
         return True
@@ -63,6 +63,7 @@ class CommandManager(object):
         return bool(self.undo_stack)
 
     can_undo = is_modified
+
     @property
     def can_redo(self):
         return bool(self.redo_stack)
@@ -72,4 +73,3 @@ class CommandManager(object):
 
     def enable_redo(self, enable=True):
         pass
-

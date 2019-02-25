@@ -1,13 +1,13 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
 import gtk
+
 from .dnd.drag import DragTarget
 from .dnd.drop import DropTarget
 
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
-#TODO build a GenericDragProvider and a TreeDragProvider
+
 class DragProvider(object):
     """
     A DragProvider handles complicated Drag&Drop interactions with multiple sources
@@ -23,15 +23,15 @@ class DragProvider(object):
         self.drag_targets = []
         self.drop_targets = []
         self.connect()
-        tv = widget
-        tv.connect("drag_begin", self._on_drag_begin)
-        tv.connect("drag-data-get", self._on_drag_get_data)
-        tv.connect("drag-data-received", self._on_drag_received_data)
-        tv.connect("drag-data-delete", self._on_drag_delete_data)
-        tv.connect('drag_motion', self._on_drag_motion)
-        tv.connect('drag_drop', self._on_drag_drop)
+        curr_view = widget
+        curr_view.connect("drag_begin", self._on_drag_begin)
+        curr_view.connect("drag-data-get", self._on_drag_get_data)
+        curr_view.connect("drag-data-received", self._on_drag_received_data)
+        curr_view.connect("drag-data-delete", self._on_drag_delete_data)
+        curr_view.connect('drag_motion', self._on_drag_motion)
+        curr_view.connect('drag_drop', self._on_drag_drop)
 
-        tv.get_selection().connect('changed', self._on_selection_change)
+        curr_view.get_selection().connect('changed', self._on_selection_change)
 
     def connect(self):
         """
@@ -41,30 +41,30 @@ class DragProvider(object):
 
         this method is implicitly called by append()
         """
-        tv = self.widget
-        # TODO make this customizeable, allow LINK action
+        curr_view = self.widget
 
         # stuff that gtk shall do automatically
         GTK_HANDLERS = gtk.DEST_DEFAULT_HIGHLIGHT | gtk.DEST_DEFAULT_DROP
 
         drag_targets = []
-        for i, target in enumerate(self.drag_targets):
-            t = gtk.TargetEntry.new(target.atom.name(), target.app | target.widget, 1500 + i)        
-            drag_targets.append(t)
+        for idx, target in enumerate(self.drag_targets):
+            curr_target = gtk.TargetEntry.new(target.atom.name(),
+                                              target.app | target.widget, 1500 + idx)
+            drag_targets.append(curr_target)
 
         # first enable tree model drag/drop (to get the actual row as drag_icon)
         # however this alone will only work for TreeStore/ListStore,
         # so we need to manage drag and drop by hand due to the GenericTreeModel
-        tv.enable_model_drag_source(gtk.gdk.BUTTON1_MASK,
-                                    drag_targets,
-                                    self.SOURCE_ACTIONS)
-        tv.drag_source_set(gtk.gdk.BUTTON1_MASK,
-                                    drag_targets,
-                                    self.SOURCE_ACTIONS)
-        tv.enable_model_drag_dest([], self.DEST_ACTIONS)
-        tv.drag_dest_set(0, # gtk.DEST_DEFAULT_ALL, # if DEFAULT_ALL is set, data preview won't work
-                         [],
-                         self.DEST_ACTIONS)
+        curr_view.enable_model_drag_source(gtk.gdk.BUTTON1_MASK,
+                                           drag_targets, self.SOURCE_ACTIONS)
+
+        curr_view.drag_source_set(gtk.gdk.BUTTON1_MASK,
+                                  drag_targets, self.SOURCE_ACTIONS)
+
+        curr_view.enable_model_drag_dest([], self.DEST_ACTIONS)
+
+        # gtk.DEST_DEFAULT_ALL, # if DEFAULT_ALL is set, data preview won't work
+        curr_view.drag_dest_set(0, [], self.DEST_ACTIONS)
 
     def append(self, obj):
         """
@@ -95,20 +95,21 @@ class DragProvider(object):
         drag_targets = []
 
         drag_targets = []
-        for i, target in enumerate(self.drag_targets):
-            t = gtk.TargetEntry.new(target.atom.name(), target.app | target.widget, 1600 + i)        
-            drag_targets.append(t)
-        
+        for idx, target in enumerate(self.drag_targets):
+            curr_target = gtk.TargetEntry.new(target.atom.name(),
+                                              target.app | target.widget, 1600 + idx)
+            drag_targets.append(curr_target)
+
         # first enable tree model drag/drop (to get the actual row as drag_icon)
         # however this alone will only work for TreeStore/ListStore,
         # so we need to manage drag and drop by hand due to the GenericTreeModel
-        tv = self.widget
-        tv.enable_model_drag_source(gtk.gdk.BUTTON1_MASK,
-                                    drag_targets,
-                                    self.SOURCE_ACTIONS)
-        tv.drag_source_set(gtk.gdk.BUTTON1_MASK,
-                           drag_targets,
-                           self.SOURCE_ACTIONS)
+        curr_view = self.widget
+        curr_view.enable_model_drag_source(gtk.gdk.BUTTON1_MASK,
+                                           drag_targets,
+                                           self.SOURCE_ACTIONS)
+        curr_view.drag_source_set(gtk.gdk.BUTTON1_MASK,
+                                  drag_targets,
+                                  self.SOURCE_ACTIONS)
 
     def get_source_target(self, context, atom):
         for target in self.drag_targets:
@@ -131,7 +132,7 @@ class DragProvider(object):
 
         data = target.get_data(widget, context)
 
-        if target.atom.name() == "TEXT":  # so type will be COMPOUND_TEXT whatever foo?
+        if target.atom.name() == "TEXT":
             selection.set_text(data, -1)
         else:
             target_atom = selection.get_target()
@@ -195,7 +196,6 @@ class DragProvider(object):
         if context.get_suggested_action() & target.actions != 0:
             gtk.gdk.drag_status(context, context.get_suggested_action(), time)
         else:
-            # TODO or do i have to select one explicitly?
             gtk.gdk.drag_status(context, target.actions, time)
         return True
 
@@ -212,8 +212,7 @@ class DragProvider(object):
         # widget.drag_dest_set(0, [], 0)
         widget.drag_get_data(context, mime, etime)
 
-    def _on_drag_received_data(self, widget, context, x, y, selection,
-                                target_id, etime):
+    def _on_drag_received_data(self, widget, context, x, y, selection, target_id, etime):
         """callback function for received data upon dnd-completion"""
 
         data = selection.get_data().decode()
@@ -274,13 +273,11 @@ class DragProvider(object):
             gtk.gdk.drag_status(context, 0, time)
             return False
 
-        # do the highlighting
-        # TODO: this is treeview dependent, move it to TreeDropTarget
         try:
             path, pos = widget.get_dest_row_at_pos(x, y)
             widget.set_drag_dest_row(path, pos)
         except TypeError:
-                last_row = gtk.TreePath.new_from_indices([len(widget.get_model()) - 1])
-                widget.set_drag_dest_row(last_row, gtk.TREE_VIEW_DROP_AFTER)
+            last_row = gtk.TreePath.new_from_indices([len(widget.get_model()) - 1])
+            widget.set_drag_dest_row(last_row, gtk.TREE_VIEW_DROP_AFTER)
 
         return True

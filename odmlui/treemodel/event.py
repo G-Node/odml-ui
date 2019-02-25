@@ -2,7 +2,7 @@ import sys
 import odml
 
 
-class Event (object):
+class Event(object):
     def __init__(self, name):
         self.handlers = []
         self.name = name
@@ -127,8 +127,9 @@ class ChangeContext(object):
         after handling obj is removed from the stack again
         """
         self._obj.append(obj)
-        if obj._change_handler is not None: #hasattr(obj, "_change_handler"):
+        if obj._change_handler is not None:
             obj._change_handler(self)
+
         obj._Changed(self)
         self._obj.remove(obj)
 
@@ -136,10 +137,12 @@ class ChangeContext(object):
         self._obj = []
 
     def __repr__(self):
-        v = ""
-        if self.pre_change: v = "Pre"
-        if self.post_change: v = "Post"
-        return "<%sChange %s.%s(%s)>" % (v, repr(self.obj), self.action, repr(self.val))
+        pre_text = ""
+        if self.pre_change:
+            pre_text = "Pre"
+        if self.post_change:
+            pre_text = "Post"
+        return "<%sChange %s.%s(%s)>" % (pre_text, repr(self.obj), self.action, repr(self.val))
 
     def dump(self):
         return repr(self) + "\nObject stack:\n\t" + "\n\t".join(map(repr, self._obj))
@@ -185,11 +188,11 @@ class ModificationNotifier(ChangeHandlable):
         fire = not name.startswith('_') and hasattr(self, name)
         func = lambda: super(ModificationNotifier, self).__setattr__(name, value)
         if fire:
-            self.__fireChange("set", (name, value), func)
+            self.__fire_change("set", (name, value), func)
         else:
             func()
 
-    def __fireChange(self, action, obj, func):
+    def __fire_change(self, action, obj, func):
         """
         create a ChangeContext and
 
@@ -197,19 +200,19 @@ class ModificationNotifier(ChangeHandlable):
         * call func
         * fire a post_change-event
         """
-        c = ChangeContext(obj)
-        c.action = action
-        c.pre_change = True
-        c.pass_on(self)
+        change_context = ChangeContext(obj)
+        change_context.action = action
+        change_context.pre_change = True
+        change_context.pass_on(self)
         res = func()
-        c.reset()
-        c.post_change = True
-        c.pass_on(self)
+        change_context.reset()
+        change_context.post_change = True
+        change_context.pass_on(self)
         return res
 
     def append(self, obj, *args, **kwargs):
         func = lambda: super(ModificationNotifier, self).append(obj, *args, **kwargs)
-        self.__fireChange("append", obj, func)
+        self.__fire_change("append", obj, func)
 
     def remove(self, obj):
         func = lambda: super(ModificationNotifier, self).remove(obj)
@@ -221,15 +224,15 @@ class ModificationNotifier(ChangeHandlable):
         if hasattr(self, "pseudo_values") and hasattr(obj, "pseudo_values"):
             func = lambda: remove_value(self, obj)
 
-        self.__fireChange("remove", obj, func)
+        self.__fire_change("remove", obj, func)
 
     def insert(self, position, obj):
         func = lambda: super(ModificationNotifier, self).insert(position, obj)
-        self.__fireChange("insert", obj, func)
+        self.__fire_change("insert", obj, func)
 
     def _reorder(self, childlist, new_index):
         func = lambda: super(ModificationNotifier, self)._reorder(childlist, new_index)
-        return self.__fireChange("reorder", (childlist, new_index), func)
+        return self.__fire_change("reorder", (childlist, new_index), func)
 
 
 def remove_value(prop, pseudo):
@@ -252,6 +255,7 @@ def remove_value(prop, pseudo):
     cp_val = prop.values
     del cp_val[pseudo._index]
     prop.values = cp_val
+
 
 # create a separate global Event listeners for each class
 # and provide ModificationNotifier Capabilities
@@ -293,8 +297,11 @@ def pass_on_change_section(context):
     if document is not None:
         context.pass_on(document)
 
-# Value._Changed.finish    = pass_on_change
+
 Property._Changed.finish = pass_on_change
-Section._Changed.finish  = pass_on_change_section
+
+
+Section._Changed.finish = pass_on_change_section
+
 
 odml.addImplementation(sys.modules[__name__])

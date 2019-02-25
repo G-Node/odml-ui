@@ -19,10 +19,11 @@ Or get the implementation once it is registered::
     >>> odml.getImplementation('nodes').Section("animal_keeping section")
 
 """
-#Please note: tree-functionality is already based on event-functionality.
-#Therefore mixin in odml.tools.events will be troublesome / not work.
+# Please note: tree-functionality is already based on event-functionality.
+# Therefore mixin in odml.tools.events will be troublesome / not work.
 
 import odml
-from . import nodes
-odml.setMinimumImplementation('nodes')
 
+from . import nodes
+
+odml.setMinimumImplementation('nodes')

@@ -4,6 +4,10 @@ Document, Section, Property and Value.
 
 Additionally implements change notifications up to the corresponding section.
 """
+import sys
+
+import odml
+
 from odml.property import BaseProperty
 
 from . import event
@@ -30,8 +34,8 @@ def identity_index(obj, val):
     >>> [a,b].index(b)
     0
     """
-    for i, v in enumerate(obj):
-        if v is val:
+    for i, curr_val in enumerate(obj):
+        if curr_val is val:
             return i
 
     raise ValueError("%s does not contain the item %s" % (repr(obj), repr(val)))
@@ -60,6 +64,7 @@ class ParentedNode(RootNode):
     def to_path(self, parent=None):
         if self.parent is parent:
             return self.parent.path_to(self)
+
         return self.parent.to_path(parent) + self.parent.path_to(self)
 
     def successor(self):
@@ -99,7 +104,8 @@ class SectionNode(ParentedNode):
     def from_path(self, path):
         assert len(path) > 1
 
-        if path[0] == 0:  # sections
+        # sections
+        if path[0] == 0:
             return super(SectionNode, self).from_path(path[1:])
 
         # else: properties
@@ -112,6 +118,7 @@ class SectionNode(ParentedNode):
     def path_to(self, child):
         if isinstance(child, BaseProperty):
             return 1, identity_index(self._props, child)
+
         return 0, identity_index(self._sections, child)
 
 
@@ -135,7 +142,6 @@ class ValueNode(ParentedNode):
         raise TypeError("Value objects have no children")
 
 
-# TODO? provide this externally?
 name = "nodes"
 provides = event.provides + ["nodes"]
 
@@ -156,6 +162,4 @@ class Section(event.Section, SectionNode):
     pass
 
 
-import sys
-import odml
 odml.addImplementation(sys.modules[__name__])

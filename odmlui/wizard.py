@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 from collections import OrderedDict
-import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
-import gtk
+import pygtkcompat
+
 import odml
 import odml.terminology as terminology
 
-from .Helpers import handle_property_import
-from .treemodel.SectionModel import SectionModel
-from .SectionView import SectionView
-from .ScrolledWindow import ScrolledWindow
+import gtk
+
+from .helpers import handle_property_import
+from .treemodel.section_model import SectionModel
+from .section_view import SectionView
+from .scrolled_window import ScrolledWindow
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
 
 
 class Table(object):
@@ -95,12 +98,12 @@ class DataPage(Page):
         self.fields = fields
 
         # add a label and an entry box for each field
-        for k, v in fields.items():
-            label = gtk.Label(label="%s: " % k)
+        for key, val in fields.items():
+            label = gtk.Label(label="%s: " % key)
             label.set_alignment(1, 0.5)
             entry = gtk.Entry()
-            entry.set_text(v)
-            setattr(self, k.lower(), entry)
+            entry.set_text(val)
+            setattr(self, key.lower(), entry)
             self.table.append([entry], label, entry)
         align.add(self.table.table)
         # already load the data in background
@@ -242,13 +245,14 @@ class DocumentWizard:
         the process is finished, create the desired document
         """
         doc = odml.Document()
-        for k, v in self.data_page.data.items():
-            setattr(doc, k, v)
+        for key, val in self.data_page.data.items():
+            setattr(doc, key, val)
 
         # copy all selected sections from the terminology
         if hasattr(self.section_page, 'term') and self.section_page.term:
             term = self.section_page.term
-            term._assoc_sec = doc  # set the associated section
+            # set the associated section
+            term._assoc_sec = doc
             for sec in term.itersections(recursive=True):
                 if sec not in self.section_page.sections:
                     continue

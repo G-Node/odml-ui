@@ -1,13 +1,14 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
 import gtk
 
 from . import tree
-from ..DocumentRegistry import DocumentRegistry
-from .. import commands
 from .targets import ActionDrop
+from .. import commands
+from ..document_registry import DocumentRegistry
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 
 class OdmlTreeDropTarget(tree.TreeDropTarget):
     """
@@ -42,7 +43,10 @@ class OdmlTreeDropTarget(tree.TreeDropTarget):
 
     def tree_can_drop(self, action, model, iter, position, data=None):
         obj, position = self.get_target(model, iter, position)
-        self.model = model # store the model for later use
+
+        # store the model for later use
+        self.model = model
+
         return self.odml_tree_can_drop(action, obj, position, data)
 
     def odml_tree_can_drop(self, action, dst, position, data):
@@ -55,7 +59,10 @@ class OdmlTreeDropTarget(tree.TreeDropTarget):
 
     def tree_receive_data(self, action, data, model, iter, position):
         obj, position = self.get_target(model, iter, position)
-        self.model = model # store the model for later use
+
+        # store the model for later use
+        self.model = model
+
         return self.odml_tree_receive_data(action, obj, position, data)
 
     def odml_tree_receive_data(self, action, dst, position, data):
@@ -69,6 +76,7 @@ class OdmlTreeDropTarget(tree.TreeDropTarget):
             raise NotImplementedError
         return self.target.drop_object(action, dst, position, obj)
 
+
 class OdmlDrop(ActionDrop, OdmlTreeDropTarget):
     """
     Base for most Odml-Object Drop Targets
@@ -76,6 +84,7 @@ class OdmlDrop(ActionDrop, OdmlTreeDropTarget):
     needs a DocumentRegistry to resolve text-references to Documents
     """
     app = gtk.TARGET_SAME_APP
+
     def __init__(self, registry=None, *args, **kwargs):
         super(OdmlDrop, self).__init__(*args, **kwargs)
         self.registry = registry
@@ -96,9 +105,12 @@ class OdmlDrop(ActionDrop, OdmlTreeDropTarget):
         src = None
         if data is not None:
             doc, src = self.get_source(data)
-            if src is dst and not action.copy: # allow to copy
+
+            # allow to copy
+            if src is dst and not action.copy:
                 print("can't drop to myself")
                 return False
+
         return self.odml_can_drop(action, dst, position, src)
 
     def get_source(self, data):
@@ -117,11 +129,14 @@ class OdmlDrop(ActionDrop, OdmlTreeDropTarget):
         using reorder functionality.
         """
         doc, src = self.get_source(data)
-        if dst is None: return False
+        if dst is None:
+            return False
+
         # try to find out if this is a reorder-thing
         if action.move and position != -1 and dst is src.parent:
             cmd = commands.ReorderObject(obj=src, new_index=position)
             return self.execute(cmd)
+
         return self.drop_object(action, dst, position, src)
 
     def drop_object(self, action, dst, position, src):
@@ -129,11 +144,13 @@ class OdmlDrop(ActionDrop, OdmlTreeDropTarget):
         # the delete event still occurs, but is not handled by OdmlDrag objects
         # so we are fine
 
+
 class OdmlDrag(tree.TreeDragTarget):
     """
     A TreeDragTarget valid for a certain odml object class *inst*
     """
     inst = object
+
     def __init__(self, mime=None, inst=None, *args, **kwargs):
         super(OdmlDrag, self).__init__(*args, **kwargs)
         if mime is not None:
@@ -143,7 +160,8 @@ class OdmlDrag(tree.TreeDragTarget):
             self.inst = inst
 
     def tree_get_data(self, action, model, iter):
-        if iter is None: return
+        if iter is None:
+            return
         obj = model.get_object(iter)
         if isinstance(obj, self.inst):
             return self.odml_get_data(action, obj)
@@ -152,10 +170,12 @@ class OdmlDrag(tree.TreeDragTarget):
         """
         serialize the object-path and its document reference into a string
         """
-        return "%d;%s" % (DocumentRegistry.get_id(obj.document), ",".join(map(str, obj.to_path())))
+        return "%d;%s" % (DocumentRegistry.get_id(obj.document),
+                          ",".join(map(str, obj.to_path())))
 
     def tree_delete_data(self, model, iter):
-        if iter is None: return
+        if iter is None:
+            return
         obj = model.get_object(iter)
         if isinstance(obj, self.inst):
             return self.odml_delete_data(obj)

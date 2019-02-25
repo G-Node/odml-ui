@@ -7,7 +7,7 @@ from odml import fileio
 from odml.dtypes import default_values
 from odml.tools.parser_utils import SUPPORTED_PARSERS
 
-from .treemodel import ValueModel
+from .treemodel import value_model
 
 try:  # Python 3
     from urllib.parse import urlparse, unquote, urljoin
@@ -117,7 +117,7 @@ def create_pseudo_values(odml_properties):
         values = prop.values
         new_values = []
         for index in range(len(values)):
-            val = ValueModel.Value(prop, index)
+            val = value_model.Value(prop, index)
             new_values.append(val)
         prop.pseudo_values = new_values
 

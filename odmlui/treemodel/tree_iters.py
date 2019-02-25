@@ -1,9 +1,9 @@
-from . import GenericIter
+from . import generic_iter
 from . import nodes
-from .ValueModel import Value
+from .value_model import Value
 
 
-class PropIter(GenericIter.GenericIter):
+class PropIter(generic_iter.GenericIter):
     """
     An iterator for a Property
 
@@ -56,7 +56,7 @@ class PropIter(GenericIter.GenericIter):
         return None
 
 
-class ValueIter(GenericIter.GenericIter):
+class ValueIter(generic_iter.GenericIter):
     """
     An iterator for a Value object
     """
@@ -85,7 +85,7 @@ class ValueIter(GenericIter.GenericIter):
         return ""
 
 
-class SectionIter(GenericIter.GenericIter):
+class SectionIter(generic_iter.GenericIter):
     @property
     def parent(self):
         if not self._obj.parent:
@@ -95,7 +95,7 @@ class SectionIter(GenericIter.GenericIter):
         return super(SectionIter, self).parent
 
 
-class SectionPropertyIter(GenericIter.GenericIter):
+class SectionPropertyIter(generic_iter.GenericIter):
     @property
     def n_children(self):
         return len(self._obj.properties)

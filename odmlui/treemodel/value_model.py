@@ -28,7 +28,7 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
     only available as a 'pure' python list we cannot render it to the Editor
     UI directly. So, we make use of this wrapper class which acts as a mapper
     between the model values and the values rendered in Editor UI.
-    
+
     A list of objects from this class is added as an additional attribute to
     the original `odml.Property` node, as `pseudo_values`. All interactions
     from the Editor interact with these pseudo_values, and internally, these
@@ -42,7 +42,8 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
     def __init__(self, parent, index=None):
 
         self._property = parent
-        if index is None:  # Instantiate a new odML value
+        # Instantiate a new odML value
+        if index is None:
             index = len(self._property.values)
             dtype = self.parent.dtype
             default_value = dtypes.default_values(dtype)

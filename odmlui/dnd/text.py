@@ -1,18 +1,22 @@
 import pygtkcompat
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import gtk
 
 import odml.tools.xmlparser as xmlparser
 
 from odml.property import BaseProperty
 from odml.section import BaseSection
 
+import gtk
+
 from . import odmldrop
 from . import tree
-from .targets import *
-from ..treemodel import ValueModel
+from .targets import SectionDrop, PropertyDrop, ValueDrop
+from .. import commands
+from ..treemodel import value_model
+
+
+pygtkcompat.enable()
+pygtkcompat.enable_gtk(version='3.0')
+
 
 class TextDrop(odmldrop.OdmlTreeDropTarget):
     """
@@ -44,6 +48,7 @@ class TextDrop(odmldrop.OdmlTreeDropTarget):
     def text_receive_data(self, action, dst, position, obj):
         return self.drop_object(action, dst, position, obj)
 
+
 class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
     """
     Can drop objects if they parse to an class contained in self.targets
@@ -53,10 +58,10 @@ class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
 
     def drop_object(self, action, dst, position, obj):
         for kls, tkls in [
-            (ValueModel.Value, ValueDrop),
-            (BaseProperty, PropertyDrop),
-            (BaseSection, SectionDrop)
-            ]:
+                (value_model.Value, ValueDrop),
+                (BaseProperty, PropertyDrop),
+                (BaseSection, SectionDrop)]:
+
             if not kls in self.targets:
                 continue
             if isinstance(obj, kls):
@@ -65,25 +70,31 @@ class TextGenericDrop(TextDrop, SectionDrop, PropertyDrop, ValueDrop):
 
     def text_can_drop(self, action, dst, position, obj):
         for kls in self.targets:
-            if isinstance(obj, kls): return True
+            if isinstance(obj, kls):
+                return True
+
         return False
+
 
 class TextGenericDropForPropertyTV(TextGenericDrop):
     """
     can drop Properties and Values, but only Values into Properties
     and Properties into Sections
     """
-    targets = [BaseProperty, ValueModel.Value]
+    targets = [BaseProperty, value_model.Value]
+
     def text_can_drop(self, action, dst, position, obj):
-        if not super(TextGenericDropForPropertyTV, self).text_can_drop(action, dst, position, obj):
+        if not super(TextGenericDropForPropertyTV, self).text_can_drop(action, dst,
+                                                                       position, obj):
             return False
         # can't drop values to anything but properties
-        if isinstance(obj, ValueModel.Value) and not isinstance(dst, BaseProperty):
+        if isinstance(obj, value_model.Value) and not isinstance(dst, BaseProperty):
             return False
         # can't drop properties to anything but sections
         if isinstance(obj, BaseProperty) and not isinstance(dst, BaseSection):
             return False
         return True
+
 
 class TextGenericDropForSectionTV(TextGenericDropForPropertyTV):
     """
@@ -91,6 +102,7 @@ class TextGenericDropForSectionTV(TextGenericDropForPropertyTV):
     Properties into Sections (not into Documents)
     """
     targets = [BaseProperty, BaseSection]
+
 
 class TextDrag(odmldrop.OdmlDrag):
     """

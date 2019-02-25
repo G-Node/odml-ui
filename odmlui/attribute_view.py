@@ -81,9 +81,15 @@ class AttributeView(TreeView):
 
                 self._store.append([curr_attr, val])
 
-    def on_edited(self, widget, row, new_value, col):
+    def on_edited(self, widget, path, new_value, data):
+        """
+        :param widget: Non required base class parameter.
+        :param path: The row of the edited cell .
+        :param new_value: New value of the edited cell.
+        :param data: Non required base class parameter.
+        """
         store = self._store
-        store_iter = store.get_iter(row)
+        store_iter = store.get_iter(path)
         curr_val = store.get_value(store_iter, COL_KEY)
         cmd = commands.ChangeValue(
             object=self._model,

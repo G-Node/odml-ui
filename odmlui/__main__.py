@@ -47,8 +47,9 @@ def run():
         from ctypes import cdll
         libc = cdll.LoadLibrary("libc.so.6")
         libc.prctl(15, 'odMLEditor', 0, 0, 0)
-    except:
+    except ImportError:
         pass
+
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('--debug', help='Print debug messages', action='store_true')

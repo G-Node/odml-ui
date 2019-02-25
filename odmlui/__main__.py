@@ -8,7 +8,7 @@ import gtk
 import odmlui
 
 from .editor import register_stock_icons, EditorWindow
-from . import helpers
+from .helpers import path_to_uri
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
@@ -33,11 +33,12 @@ def main(filenames=None, debug=False):
         if not os.path.isabs(file):
             filenames[i] = os.path.abspath(file)
 
-    file_uris = list(map(helpers.path_to_uri, filenames))
+    file_uris = list(map(path_to_uri, filenames))
     tabs = list(map(editor.load_document, file_uris))
 
     if len(filenames) == 0:
         editor.welcome()
+
     return tabs
 
 

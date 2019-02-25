@@ -28,6 +28,8 @@ class AttributeView(TreeView):
         self._store = gtk.ListStore(str, str)
         self._store.set_sort_column_id(COL_KEY, gtk.SORT_ASCENDING)
         self._model = None
+        self._fmt = None
+
         if obj is not None:
             self.set_model(obj)
 

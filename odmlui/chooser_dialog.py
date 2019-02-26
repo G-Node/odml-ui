@@ -43,21 +43,24 @@ class ChooserDialog(gtk.FileChooserDialog):
         if response_id == gtk.RESPONSE_OK:
             self.hide()
 
-            filter_selection = widget.get_filter().get_name()
-            file_type = "XML"
-            if filter_selection == OdmlChooserDialog.YAML:
-                file_type = "YAML"
-            elif filter_selection == OdmlChooserDialog.JSON:
-                file_type = "JSON"
+            if self.save:
+                filter_selection = widget.get_filter().get_name()
+                file_type = "XML"
+                if filter_selection == OdmlChooserDialog.YAML:
+                    file_type = "YAML"
+                elif filter_selection == OdmlChooserDialog.JSON:
+                    file_type = "JSON"
 
-            self.on_accept(self.get_uri(), file_type)
+                self.on_accept(self.get_uri(), file_type)
+            else:
+                self.on_accept(self.get_uri())
 
         self.destroy()
 
-    def on_accept(self, uri, file_type):
+    def on_accept(self, uri, file_type=None):
         """
-        This method is overridden by gi introspection.
-        The actual method is set as a callback on the class.
+        This method is overridden by gi introspection. The actual method
+        is set as a callback on the class at the point of usage.
         """
         pass
 

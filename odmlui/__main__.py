@@ -8,33 +8,37 @@ import gtk
 import odmlui
 
 from .editor import register_stock_icons, EditorWindow
-from . import helpers
+from .helpers import path_to_uri
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
 
-def main(filenames=[], debug=False):
+def main(filenames=None, debug=False):
     """
-    start the editor, with a new empty document
-    or load all *filenames* as tabs
+    Start the editor, with a new empty document
+    or load all passed *filenames* as tabs.
 
-    returns the tab object
+    Returns the tab object.
     """
     odmlui.DEBUG = debug
     register_stock_icons()
     editor = EditorWindow()
 
-    # Convert relative path to absolute path, if any
-    for i, file in enumerate(filenames):
-        if not os.path.isabs(file):
-            filenames[i] = os.path.abspath(file)
+    if not filenames:
+        filenames = []
 
-    file_uris = list(map(helpers.path_to_uri, filenames))
+    # Convert relative path to absolute path
+    for i, file_path in enumerate(filenames):
+        if not os.path.isabs(file_path):
+            filenames[i] = os.path.abspath(file_path)
+
+    file_uris = list(map(path_to_uri, filenames))
     tabs = list(map(editor.load_document, file_uris))
 
-    if len(filenames) == 0:
+    if not filenames:
         editor.welcome()
+
     return tabs
 
 
@@ -47,8 +51,9 @@ def run():
         from ctypes import cdll
         libc = cdll.LoadLibrary("libc.so.6")
         libc.prctl(15, 'odMLEditor', 0, 0, 0)
-    except:
+    except ImportError:
         pass
+
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('--debug', help='Print debug messages', action='store_true')

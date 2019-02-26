@@ -28,6 +28,8 @@ class AttributeView(TreeView):
         self._store = gtk.ListStore(str, str)
         self._store.set_sort_column_id(COL_KEY, gtk.SORT_ASCENDING)
         self._model = None
+        self._fmt = None
+
         if obj is not None:
             self.set_model(obj)
 
@@ -37,12 +39,10 @@ class AttributeView(TreeView):
 
         super(AttributeView, self).__init__(self._store)
 
-        for idx, name in ((COL_KEY, "Attribute"), (COL_VALUE, "Value")):
-            self.add_column(
-                name=name,
-                edit_func=self.on_edited if idx == COL_VALUE else None,
-                data=idx,
-                col_id=idx)
+        self.add_column(name="Attribute", edit_func=None,
+                        data=COL_KEY, col_id=COL_KEY)
+        self.add_column(name="Value", edit_func=self.on_edited,
+                        data=COL_VALUE, col_id=COL_VALUE)
 
         self._treeview.show()
 
@@ -81,9 +81,15 @@ class AttributeView(TreeView):
 
                 self._store.append([curr_attr, val])
 
-    def on_edited(self, widget, row, new_value, col):
+    def on_edited(self, widget, path, new_value, data):
+        """
+        :param widget: Non required base class parameter.
+        :param path: The row of the edited cell .
+        :param new_value: New value of the edited cell.
+        :param data: Non required base class parameter.
+        """
         store = self._store
-        store_iter = store.get_iter(row)
+        store_iter = store.get_iter(path)
         curr_val = store.get_value(store_iter, COL_KEY)
         cmd = commands.ChangeValue(
             object=self._model,

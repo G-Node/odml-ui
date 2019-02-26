@@ -411,7 +411,7 @@ class EditorWindow(gtk.Window):
         recent_action.connect("item-activated", self.open_recent)
 
         recent_filter = gtk.RecentFilter()
-        OdmlChooserDialog._setup_file_filter(recent_filter)
+        OdmlChooserDialog.setup_file_filter(recent_filter)
 
         recent_action.set_sort_type(gtk.RECENT_SORT_MRU)
         recent_action.add_filter(recent_filter)
@@ -436,7 +436,7 @@ class EditorWindow(gtk.Window):
 
         # display recently used files
         recent_filter = gtk.RecentFilter()
-        OdmlChooserDialog._setup_file_filter(recent_filter)
+        OdmlChooserDialog.setup_file_filter(recent_filter)
 
         # Now, we need to pass in a separate struct 'gtk.RecentFilterInfo',
         # for each recently used file, for the filtering process by the
@@ -542,7 +542,7 @@ class EditorWindow(gtk.Window):
         """called to show the open file dialog"""
         self.chooser_dialog(title="Open Document", callback=self.load_document)
 
-    def load_document(self, uri, file_type=None):
+    def load_document(self, uri):
         """open a new tab, load the document into it"""
         tab = EditorTab(self)
         if not tab.load(uri):  # Close tab upon parsing errors
@@ -558,7 +558,7 @@ class EditorWindow(gtk.Window):
         self.chooser_dialog(title="Import previous odML version",
                             callback=self.convert_version)
 
-    def convert_version(self, uri, file_type=None):
+    def convert_version(self, uri):
         """
         Open a new tab, and load a previous version odML file into it.
         """

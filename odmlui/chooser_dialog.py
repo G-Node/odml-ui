@@ -33,7 +33,10 @@ class ChooserDialog(gtk.FileChooserDialog):
         self.destroy()
 
     def on_accept(self, uri, file_type):
-        raise NotImplementedError
+        """
+        This method is overridden by gi introspection.
+        """
+        pass
 
 
 class OdmlChooserDialog(ChooserDialog):

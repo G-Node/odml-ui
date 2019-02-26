@@ -542,7 +542,7 @@ class EditorWindow(gtk.Window):
         """called to show the open file dialog"""
         self.chooser_dialog(title="Open Document", callback=self.load_document)
 
-    def load_document(self, uri, file_type=None):
+    def load_document(self, uri):
         """open a new tab, load the document into it"""
         tab = EditorTab(self)
         if not tab.load(uri):  # Close tab upon parsing errors
@@ -558,7 +558,7 @@ class EditorWindow(gtk.Window):
         self.chooser_dialog(title="Import previous odML version",
                             callback=self.convert_version)
 
-    def convert_version(self, uri, file_type=None):
+    def convert_version(self, uri):
         """
         Open a new tab, and load a previous version odML file into it.
         """

@@ -14,9 +14,13 @@ class ChooserDialog(gtk.FileChooserDialog):
     The ChooserDialog class extends the gtk.FileChooserDialog class
     to enable both opening and saving of files.
     """
-    def __init__(self, title, save):
-        default_button = gtk.STOCK_SAVE if save else gtk.STOCK_OPEN
-        default_action = gtk.FILE_CHOOSER_ACTION_SAVE if save else gtk.FILE_CHOOSER_ACTION_OPEN
+    def __init__(self, title, save=False):
+        default_button = gtk.STOCK_OPEN
+        default_action = gtk.FILE_CHOOSER_ACTION_OPEN
+        if save:
+            default_button = gtk.STOCK_SAVE
+            default_action = gtk.FILE_CHOOSER_ACTION_SAVE
+
         super(ChooserDialog, self).__init__(title=title, action=default_action)
 
         self.add_button(default_button, gtk.RESPONSE_OK)

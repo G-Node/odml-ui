@@ -46,41 +46,41 @@ class OdmlChooserDialog(ChooserDialog):
         self.add_filters()
 
     @staticmethod
-    def _setup_file_filter(filter):
+    def _setup_file_filter(format_filter):
         """
-             Used for setting up recent filters for recently used files.
+        Used to set up filters for recently used files.
         """
-        filter.set_name("odML Documents (*.xml, *.yaml, *.json, *.odml)")
+        format_filter.set_name("odML Documents (*.xml, *.yaml, *.json, *.odml)")
 
-        filter.add_mime_type("application/xml")
-        filter.add_mime_type("text/xml")
-        filter.add_pattern('*.xml')
-        filter.add_pattern('*.yaml')
-        filter.add_pattern('*.yml')
-        filter.add_pattern('*.json')
-        filter.add_pattern('*.odml')
+        format_filter.add_mime_type("application/xml")
+        format_filter.add_mime_type("text/xml")
+        format_filter.add_pattern('*.xml')
+        format_filter.add_pattern('*.yaml')
+        format_filter.add_pattern('*.yml')
+        format_filter.add_pattern('*.json')
+        format_filter.add_pattern('*.odml')
 
     def xml_filter(self):
-        filter = gtk.FileFilter()
-        filter.set_name(self.XML)
-        filter.add_pattern('*.xml')
-        filter.add_pattern('*.odml')
-        return filter
+        x_fil = gtk.FileFilter()
+        x_fil.set_name(self.XML)
+        x_fil.add_pattern('*.xml')
+        x_fil.add_pattern('*.odml')
+        return x_fil
 
     def yaml_filter(self):
-        filter = gtk.FileFilter()
-        filter.set_name(self.YAML)
-        filter.add_pattern('*.yaml')
-        filter.add_pattern('*.yml')
-        filter.add_pattern('*.odml')
-        return filter
+        y_fil = gtk.FileFilter()
+        y_fil.set_name(self.YAML)
+        y_fil.add_pattern('*.yaml')
+        y_fil.add_pattern('*.yml')
+        y_fil.add_pattern('*.odml')
+        return y_fil
 
     def json_filter(self):
-        filter = gtk.FileFilter()
-        filter.set_name(self.JSON)
-        filter.add_pattern('*.json')
-        filter.add_pattern('*.odml')
-        return filter
+        j_fil = gtk.FileFilter()
+        j_fil.set_name(self.JSON)
+        j_fil.add_pattern('*.json')
+        j_fil.add_pattern('*.odml')
+        return j_fil
 
     def add_filters(self):
         self.add_filter(self.xml_filter())

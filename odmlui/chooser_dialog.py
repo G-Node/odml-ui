@@ -49,7 +49,7 @@ class OdmlChooserDialog(ChooserDialog):
         self.add_filters()
 
     @staticmethod
-    def _setup_file_filter(format_filter):
+    def setup_file_filter(format_filter):
         """
         Used to set up filters for recently used files.
         """

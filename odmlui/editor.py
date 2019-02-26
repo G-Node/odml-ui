@@ -411,7 +411,7 @@ class EditorWindow(gtk.Window):
         recent_action.connect("item-activated", self.open_recent)
 
         recent_filter = gtk.RecentFilter()
-        OdmlChooserDialog._setup_file_filter(recent_filter)
+        OdmlChooserDialog.setup_file_filter(recent_filter)
 
         recent_action.set_sort_type(gtk.RECENT_SORT_MRU)
         recent_action.add_filter(recent_filter)
@@ -436,7 +436,7 @@ class EditorWindow(gtk.Window):
 
         # display recently used files
         recent_filter = gtk.RecentFilter()
-        OdmlChooserDialog._setup_file_filter(recent_filter)
+        OdmlChooserDialog.setup_file_filter(recent_filter)
 
         # Now, we need to pass in a separate struct 'gtk.RecentFilterInfo',
         # for each recently used file, for the filtering process by the

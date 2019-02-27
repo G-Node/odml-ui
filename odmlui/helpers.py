@@ -1,3 +1,7 @@
+"""
+The 'helpers' module provides various helper functions.
+"""
+
 import json
 import os
 import subprocess
@@ -19,7 +23,8 @@ except ImportError:  # Python 2
 
 def uri_to_path(uri):
     """
-    uri_to_path parses a uri into a OS specific file path.
+    *uri_to_path* parses a uri into a OS specific file path.
+
     :param uri: string containing a uri.
     :return: OS specific file path.
     """
@@ -34,12 +39,19 @@ def uri_to_path(uri):
 
 
 def path_to_uri(path):
+    """
+    Converts a passed *path* to a URI GTK can handle and returns it.
+    """
     uri = pathname2url(path)
     uri = urljoin('file:', uri)
     return uri
 
 
 def get_extension(path):
+    """
+    Returns the upper case file extension of a file
+    referenced by a passed *path*.
+    """
     ext = os.path.splitext(path)[1][1:]
     ext = ext.upper()
     return ext
@@ -47,8 +59,8 @@ def get_extension(path):
 
 def get_parser_for_uri(uri):
     """
-        Sanitize the given path, and also return the
-        odML parser to be used for the given path.
+    Sanitize the given path, and also return the
+    odML parser to be used for the given path.
     """
     path = uri_to_path(uri)
     parser = get_extension(path)
@@ -105,6 +117,11 @@ def handle_property_import(prop):
 
 
 def create_pseudo_values(odml_properties):
+    """
+    Creates a treemodel.Value for each value in an
+    odML Property and appends the resulting list
+    as *pseudo_values* to the passed odML Property.
+    """
     for prop in odml_properties:
         values = prop.values
         new_values = []

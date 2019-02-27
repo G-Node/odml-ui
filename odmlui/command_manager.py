@@ -19,17 +19,16 @@ class CommandManager(object):
     def undo(self):
         cmd = self.undo_stack.pop()
         self.redo_stack.append(cmd)
+
         if len(self.undo_stack) == 0:
             self.enable_undo(enable=False)
+
         self.enable_redo()
-        failed = False
         try:
             cmd.undo()
         except Exception as err:
             self.error_func(cmd, err)
             raise
-
-        return True
 
     def redo(self):
         self.execute(self.redo_stack.pop(), redo=True)

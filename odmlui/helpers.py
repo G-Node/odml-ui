@@ -79,7 +79,7 @@ def get_parser_for_file_type(file_type):
     Returns either the identified parser or XML as the fallback parser.
     """
     parser = file_type.upper()
-    if file_type not in SUPPORTED_PARSERS:
+    if parser not in SUPPORTED_PARSERS:
         parser = 'XML'
     return parser
 

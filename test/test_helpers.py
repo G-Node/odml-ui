@@ -23,3 +23,19 @@ class TestHelpers(unittest.TestCase):
         filename = "IdoNotExist"
         filepath = os.path.join(self.basepath, filename)
         self.assertEqual("", helpers.get_extension(filepath))
+
+    def test_get_parser_for_uri(self):
+        xml_uri = os.path.join(self.basepath, "IdoNotExist.xml")
+        self.assertEqual("XML", helpers.get_parser_for_uri(xml_uri))
+
+        json_uri = os.path.join(self.basepath, "IdoNotExist.json")
+        self.assertEqual("JSON", helpers.get_parser_for_uri(json_uri))
+
+        yaml_uri = os.path.join(self.basepath, "IdoNotExist.yaml")
+        self.assertEqual("YAML", helpers.get_parser_for_uri(yaml_uri))
+
+        default_uri = os.path.join(self.basepath, "IdoNotExist.odml")
+        self.assertEqual("XML", helpers.get_parser_for_uri(default_uri))
+
+        default_uri = os.path.join(self.basepath, "IdoNotExist")
+        self.assertEqual("XML", helpers.get_parser_for_uri(default_uri))

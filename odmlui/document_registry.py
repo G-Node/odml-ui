@@ -20,7 +20,6 @@ class DocumentRegistry(object):
         """
         add a document to the registry and return its unique id
         """
-        # odML.Document is unhashable. Converting to string before hashing
         doc_id = hash(doc)
         self.docs[doc_id] = doc
         return doc_id
@@ -33,5 +32,4 @@ class DocumentRegistry(object):
 
     @staticmethod
     def get_id(doc):
-        # odML.Document is unhashable. Converting to string before hashing.
         return hash(doc)

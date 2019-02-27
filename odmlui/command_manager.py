@@ -12,6 +12,7 @@ class CommandManager(object):
             cmd()
         except Exception as err:
             self.error_func(cmd, err)
+            raise
 
         self.undo_stack.append(cmd)
         self.enable_undo()

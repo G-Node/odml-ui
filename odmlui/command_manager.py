@@ -20,10 +20,11 @@ class CommandManager(object):
         cmd = self.undo_stack.pop()
         self.redo_stack.append(cmd)
 
-        if len(self.undo_stack) == 0:
+        if not self.undo_stack:
             self.enable_undo(enable=False)
 
         self.enable_redo()
+
         try:
             cmd.undo()
         except Exception as err:
@@ -32,8 +33,10 @@ class CommandManager(object):
 
     def redo(self):
         self.execute(self.redo_stack.pop(), redo=True)
-        if len(self.redo_stack) == 0:
+
+        if not self.redo_stack:
             self.enable_redo(enable=False)
+
         self.enable_undo()
 
     def reset(self):

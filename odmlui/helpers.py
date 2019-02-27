@@ -33,14 +33,6 @@ def uri_to_path(uri):
     return file_path
 
 
-def uri_exists(uri):
-    file_path = uri_to_path(uri)
-    if os.path.isfile(file_path):
-        return True
-
-    return False
-
-
 def path_to_uri(path):
     uri = pathname2url(path)
     uri = urljoin('file:', uri)

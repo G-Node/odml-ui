@@ -128,23 +128,30 @@ def get_conda_root():
 
     :return: Either the root of an active Anaconda environment or an empty string.
     """
-    root_path = ""
-    try:
-        # Try identifying conda the easy way
-        if "CONDA_PREFIX" in os.environ:
-            return os.environ["CONDA_PREFIX"]
+    # Try identifying conda the easy way
+    if "CONDA_PREFIX" in os.environ:
+        return os.environ["CONDA_PREFIX"]
 
-        # Try identifying conda the hard way
+    # Try identifying conda the hard way
+    try:
         conda_json = subprocess.check_output("conda info --json",
                                              shell=True, stderr=subprocess.PIPE)
-        if sys.version_info.major > 2:
-            conda_json = conda_json.decode("utf-8")
-        dec = json.JSONDecoder()
-        root_path = dec.decode(conda_json)['default_prefix']
-        if sys.version_info.major < 3:
-            root_path = str(root_path)
     except subprocess.CalledProcessError as exc:
         print("[Info] Conda check: %s" % exc)
+        return ""
+
+    if sys.version_info.major > 2:
+        conda_json = conda_json.decode("utf-8")
+
+    dec = json.JSONDecoder()
+    try:
+        root_path = dec.decode(conda_json)['default_prefix']
+    except ValueError as exc:
+        print("[Info] Conda check: %s" % exc)
+        return ""
+
+    if sys.version_info.major < 3:
+        root_path = str(root_path)
 
     return root_path
 

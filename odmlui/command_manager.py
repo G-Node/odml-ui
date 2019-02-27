@@ -73,3 +73,9 @@ class CommandManager(object):
 
     def enable_redo(self, enable=True):
         pass
+
+    def error_func(self, cmd, err):
+        """
+        The actual method is set on the class at the point of usage.
+        """
+        pass

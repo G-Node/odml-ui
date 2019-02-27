@@ -31,7 +31,7 @@ class CommandManager(object):
         try:
             cmd()
         except Exception as err:
-            self.error_func(cmd, err)
+            self.error_func(err)
             raise
 
         self.undo_stack.append(cmd)
@@ -54,7 +54,7 @@ class CommandManager(object):
         try:
             cmd.undo()
         except Exception as err:
-            self.error_func(cmd, err)
+            self.error_func(err)
             raise
 
     def redo(self):
@@ -108,7 +108,7 @@ class CommandManager(object):
         """
         pass
 
-    def error_func(self, cmd, err):
+    def error_func(self, err):
         """
         *error_func* provides feedback to the user, if an error occurs.
 

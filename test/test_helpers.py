@@ -39,3 +39,17 @@ class TestHelpers(unittest.TestCase):
 
         default_uri = os.path.join(self.basepath, "IdoNotExist")
         self.assertEqual("XML", helpers.get_parser_for_uri(default_uri))
+
+    def test_get_parser_for_file_type(self):
+        x_type = "xml"
+        y_type = "yaml"
+        j_type = "json"
+        default_type = "odml"
+
+        self.assertEqual("XML", helpers.get_parser_for_file_type(x_type))
+        self.assertEqual("YAML", helpers.get_parser_for_file_type(y_type))
+        self.assertEqual("JSON", helpers.get_parser_for_file_type(j_type))
+        self.assertEqual("XML", helpers.get_parser_for_file_type(default_type))
+
+        default_type = ""
+        self.assertEqual("XML", helpers.get_parser_for_file_type(default_type))

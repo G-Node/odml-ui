@@ -30,11 +30,6 @@ class EditorInfoBar(gtk.InfoBar):
         time_delay = max(int(3.0 * len(text) / 60), 1)
         self.add_timer(time_delay)
 
-    def show_question(self, text, resp):
-        self._msg_label.set_text(text)
-        self.set_message_type(gtk.MESSAGE_QUESTION)
-        self.show()
-
     def add_timer(self, seconds=3):
         self._timerid = glib.timeout_add_seconds(seconds, self.on_timer)
 

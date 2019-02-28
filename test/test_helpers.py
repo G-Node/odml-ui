@@ -78,3 +78,25 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(len(prop_multiple.pseudo_values), len(multiple))
         self.assertIsInstance(prop_multiple.pseudo_values[1], PseudoValue)
         self.assertEqual(prop_multiple.pseudo_values[1].value, prop_multiple.values[1])
+
+    def test_handle_property_import(self):
+
+        # Test empty property imported with one string default value
+        prop = odml.Property(name="empty test")
+        self.assertEqual([], prop.values)
+        helpers.handle_property_import(prop)
+        self.assertEqual(1, len(prop.values))
+        self.assertEqual([odml.dtypes.default_values("string")], prop.values)
+
+        # Test empty property with dtype imported with one appropriate default value
+        prop_dtype = odml.Property(name="dtype test", dtype="int")
+        self.assertEqual([], prop_dtype.values)
+        helpers.handle_property_import(prop_dtype)
+        self.assertEqual(1, len(prop_dtype.values))
+        self.assertEqual([odml.dtypes.default_values("int")], prop_dtype.values)
+
+        vals = [1.0, 2.0, 3.0]
+        prop_val = odml.Property(name="value test", values=vals)
+        helpers.handle_property_import(prop_val)
+        self.assertEqual(vals, prop_val.values)
+        self.assertEqual("float", prop_val.dtype)

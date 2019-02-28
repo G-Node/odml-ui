@@ -1,3 +1,7 @@
+"""
+The 'info_bar' module provides a class for the app specific message bar.
+"""
+
 import pygtkcompat
 import glib
 import gtk
@@ -7,6 +11,11 @@ pygtkcompat.enable_gtk(version='3.0')
 
 
 class EditorInfoBar(gtk.InfoBar):
+    """
+    EditorInfoBar is the main feedback object for messages
+    to the user. It can either be manually hidden or
+    will hide automatically after a specific amount of time.
+    """
     default_timeout = 10
 
     def __init__(self, *args, **kargs):
@@ -27,6 +36,15 @@ class EditorInfoBar(gtk.InfoBar):
             self.hide()
 
     def show_info(self, text):
+        """
+        Display a provided text message. The InfoBar is
+        automatically hidden after a specific amount of time.
+        This time window depends on the length of the text,
+        but has a minimum of seconds defined by the classes
+        *default_timeout*.
+
+        :param text: Message to be displayed in the InfoBar.
+        """
         self._msg_label.set_text(text)
         self.set_message_type(gtk.MESSAGE_INFO)
         self.show()

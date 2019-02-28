@@ -31,7 +31,7 @@ class EditorInfoBar(gtk.InfoBar):
         time_delay = max(int(3.0 * len(text) / 60), 1)
         self._add_timer(time_delay)
 
-    def _add_timer(self, seconds=3):
+    def _add_timer(self, seconds=20):
         self._timerid = glib.timeout_add_seconds(seconds, self._on_timer)
 
     def _on_timer(self):

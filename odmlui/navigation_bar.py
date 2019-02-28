@@ -46,7 +46,7 @@ class NavigationBar(gtk.Label):
         self.update_display()
         self.on_selection_change(obj)
 
-    def switch(self, widget, path):
+    def switch(self, _, path):
         """called if a link in the property_status Label widget is clicked"""
         if path:
             path = [int(i) for i in path.split(":")]
@@ -107,7 +107,7 @@ class NavigationBar(gtk.Label):
             return
 
         if context.action == "set" and context.post_change:
-            name, val = context.val
+            name, _ = context.val
             if name != "name":
                 return
 

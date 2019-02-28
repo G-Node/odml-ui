@@ -17,11 +17,12 @@ class EditorInfoBar(gtk.InfoBar):
         self.connect("response", self._on_response)
         self._timerid = 0
 
-    def _on_response(self, obj, response_id):
-        if self._timerid > 0:
-            glib.source_remove(self._timerid)
-            self._timerid = 0
-        self.hide()
+    def _on_response(self, widget, response_id):
+        if self == widget and response_id == gtk.RESPONSE_OK:
+            if self._timerid > 0:
+                glib.source_remove(self._timerid)
+                self._timerid = 0
+            self.hide()
 
     def show_info(self, text):
         self._msg_label.set_text(text)

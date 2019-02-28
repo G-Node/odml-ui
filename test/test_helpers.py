@@ -5,7 +5,10 @@ Tests for odmlui.helpers functions.
 import os
 import unittest
 
+import odml
+
 from odmlui import helpers
+from odmlui.treemodel.value_model import Value as PseudoValue
 
 
 class TestHelpers(unittest.TestCase):
@@ -53,3 +56,25 @@ class TestHelpers(unittest.TestCase):
 
         default_type = ""
         self.assertEqual("XML", helpers.get_parser_for_file_type(default_type))
+
+    def test_create_pseudo_values(self):
+        # Test create empty pseudo value
+        prop_empty = odml.Property()
+        self.assertFalse(hasattr(prop_empty, "pseudo_values"))
+        helpers.create_pseudo_values([prop_empty])
+        self.assertTrue(hasattr(prop_empty, "pseudo_values"))
+        self.assertEqual([], prop_empty.pseudo_values)
+
+        # Test create pseudo values
+        single = [1]
+        multiple = ["a", "b", "c"]
+        prop_single = odml.Property(name="single", value=single)
+        prop_multiple = odml.Property(name="multiple", value=multiple)
+
+        helpers.create_pseudo_values([prop_single, prop_multiple])
+        self.assertIsInstance(prop_single.pseudo_values[0], PseudoValue)
+        self.assertEqual(prop_single.pseudo_values[0].value, prop_single.values[0])
+
+        self.assertEqual(len(prop_multiple.pseudo_values), len(multiple))
+        self.assertIsInstance(prop_multiple.pseudo_values[1], PseudoValue)
+        self.assertEqual(prop_multiple.pseudo_values[1].value, prop_multiple.values[1])

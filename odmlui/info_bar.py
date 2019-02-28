@@ -29,11 +29,11 @@ class EditorInfoBar(gtk.InfoBar):
         self.set_message_type(gtk.MESSAGE_INFO)
         self.show()
         time_delay = max(int(3.0 * len(text) / 60), 1)
-        self.add_timer(time_delay)
+        self._add_timer(time_delay)
 
-    def add_timer(self, seconds=3):
-        self._timerid = glib.timeout_add_seconds(seconds, self.on_timer)
+    def _add_timer(self, seconds=3):
+        self._timerid = glib.timeout_add_seconds(seconds, self._on_timer)
 
-    def on_timer(self):
+    def _on_timer(self):
         self.hide()
         self._timerid = 0

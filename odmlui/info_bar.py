@@ -7,6 +7,8 @@ pygtkcompat.enable_gtk(version='3.0')
 
 
 class EditorInfoBar(gtk.InfoBar):
+    default_timeout = 10
+
     def __init__(self, *args, **kargs):
         gtk.InfoBar.__init__(self, *args, **kargs)
         self._msg_label = gtk.Label(label="")
@@ -28,10 +30,10 @@ class EditorInfoBar(gtk.InfoBar):
         self._msg_label.set_text(text)
         self.set_message_type(gtk.MESSAGE_INFO)
         self.show()
-        time_delay = max(int(3.0 * len(text) / 60), 1)
+        time_delay = max(int(3.0 * len(text) / 60), self.default_timeout)
         self._add_timer(time_delay)
 
-    def _add_timer(self, seconds=20):
+    def _add_timer(self, seconds=default_timeout):
         self._timerid = glib.timeout_add_seconds(seconds, self._on_timer)
 
     def _on_timer(self):

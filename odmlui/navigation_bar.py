@@ -12,6 +12,9 @@ class NavigationBar(gtk.Label):
     def __init__(self, *args, **kargs):
         super(NavigationBar, self).__init__(*args, **kargs)
         self._document = None
+        self._current_object = None
+        self._current_hierarchy = []
+
         self.show()
         self.set_use_markup(True)
         self.set_justify(gtk.JUSTIFY_RIGHT)

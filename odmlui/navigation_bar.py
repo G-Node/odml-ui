@@ -2,8 +2,6 @@ import pygtkcompat
 
 import gtk
 
-import odmlui
-
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
@@ -98,10 +96,6 @@ class NavigationBar(gtk.Label):
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh correspondingly
         """
-
-        if odmlui.DEBUG:
-            print("change event(document): ", context)
-
         # we are only interested in changes on sections
         if context.cur is not self._document:
             return

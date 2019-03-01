@@ -146,6 +146,24 @@ class TestNavigationBar(unittest.TestCase):
         self.assertEqual(other_doc, self.nav_bar._current_hierarchy[0])
         self.assertEqual(other_doc, self.nav_bar._current_object)
 
+    def test_switch(self):
+        doc = self.create_ui_doc()
+        self.nav_bar.document = doc
+
+        self.assertEqual(self.nav_bar.current_object, doc)
+
+        prop = doc.sections[0].properties[0]
+
+        self.nav_bar.emit("activate-link", "0:1:0")
+        self.assertEqual(self.nav_bar.current_object, prop)
+
+        sec = doc.sections[0]
+        self.nav_bar.emit("activate-link", "0")
+        self.assertEqual(self.nav_bar.current_object, sec)
+
+        self.nav_bar.emit("activate-link", "")
+        self.assertEqual(self.nav_bar.current_object, doc)
+
     @staticmethod
     def create_ui_doc(author=""):
         doc = odml.Document(author=author)

@@ -12,3 +12,8 @@ class TestNavigationBar(unittest.TestCase):
     def setUp(self):
         self.nav_bar = NavigationBar()
 
+    def test_init(self):
+        self.assertIsNone(self.nav_bar._document)
+        self.assertIsNone(self.nav_bar._current_object)
+        self.assertEqual([], self.nav_bar._current_hierarchy)
+

@@ -1,3 +1,7 @@
+"""
+The 'helpers' module provides various helper functions.
+"""
+
 import json
 import os
 import subprocess
@@ -19,7 +23,8 @@ except ImportError:  # Python 2
 
 def uri_to_path(uri):
     """
-    uri_to_path parses a uri into a OS specific file path.
+    *uri_to_path* parses a uri into a OS specific file path.
+
     :param uri: string containing a uri.
     :return: OS specific file path.
     """
@@ -33,21 +38,20 @@ def uri_to_path(uri):
     return file_path
 
 
-def uri_exists(uri):
-    file_path = uri_to_path(uri)
-    if os.path.isfile(file_path):
-        return True
-
-    return False
-
-
 def path_to_uri(path):
+    """
+    Converts a passed *path* to a URI GTK can handle and returns it.
+    """
     uri = pathname2url(path)
     uri = urljoin('file:', uri)
     return uri
 
 
 def get_extension(path):
+    """
+    Returns the upper case file extension of a file
+    referenced by a passed *path*.
+    """
     ext = os.path.splitext(path)[1][1:]
     ext = ext.upper()
     return ext
@@ -55,8 +59,8 @@ def get_extension(path):
 
 def get_parser_for_uri(uri):
     """
-        Sanitize the given path, and also return the
-        odML parser to be used for the given path.
+    Sanitize the given path, and also return the
+    odML parser to be used for the given path.
     """
     path = uri_to_path(uri)
     parser = get_extension(path)
@@ -75,7 +79,7 @@ def get_parser_for_file_type(file_type):
     Returns either the identified parser or XML as the fallback parser.
     """
     parser = file_type.upper()
-    if file_type not in SUPPORTED_PARSERS:
+    if parser not in SUPPORTED_PARSERS:
         parser = 'XML'
     return parser
 
@@ -113,6 +117,11 @@ def handle_property_import(prop):
 
 
 def create_pseudo_values(odml_properties):
+    """
+    Creates a treemodel.Value for each value in an
+    odML Property and appends the resulting list
+    as *pseudo_values* to the passed odML Property.
+    """
     for prop in odml_properties:
         values = prop.values
         new_values = []
@@ -128,23 +137,30 @@ def get_conda_root():
 
     :return: Either the root of an active Anaconda environment or an empty string.
     """
-    root_path = ""
-    try:
-        # Try identifying conda the easy way
-        if "CONDA_PREFIX" in os.environ:
-            return os.environ["CONDA_PREFIX"]
+    # Try identifying conda the easy way
+    if "CONDA_PREFIX" in os.environ:
+        return os.environ["CONDA_PREFIX"]
 
-        # Try identifying conda the hard way
+    # Try identifying conda the hard way
+    try:
         conda_json = subprocess.check_output("conda info --json",
                                              shell=True, stderr=subprocess.PIPE)
-        if sys.version_info.major > 2:
-            conda_json = conda_json.decode("utf-8")
-        dec = json.JSONDecoder()
+    except subprocess.CalledProcessError as exc:
+        print("[Info] Conda check: %s" % exc)
+        return ""
+
+    if sys.version_info.major > 2:
+        conda_json = conda_json.decode("utf-8")
+
+    dec = json.JSONDecoder()
+    try:
         root_path = dec.decode(conda_json)['default_prefix']
-        if sys.version_info.major < 3:
-            root_path = str(root_path)
-    except Exception as ex:
-        print("[Info] Conda check: %s" % ex)
+    except ValueError as exc:
+        print("[Info] Conda check: %s" % exc)
+        return ""
+
+    if sys.version_info.major < 3:
+        root_path = str(root_path)
 
     return root_path
 

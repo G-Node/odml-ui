@@ -2,8 +2,6 @@ import pygtkcompat
 
 import gtk
 
-import odmlui
-
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
@@ -12,6 +10,9 @@ class NavigationBar(gtk.Label):
     def __init__(self, *args, **kargs):
         super(NavigationBar, self).__init__(*args, **kargs)
         self._document = None
+        self._current_object = None
+        self._current_hierarchy = []
+
         self.show()
         self.set_use_markup(True)
         self.set_justify(gtk.JUSTIFY_RIGHT)
@@ -43,7 +44,7 @@ class NavigationBar(gtk.Label):
         self.update_display()
         self.on_selection_change(obj)
 
-    def switch(self, widget, path):
+    def switch(self, _, path):
         """called if a link in the property_status Label widget is clicked"""
         if path:
             path = [int(i) for i in path.split(":")]
@@ -95,16 +96,16 @@ class NavigationBar(gtk.Label):
         this is called by the Eventable modified MixIns of Value/Property/Section
         and causes the GUI to refresh correspondingly
         """
-
-        if odmlui.DEBUG:
-            print("change event(document): ", context)
-
         # we are only interested in changes on sections
         if context.cur is not self._document:
             return
 
-        if context.action == "set" and context.post_change:
-            name, val = context.val
+        # Handle only post change events
+        if not context.post_change:
+            return
+
+        if context.action == "set":
+            name, _ = context.val
             if name != "name":
                 return
 
@@ -112,7 +113,7 @@ class NavigationBar(gtk.Label):
                 if context.obj is obj:
                     self.update_display()
 
-        if context.action == "remove" and context.post_change:
+        if context.action == "remove":
             # an object is removed, two reasons possible:
             # a) move (an append-action will take care of everything later,
             #    however we don't know yet)
@@ -123,8 +124,7 @@ class NavigationBar(gtk.Label):
                     # set the view to the parent
                     self.set_model(context.obj)
 
-        if (context.action == "append" or context.action == "insert") and \
-                context.post_change:
+        if context.action in ["append", "insert"]:
             if self.possible_move is None:
                 return
             obj, cur = self.possible_move

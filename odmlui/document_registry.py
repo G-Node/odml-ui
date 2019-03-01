@@ -1,3 +1,8 @@
+"""
+Provides a document registry to enable working on
+multiple documents in the same application.
+"""
+
 import weakref
 
 
@@ -18,20 +23,21 @@ class DocumentRegistry(object):
 
     def add(self, doc):
         """
-        add a document to the registry and return its unique id
+        Add a document to the registry and return its hash as id.
         """
-        # odML.Document is unhashable. Converting to string before hashing
         doc_id = hash(doc)
         self.docs[doc_id] = doc
         return doc_id
 
     def get(self, doc_id):
         """
-        return a document from the registry based on its unique id
+        Return a document from the registry based on its unique id.
         """
         return self.docs[doc_id]
 
     @staticmethod
     def get_id(doc):
-        # odML.Document is unhashable. Converting to string before hashing.
+        """
+        Return the hash of a document.
+        """
         return hash(doc)

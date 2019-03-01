@@ -1106,7 +1106,7 @@ class EditorWindow(gtk.Window):
         # to avoid Model and View being out of sync.
         self._property_tv.reset_value_view(None)
 
-    def command_error(self, cmd, error):
+    def command_error(self, error):
         self._info_bar.show_info("Editing failed: %s" % error)
 
     def execute(self, cmd):

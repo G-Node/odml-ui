@@ -85,6 +85,28 @@ class TestNavigationBar(unittest.TestCase):
                  "<a href=\"0:1:0\"><b>prop</b></a> "
         self.assertEqual(self.nav_bar.get_label(), wanted)
 
+    def test_set_model(self):
+        self.assertIsNone(self.nav_bar.current_object)
+        self.assertEqual(self.nav_bar.get_label(), "")
+
+        doc = self.create_ui_doc()
+        self.nav_bar.set_model(doc)
+
+        self.assertEqual(doc, self.nav_bar.current_object)
+        self.assertEqual([doc], self.nav_bar._current_hierarchy)
+        self.assertEqual(self.nav_bar.get_label(),
+                         "Attributes | <a href=\"\"><b>Document</b></a> ")
+
+        sec = doc.sections[0]
+        prop = doc.sections[0].properties[0]
+        self.nav_bar.set_model(prop)
+        self.assertEqual(prop, self.nav_bar.current_object)
+        self.assertEqual([prop, sec, doc], self.nav_bar._current_hierarchy)
+        wanted = "Attributes | <a href=\"\">Document</a>: " + \
+                 "<a href=\"0\">sec</a>: " + \
+                 "<a href=\"0:1:0\"><b>prop</b></a> "
+        self.assertEqual(self.nav_bar.get_label(), wanted)
+
     def test_document(self):
         self.assertIsNone(self.nav_bar.document)
 

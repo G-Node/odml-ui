@@ -17,12 +17,46 @@ from odmlui.navigation_bar import NavigationBar
 class TestNavigationBar(unittest.TestCase):
 
     def setUp(self):
+        self.nav_bar = None
         self.nav_bar = NavigationBar()
 
     def test_init(self):
         self.assertIsNone(self.nav_bar._document)
         self.assertIsNone(self.nav_bar._current_object)
         self.assertEqual([], self.nav_bar._current_hierarchy)
+
+    def test_update_display(self):
+        self.assertEqual("", self.nav_bar.get_label())
+
+        self.nav_bar.update_display()
+        self.assertEqual("Attributes |  ", self.nav_bar.get_label())
+
+        # manually set selected objects and object hierarchy
+        # to simulate test case.
+        doc = self.create_ui_doc()
+
+        # test document root selected
+        self.nav_bar._current_object = doc
+        self.nav_bar._current_hierarchy = [doc]
+        self.assertEqual("Attributes |  ", self.nav_bar.get_label())
+
+        self.nav_bar.update_display()
+        self.assertEqual(self.nav_bar.get_label(),
+                         "Attributes | <a href=\"\"><b>Document</b></a> ")
+
+        # test property selected
+        sec = doc.sections[0]
+        prop = doc.sections[0].properties[0]
+        self.nav_bar._current_object = prop
+        self.nav_bar._current_hierarchy = [prop, sec, doc]
+
+        self.nav_bar.update_display()
+
+        wanted = "Attributes | <a href=\"\">Document</a>: " + \
+                 "<a href=\"0\">sec</a>: " + \
+                 "<a href=\"0:1:0\"><b>prop</b></a> "
+
+        self.assertEqual(self.nav_bar.get_label(), wanted)
 
     def test_document(self):
         self.assertIsNone(self.nav_bar.document)

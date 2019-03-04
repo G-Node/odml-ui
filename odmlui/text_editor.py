@@ -28,6 +28,7 @@ class TextEditor(gtk.Window):
     def on_close(self, _):
         text_buffer = self.text.get_buffer()
         start, end = text_buffer.get_bounds()
-        text = text_buffer.get_text(start, end)
+        include_hidden_text = False
+        text = text_buffer.get_text(start, end, include_hidden_text)
         cmd = ChangeValue(object=self.obj, attr=self.attr, new_value=text)
         cmd()

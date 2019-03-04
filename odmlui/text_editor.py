@@ -22,8 +22,8 @@ class TextEditor(gtk.Window):
             attr = "pseudo_values"
 
         self.attr = attr
-        self.set_title("Editing %s.%s" % (repr(obj), attr))
-        self.set_default_size(400, 600)
+        self.set_title("Editing %s. Closing window saves changes" % repr(obj))
+        self.set_default_size(600, 600)
         self.connect('destroy', self.on_close)
 
         self.text = gtk.TextView()

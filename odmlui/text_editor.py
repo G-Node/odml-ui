@@ -2,6 +2,7 @@ import pygtkcompat
 
 import gtk
 
+from .commands import ChangeValue
 from .scrolled_window import ScrolledWindow
 
 pygtkcompat.enable()
@@ -18,19 +19,15 @@ class TextEditor(gtk.Window):
         self.connect('destroy', self.on_close)
 
         self.text = gtk.TextView()
-        buffer = self.text.get_buffer()
-        buffer.set_text(getattr(obj, attr))
+        text_buffer = self.text.get_buffer()
+        text_buffer.set_text(getattr(obj, attr))
 
         self.add(ScrolledWindow(self.text))
         self.show_all()
 
-    def on_close(self, window):
-        from . import commands
-        buffer = self.text.get_buffer()
-        start, end = buffer.get_bounds()
-        text = buffer.get_text(start, end)
-        cmd = commands.ChangeValue(object=self.obj, attr=self.attr, new_value=text)
-        self.execute(cmd)
-
-    def execute(self, cmd):
+    def on_close(self, _):
+        text_buffer = self.text.get_buffer()
+        start, end = text_buffer.get_bounds()
+        text = text_buffer.get_text(start, end)
+        cmd = ChangeValue(object=self.obj, attr=self.attr, new_value=text)
         cmd()

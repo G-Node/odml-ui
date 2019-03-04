@@ -13,6 +13,13 @@ class TextEditor(gtk.Window):
     def __init__(self, obj, attr):
         super(TextEditor, self).__init__()
         self.obj = obj
+
+        # The 'value' attribute of the Values Class
+        # can only be set via the 'pseudo_values' attribute.
+        # We need to account for this particularity.
+        if attr == "value":
+            attr = "pseudo_values"
+
         self.attr = attr
         self.set_title("Editing %s.%s" % (repr(obj), attr))
         self.set_default_size(400, 600)

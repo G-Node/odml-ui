@@ -58,7 +58,7 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
         self._index = index
 
     def __repr__(self):
-        return "PseudoValue <%s>" % str(self.pseudo_values)
+        return "PseudoValue <%s>" % self.get_display()
 
     def __eq__(self, obj):
         """

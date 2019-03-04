@@ -4,6 +4,7 @@ import gtk
 
 from .commands import ChangeValue
 from .scrolled_window import ScrolledWindow
+from .treemodel.value_model import Value
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
@@ -17,7 +18,7 @@ class TextEditor(gtk.Window):
         # The 'value' attribute of the Values Class
         # can only be set via the 'pseudo_values' attribute.
         # We need to account for this particularity.
-        if attr == "value":
+        if isinstance(obj, Value) and attr == "value":
             attr = "pseudo_values"
 
         self.attr = attr

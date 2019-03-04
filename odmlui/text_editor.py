@@ -1,3 +1,7 @@
+"""
+'text_editor' provides a simple TextEditor Window class.
+"""
+
 import pygtkcompat
 
 import gtk
@@ -11,6 +15,12 @@ pygtkcompat.enable_gtk(version='3.0')
 
 
 class TextEditor(gtk.Window):
+    """
+    TextEditor is a simple text editor window that
+    reads the value of a passed objects attribute
+    and overwrites this attributes value with the content
+    of the editor when the window is closed.
+    """
     def __init__(self, obj, attr):
         super(TextEditor, self).__init__()
         self.obj = obj
@@ -34,6 +44,11 @@ class TextEditor(gtk.Window):
         self.show_all()
 
     def on_close(self, _):
+        """
+        Reads the text buffer value, and updates
+        the target object with the new value via
+        a command.ChangeValue object.
+        """
         text_buffer = self.text.get_buffer()
         start, end = text_buffer.get_bounds()
         include_hidden_text = False

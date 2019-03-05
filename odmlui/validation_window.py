@@ -98,6 +98,3 @@ class ValidationWindow(gtk.Window):
     def on_close(self, window, data=None):
         ValidationWindow.width, ValidationWindow.height = self.get_size()
         self.tab.remove_validation()
-
-    def execute(self, cmd):
-        cmd()

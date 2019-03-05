@@ -70,8 +70,6 @@ class ValidationView(TreeView):
 class ValidationWindow(gtk.Window):
     max_height = 768
     max_width = 1024
-    height = max_height
-    width = max_width
 
     def __init__(self, tab):
         super(ValidationWindow, self).__init__()
@@ -86,14 +84,14 @@ class ValidationWindow(gtk.Window):
 
         tree_view = self.curr_view.get_tree_view()
         self.add(ScrolledWindow(tree_view))
-        # required for updated size in 'treeview.size_request()'
+
+        # required for updated size in 'tree_view.size_request()'
         tree_view.check_resize()
-
         width, height = tree_view.size_request()
-        width = min(width + 10, max(self.width, self.max_width))
-        height = min(height + 10, max(self.height, self.max_height))
+        width = min(width + 10, self.max_width)
+        height = min(height + 10, self.max_height)
 
-        self.set_default_size(width, height)
+        self.resize(width, height)
 
         self.show_all()
 

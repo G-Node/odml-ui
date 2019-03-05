@@ -55,3 +55,24 @@ class TextEditor(gtk.Window):
         text = text_buffer.get_text(start, end, include_hidden_text)
         cmd = ChangeValue(object=self.obj, attr=self.attr, new_value=text)
         cmd()
+
+    def on_cancel(self, _):
+        """
+        Close widget w/o doing anything
+        """
+        self.destroy()
+
+    def on_ok(self, _):
+        """
+        Reads the text buffer value, and updates
+        the target object with the new value via
+        a command.ChangeValue object.
+        """
+        text_buffer = self.text.get_buffer()
+        start, end = text_buffer.get_bounds()
+        include_hidden_text = False
+        text = text_buffer.get_text(start, end, include_hidden_text)
+        cmd = ChangeValue(object=self.obj, attr=self.attr, new_value=text)
+        cmd()
+
+        self.destroy()

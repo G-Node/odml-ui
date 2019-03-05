@@ -5,8 +5,16 @@ until the next release.
 
 # Latest changes in master
 
+## Features
+- The TextEditor for editing values of dtype `text` now features
+  'Save' and 'Cancel' buttons.
+
 ## Fixes
 - Fixes saving and loading of files using Windows.
+- Fixes a bug in `helpers.get_parser_for_file_type` 
+  where the file_type would default to `XML` by mistake.
+- Various TextEditor bug fixes. See #146
+
 
 # Version 1.4.2
 

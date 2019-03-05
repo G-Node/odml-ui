@@ -58,7 +58,7 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
         self._index = index
 
     def __repr__(self):
-        return "PseudoValue <%s>" % str(self.pseudo_values)
+        return "PseudoValue <%s>" % self.get_display()
 
     def __eq__(self, obj):
         """
@@ -135,7 +135,7 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
         """
         return a textual representation that can be used for display
 
-        typically takes the first line (max *max_length* chars) and adds '…'
+        typically takes the first line (max *max_length* chars) and adds '[...]'
         """
         text = str(self.pseudo_values)
 
@@ -148,8 +148,9 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
         text = text.split("\n")[0]
         if max_length != -1:
             text = text[:max_length]
+
         if self.can_display(text, max_length):
-            return (text + u'…').encode('utf-8')
+            return "%s [...]" % text
 
         return "(%d bytes)" % len(self._value)
 

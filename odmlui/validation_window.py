@@ -24,8 +24,10 @@ class ValidationView(TreeView):
 
         super(ValidationView, self).__init__(self._store)
 
-        for i, name in ((COL_PATH, "Path"), (COL_DESC, "Description")):
-            self.add_column(name=name, data=i, col_id=i)
+        self.errors = []
+
+        self.add_column(name="Path", data=COL_PATH, col_id=COL_PATH)
+        self.add_column(name="Description", data=COL_DESC, col_id=COL_DESC)
 
         curr_view = self._treeview
         curr_view.show()
@@ -95,6 +97,6 @@ class ValidationWindow(gtk.Window):
 
         self.show_all()
 
-    def on_close(self, window, data=None):
+    def on_close(self, widget, _):
         ValidationWindow.width, ValidationWindow.height = self.get_size()
         self.tab.remove_validation()

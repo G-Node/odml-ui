@@ -54,12 +54,15 @@ class ValidationView(TreeView):
         """
         select the corresponding object in the editor upon a selection change
         """
-        (model, tree_iter) = tree_selection.get_selected()
+        (_, tree_iter) = tree_selection.get_selected()
         index = self._store.get_value(tree_iter, COL_INDEX)
         self.on_select_object(self.errors[index].obj)
 
     def on_select_object(self, obj):
         raise NotImplementedError
+
+    def get_tree_view(self):
+        return self._treeview
 
 
 class ValidationWindow(gtk.Window):
@@ -79,12 +82,15 @@ class ValidationWindow(gtk.Window):
         self.curr_view.on_select_object = tab.window.navigate
         self.curr_view.set_errors(tab.document.validation_result.errors)
 
-        self.add(ScrolledWindow(self.curr_view._treeview))
+        tree_view = self.curr_view.get_tree_view()
+        self.add(ScrolledWindow(tree_view))
         # required for updated size in 'treeview.size_request()'
-        self.curr_view._treeview.check_resize()
-        width, height = self.curr_view._treeview.size_request()
+        tree_view.check_resize()
+
+        width, height = tree_view.size_request()
         width = min(width + 10, max(self.width, self.max_width))
         height = min(height + 10, max(self.height, self.max_height))
+
         self.set_default_size(width, height)
 
         self.show_all()

@@ -276,8 +276,3 @@ class DocumentWizard:
         Placeholder that is overridden by an actual implementation
         """
         raise NotImplementedError
-
-
-if __name__ == "__main__":
-    DocumentWizard()
-    gtk.main()

@@ -23,7 +23,10 @@ class Table(object):
         self.cols = cols
         self.rows = 0
 
-    def append(self, fill=[], *cols):
+    def append(self, fill=None, *cols):
+        if fill is None:
+            fill = []
+
         self.table.resize(rows=self.rows+1, columns=self.cols)
         for i, widget in enumerate(cols):
             xoptions = gtk.EXPAND | gtk.FILL if widget in fill else 0

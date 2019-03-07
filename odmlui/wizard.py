@@ -121,6 +121,10 @@ class CheckableSectionView(SectionView):
         self._treeview.set_expander_column(self._treeview.get_column(1))
         self.sections = {}
 
+    @property
+    def tree_view(self):
+        return self._treeview
+
     def celldatamethod(self, column, cell, model, sec_iter, _):
         """
         custom method to set the active state for the CellRenderer
@@ -163,7 +167,7 @@ class SectionPage(Page):
     def __init__(self, *args, **kargs):
         super(SectionPage, self).__init__(*args, **kargs)
         self.view = CheckableSectionView(None)
-        self.pack_start(ScrolledWindow(self.view._treeview), True, True, 0)
+        self.pack_start(ScrolledWindow(self.view.tree_view), True, True, 0)
         self.term = None
 
     def prepare(self, assistant, prev_page):

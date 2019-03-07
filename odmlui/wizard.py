@@ -9,7 +9,7 @@ import odml.terminology as terminology
 
 import gtk
 
-from .helpers import handle_property_import
+from .helpers import handle_property_import, get_username
 from .treemodel.section_model import SectionModel
 from .section_view import SectionView
 from .scrolled_window import ScrolledWindow
@@ -62,17 +62,6 @@ class Page(gtk.VBox):
         called to finish processing the page and allow it to collect all entered data
         """
         pass
-
-
-def get_username():
-    import getpass
-    username = getpass.getuser()
-    try:  # this only works on linux
-        import pwd
-        username = pwd.getpwnam(username).pw_gecos
-    except ImportError:
-        pass
-    return username.rstrip(",")
 
 
 class DataPage(Page):

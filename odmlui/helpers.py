@@ -188,3 +188,14 @@ def run_odmltables(file_uri, save_dir, odml_doc, odmltables_wizard):
         subprocess.Popen(['odmltables', '-w', odmltables_wizard, '-f', tmp_file])
     except Exception as exc:
         print("[Warning] Error running odml-tables: %s" % exc)
+
+
+def get_username():
+    import getpass
+    username = getpass.getuser()
+    try:  # this only works on linux
+        import pwd
+        username = pwd.getpwnam(username).pw_gecos
+    except ImportError:
+        pass
+    return username.rstrip(",")

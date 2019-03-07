@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from collections import OrderedDict
 
 import pygtkcompat
@@ -88,11 +87,13 @@ class DataPage(Page):
         align = gtk.Alignment(0.5, 0.5, xscale=1.0)
         self.add(align)
 
+        self.data = {}
+
         fields = OrderedDict()
-        fields['Author'] = get_username()
-        fields['Date'] = get_date()
-        fields['Version'] = '1.0'
-        fields['Repository'] = terminology.REPOSITORY
+        fields["Author"] = get_username()
+        fields["Date"] = get_date()
+        fields["Version"] = "1.0"
+        fields["Repository"] = terminology.REPOSITORY
         self.fields = fields
 
         # add a label and an entry box for each field
@@ -103,9 +104,10 @@ class DataPage(Page):
             entry.set_text(val)
             setattr(self, key.lower(), entry)
             self.table.append([entry], label, entry)
+
         align.add(self.table.table)
         # already load the data in background
-        terminology.terminologies.deferred_load(fields['Repository'])
+        terminology.terminologies.deferred_load(fields["Repository"])
 
     def finalize(self):
         """read the data from the corresponding labels"""
@@ -133,19 +135,19 @@ class CheckableSectionView(SectionView):
         self._treeview.set_expander_column(self._treeview.get_column(1))
         self.sections = {}
 
-    def celldatamethod(self, column, cell, model, iter, data=None):
+    def celldatamethod(self, column, cell, model, sec_iter, _):
         """
         custom method to set the active state for the CellRenderer
         """
-        sec = model.get_object(iter)
+        sec = model.get_object(sec_iter)
         cell.set_active(self.sections.get(sec, False))
 
     def toggled(self, renderer, path):
         active = not renderer.get_active()
 
         model = self._treeview.get_model()
-        iter = model.get_iter(path)
-        obj = model.get_object(iter)
+        path_iter = model.get_iter(path)
+        obj = model.get_object(path_iter)
 
         # Checking a section, includes/excludes all subsections by default
         for sec in obj.itersections(recursive=True, yield_self=True):
@@ -176,11 +178,12 @@ class SectionPage(Page):
         super(SectionPage, self).__init__(*args, **kargs)
         self.view = CheckableSectionView(None)
         self.pack_start(ScrolledWindow(self.view._treeview), True, True, 0)
+        self.term = None
 
     def prepare(self, assistant, prev_page):
-        if "repository" in prev_page.data.keys() and \
-                        len(prev_page.data["repository"].strip()) > 0:
-            self.term = terminology.terminologies.load(prev_page.data['repository'])
+        data = prev_page.data
+        if "repository" in data.keys() and data["repository"].strip():
+            self.term = terminology.terminologies.load(data["repository"])
             self.view.set_model(SectionModel(self.term))
 
     @property
@@ -195,8 +198,9 @@ class SummaryPage(Page):
 
     def __init__(self, *args, **kargs):
         super(SummaryPage, self).__init__(*args, **kargs)
-        self.add(gtk.Label(label="All information has been gathered. "
-                                 "Ready to create document."))
+
+        msg = "All information has been gathered. Ready to create document."
+        self.add(gtk.Label(label=msg))
 
 
 class DocumentWizard:
@@ -221,7 +225,7 @@ class DocumentWizard:
 
         SummaryPage().deploy(assistant, "Complete")
 
-        assistant.connect('prepare', self.prepare)
+        assistant.connect("prepare", self.prepare)
         # third page loads the repository and offers which sections to import initially
         assistant.show_all()
 
@@ -243,7 +247,7 @@ class DocumentWizard:
         """
         raise NotImplementedError
 
-    def apply(self, assistant):
+    def apply(self, _):
         """
         the process is finished, create the desired document
         """
@@ -252,7 +256,7 @@ class DocumentWizard:
             setattr(doc, key, val)
 
         # copy all selected sections from the terminology
-        if hasattr(self.section_page, 'term') and self.section_page.term:
+        if hasattr(self.section_page, "term") and self.section_page.term:
             term = self.section_page.term
             # set the associated section
             term._assoc_sec = doc

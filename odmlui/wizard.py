@@ -41,13 +41,6 @@ class Page(gtk.VBox):
     def __init__(self, *args, **kargs):
         super(Page, self).__init__(*args, **kargs)
         self.set_border_width(5)
-        self.init()
-
-    def init(self, *args, **kargs):
-        """
-        called in the beginning to perform additional initialization
-        """
-        pass
 
     def deploy(self, assistant, title):
         page = assistant.append_page(self)
@@ -87,7 +80,9 @@ def get_date():
 
 
 class DataPage(Page):
-    def init(self):
+    def __init__(self, *args, **kargs):
+        super(DataPage, self).__init__(*args, **kargs)
+
         self.table = Table(cols=2)
         # put the data area in center, fill only horizontally
         align = gtk.Alignment(0.5, 0.5, xscale=1.0)
@@ -177,7 +172,8 @@ class CheckableSectionView(SectionView):
 
 
 class SectionPage(Page):
-    def init(self):
+    def __init__(self, *args, **kargs):
+        super(SectionPage, self).__init__(*args, **kargs)
         self.view = CheckableSectionView(None)
         self.pack_start(ScrolledWindow(self.view._treeview), True, True, 0)
 
@@ -197,7 +193,8 @@ class SectionPage(Page):
 class SummaryPage(Page):
     type = gtk.ASSISTANT_PAGE_CONFIRM
 
-    def init(self):
+    def __init__(self, *args, **kargs):
+        super(SummaryPage, self).__init__(*args, **kargs)
         self.add(gtk.Label(label="All information has been gathered. "
                                  "Ready to create document."))
 

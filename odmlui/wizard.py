@@ -22,7 +22,7 @@ class Table(object):
         self.cols = cols
         self.rows = 0
 
-    def append(self, fill=None, *cols):
+    def append(self, fill, *cols):
         if fill is None:
             fill = []
 

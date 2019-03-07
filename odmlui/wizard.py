@@ -1,3 +1,5 @@
+import datetime
+
 from collections import OrderedDict
 
 import pygtkcompat
@@ -73,11 +75,6 @@ def get_username():
     return username.rstrip(",")
 
 
-def get_date():
-    import datetime
-    return datetime.date.today().isoformat()
-
-
 class DataPage(Page):
     def __init__(self, *args, **kargs):
         super(DataPage, self).__init__(*args, **kargs)
@@ -91,7 +88,7 @@ class DataPage(Page):
 
         fields = OrderedDict()
         fields["Author"] = get_username()
-        fields["Date"] = get_date()
+        fields["Date"] = datetime.date.today().isoformat()
         fields["Version"] = "1.0"
         fields["Repository"] = terminology.REPOSITORY
         self.fields = fields

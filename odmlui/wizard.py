@@ -148,11 +148,14 @@ class CheckableSectionView(SectionView):
         model = self._treeview.get_model()
         iter = model.get_iter(path)
         obj = model.get_object(iter)
-        # checking a section, includes/excludes all subsections by default
+
+        # Checking a section, includes/excludes all subsections by default
         for sec in obj.itersections(recursive=True, yield_self=True):
             self.set_active(sec, active)
-        # if activating a section, all parent sections must be included too
-        if active:
+
+        # If activating a section, all parent sections must be included too
+        sec = obj
+        if active and hasattr(sec, "parent"):
             while sec.parent is not None:
                 sec = sec.parent
                 self.set_active(sec, active)

@@ -2,6 +2,7 @@
 The 'helpers' module provides various helper functions.
 """
 
+import getpass
 import json
 import os
 import subprocess
@@ -191,11 +192,18 @@ def run_odmltables(file_uri, save_dir, odml_doc, odmltables_wizard):
 
 
 def get_username():
-    import getpass
+    """
+    :return: Full name or username of the current user
+    """
     username = getpass.getuser()
-    try:  # this only works on linux
+
+    try:
+        # this only works on linux
         import pwd
-        username = pwd.getpwnam(username).pw_gecos
+        fullname = pwd.getpwnam(username).pw_gecos
+        if fullname:
+            username = fullname
     except ImportError:
         pass
+
     return username.rstrip(",")

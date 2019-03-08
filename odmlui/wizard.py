@@ -228,8 +228,18 @@ class SectionPage(Page):
     def __init__(self, *args, **kargs):
         super(SectionPage, self).__init__(*args, **kargs)
         self.view = CheckableSectionView(None)
-        self.pack_start(ScrolledWindow(self.view.tree_view), True, True, 0)
+
+        vbox = gtk.VBox()
+
+        message_lbl = gtk.Label()
+        vbox.pack_start(message_lbl, False, False, 5)
+
+        scroll_win = ScrolledWindow(self.view.tree_view)
+        vbox.add(scroll_win)
+
+        self.pack_start(vbox, True, True, 0)
         self.term = None
+        self.error = message_lbl
 
     def prepare(self, assistant, prev_page):
         """
@@ -239,11 +249,21 @@ class SectionPage(Page):
         :param assistant: *gtk.Assistant*
         :param prev_page: *DataPage* containing the terminology URL.
         """
+        reset = True
+        self.error.set_text("")
+
         data = prev_page.data
         if "repository" in data.keys() and data["repository"].strip():
-            self.term = terminology.terminologies.load(data["repository"])
-            self.view.set_model(SectionModel(self.term))
-        else:
+            try:
+                self.term = terminology.terminologies.load(data["repository"])
+                self.view.set_model(SectionModel(self.term))
+                reset = False
+            except AssertionError:
+                # Handle terminology loading error
+                self.error.set_text("Could not load terminology '%s'" %
+                                    data["repository"])
+
+        if reset:
             # Reset view on empty terminology repository
             self.term = None
             self.view.set_model(None)

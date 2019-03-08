@@ -243,6 +243,10 @@ class SectionPage(Page):
         if "repository" in data.keys() and data["repository"].strip():
             self.term = terminology.terminologies.load(data["repository"])
             self.view.set_model(SectionModel(self.term))
+        else:
+            # Reset view on empty terminology repository
+            self.term = None
+            self.view.set_model(None)
 
     @property
     def sections(self):

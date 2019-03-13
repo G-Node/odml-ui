@@ -1091,7 +1091,11 @@ class EditorWindow(gtk.Window):
     @gui_action("Undo", tooltip="Undo last editing action", stock_id=gtk.STOCK_UNDO,
                 label="_Undo", accelerator="<control>Z")
     def undo(self, action):
-        self.current_tab.command_manager.undo()
+        try:
+            self.current_tab.command_manager.undo()
+        except Exception as exc:
+            self._info_bar.show_info("Unable to undo last action")
+            print("Encountered and exception during undo: %s:%s" % (type(exc), exc))
 
         # Reset model and view in case a value has been tampered with
         # to avoid Model and View being out of sync.

@@ -31,8 +31,8 @@ class TreeView(object):
         # and also, it messes up with the display of properties in the "Property
         # View". Hence, disabling this temporarily.
         # if self.on_get_tooltip is not None:
-        #     tv.connect('query-tooltip', self.on_query_tooltip)
-        #     tv.props.has_tooltip = True
+        #    curr_view.connect('query-tooltip', self.on_query_tooltip)
+        #    curr_view.props.has_tooltip = True
 
         curr_view.set_headers_visible(True)
         curr_view.set_rules_hint(True)
@@ -114,7 +114,7 @@ class TreeView(object):
             if model is None:
                 return
             value = model.get(iter, 0)
-            if self.on_get_tooltip(model, path, iter, tooltip) is not None:
+            if self.on_get_tooltip(model, iter, tooltip):
                 widget.set_tooltip_row(tooltip, path)
                 return True
         return False

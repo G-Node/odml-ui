@@ -126,17 +126,26 @@ class PropertyView(TerminologyPopupTreeView):
         """called when a different property is selected"""
         pass
 
-    def on_get_tooltip(self, model, _, tree_iter, tooltip):
+    @staticmethod
+    def on_get_tooltip(model, tree_iter, tooltip):
         """
-        set the tooltip text, if the gui queries for it
+        If the GUI is queried for a tooltip on a Property,
+        set any existing validation errors as tooltip text.
+
+        This method is currently inactivated in TreeView.init
+        until the pseudo_value display can be resolved.
+
+        :return: True if the tooltip text is set, False otherwise
         """
         obj = model.get_object(tree_iter)
         doc = obj.document
         if doc and hasattr(doc, "validation_result"):
             errors = doc.validation_result[obj]
-            if len(errors) > 0:
+            if errors:
                 tooltip.set_text("\n".join([e.msg for e in errors]))
                 return True
+
+        return False
 
     def on_object_edit(self, tree_iter, column_name, new_text):
         """

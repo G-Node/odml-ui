@@ -139,11 +139,19 @@ class SectionView(TerminologyPopupTreeView):
         """
         pass
 
-    def on_get_tooltip(self, model, path, iter, tooltip):
+    @staticmethod
+    def on_get_tooltip(model, tree_iter, tooltip):
         """
-        set the tooltip text, if the gui queries for it
+        If the GUI is queried for a tooltip on a Section,
+        set the objects name and any existing validation errors
+        as tooltip text.
+
+        This method is currently inactivated in TreeView.init
+        until the pseudo_value display can be resolved.
+
+        :return: Always returns True
         """
-        obj = model.get_object(iter)
+        obj = model.get_object(tree_iter)
 
         merged = obj.get_merged_equivalent()
         info = []
@@ -171,4 +179,5 @@ class SectionView(TerminologyPopupTreeView):
                 error = "\n\nErrors:\n" + "\n".join([e.msg for e in errors])
 
         tooltip.set_text(text + error)
+
         return True

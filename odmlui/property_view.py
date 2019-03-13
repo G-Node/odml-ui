@@ -53,10 +53,9 @@ class PropertyView(TerminologyPopupTreeView):
 
         # set up our drag provider
         drager = DragProvider(self._treeview)
-        _exec = lambda cmd: self.execute(cmd)
-        v_drop = ValueDrop(exec_func=_exec)
-        p_drop = PropertyDrop(exec_func=_exec)
-        s_drop = SectionDrop(exec_func=_exec)
+        v_drop = ValueDrop(exec_func=self.execute)
+        p_drop = PropertyDrop(exec_func=self.execute)
+        s_drop = SectionDrop(exec_func=self.execute)
         for target in [
                 OdmlDrag(mime="odml/property-ref", inst=BaseProperty),
                 TextDrag(mime="odml/property", inst=BaseProperty),
@@ -64,18 +63,18 @@ class PropertyView(TerminologyPopupTreeView):
                 TextDrag(mime="odml/value", inst=value_model.Value),
                 TextDrag(mime="TEXT"),
                 OdmlDrop(mime="odml/value-ref", target=v_drop,
-                         registry=registry, exec_func=_exec),
+                         registry=registry, exec_func=self.execute),
                 OdmlDrop(mime="odml/property-ref", target=p_drop,
-                         registry=registry, exec_func=_exec),
+                         registry=registry, exec_func=self.execute),
                 OdmlDrop(mime="odml/section-ref", target=s_drop,
-                         registry=registry, exec_func=_exec),
+                         registry=registry, exec_func=self.execute),
                 TextDrop(mime="odml/value", target=v_drop),
                 TextDrop(mime="odml/property", target=p_drop),
                 TextDrop(mime="odml/section", target=s_drop),
-                TextGenericDropForPropertyTV(exec_func=_exec), ]:
+                TextGenericDropForPropertyTV(exec_func=self.execute), ]:
 
             drager.append(target)
-        drager.execute = _exec
+        drager.execute = self.execute
         drager.connect()
 
     @staticmethod

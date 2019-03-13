@@ -23,9 +23,6 @@ from .dnd.text import TextDrag, TextDrop, TextGenericDropForPropertyTV
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-COL_KEY = 0
-COL_VALUE = 1
-
 
 class PropertyView(TerminologyPopupTreeView):
     """

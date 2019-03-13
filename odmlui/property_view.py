@@ -266,6 +266,7 @@ class PropertyView(TerminologyPopupTreeView):
         popup menu action: reset property
         """
         dst = prop.get_merged_equivalent().clone()
+        create_pseudo_values([dst])
         cmd = commands.ReplaceObject(obj=prop, repl=dst)
         self.execute(cmd)
 

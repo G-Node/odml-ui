@@ -294,26 +294,23 @@ class PropertyView(TerminologyPopupTreeView):
 
     def add_value(self, _, obj_value_pair):
         """
-        popup menu action: add value
+        Add a value to a selected Property
 
-        add a value to the selected property
+        :param obj_value_pair: obj ... property, val ... string containing added value
         """
         (obj, val) = obj_value_pair
-        if val is None:
-            val = value_model.Value(obj)
-        else:
-            val = val.clone()
+        new_val = value_model.Value(obj)
 
-        cmd = commands.AppendValue(obj=obj.pseudo_values, val=val)
+        # Add new empty PseudoValue to the Properties PseudoValue list
+        cmd = commands.AppendValue(obj=obj.pseudo_values, val=new_val)
         self.execute(cmd)
 
-        # Reset model if the Value changes from "normal" to MultiValue.
-        if self.model and len(obj.values) > 1:
-            self.model.destroy()
-            self.model = property_model.PropertyModel(obj.parent)
+        # Update the empty new PseudoValue with the actual value.
+        if val:
+            new_val.pseudo_values = val
 
-        # Reselect updated object to update view.
-        self.select_object(obj)
+        # Reset the view to make sure the changes are properly displayed.
+        self.reset_value_view(None)
 
     def add_property(self, _, obj_prop_pair):
         """

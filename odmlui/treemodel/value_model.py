@@ -79,6 +79,10 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
         return True
 
     @property
+    def index(self):
+        return self._index
+
+    @property
     def parent(self):
         """the property containing this value"""
         return self._property

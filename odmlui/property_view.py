@@ -223,13 +223,13 @@ class PropertyView(TerminologyPopupTreeView):
 
             for item in self.create_popup_menu_items("Add Value", "Empty Value", prop,
                                                      self.add_value, self._value_filter,
-                                                     lambda val: val.values,
+                                                     lambda curr_val: curr_val,
                                                      stock="odml-add-Value"):
                 menu_items.append(item)
 
             for item in self.create_popup_menu_items("Set Value", "Empty Value", prop,
                                                      self.set_value, self._value_filter,
-                                                     lambda val: val.values):
+                                                     lambda curr_val: curr_val):
                 if item.get_submenu() is None:
                     continue  # don't want a sole Set Value item
                 menu_items.append(item)

@@ -78,7 +78,8 @@ class PropertyView(TerminologyPopupTreeView):
         drager.execute = _exec
         drager.connect()
 
-    def dtype_renderer_function(self, _, cell_combobox, tree_model, tree_iter, data):
+    @staticmethod
+    def dtype_renderer(_, cell_combobox, tree_model, tree_iter, data):
         """
             Defines a custom cell renderer function, which is executed for
             every cell of the column, and sets the DType value from the underlying model.
@@ -371,6 +372,6 @@ class PropertyView(TerminologyPopupTreeView):
         combo_col = gtk.TreeViewColumn(name, combo_renderer)
         combo_col.set_min_width(40)
         combo_col.set_resizable(True)
-        combo_col.set_cell_data_func(combo_renderer, self.dtype_renderer_function, col_id)
+        combo_col.set_cell_data_func(combo_renderer, self.dtype_renderer, col_id)
 
         return combo_col

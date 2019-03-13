@@ -198,6 +198,10 @@ class PropertyView(TerminologyPopupTreeView):
         if cmd:
             self.execute(cmd)
 
+        # Always reset the view when changes have occurred
+        # to ensure no GTK view out of sync horror happening.
+        self.reset_value_view(None)
+
     @staticmethod
     def _value_filter(prop):
         values = []
@@ -269,6 +273,9 @@ class PropertyView(TerminologyPopupTreeView):
         create_pseudo_values([dst])
         cmd = commands.ReplaceObject(obj=prop, repl=dst)
         self.execute(cmd)
+
+        # Reset the view to make sure the changes are properly displayed.
+        self.reset_value_view(None)
 
     def set_value(self, _, prop_value_pair):
         """
@@ -353,14 +360,20 @@ class PropertyView(TerminologyPopupTreeView):
         Reset the view if the value model has changed e.g. after an undo or a redo.
         """
         obj = self.get_selected_object()
-        if obj is None or not isinstance(obj, TreeModelProperty):
+        if obj is None or (not hasattr(obj, "parent") and obj.parent):
             return
 
-        self.model.destroy()
-        self.model = property_model.PropertyModel(obj.parent)
+        prop = obj
+        sec = obj.parent
+        if isinstance(obj, value_model.Value):
+            sec = obj.parent.parent
+            prop = obj.parent
 
-        # Reselect updated object to update view.
-        self.select_object(obj)
+        self.model.destroy()
+        self.model = property_model.PropertyModel(sec)
+
+        # Always select the Property when resetting the view
+        self.select_object(prop)
 
     # Maybe define a generic Combo Box column creator?
     def create_odml_types_col(self, col_id, name, prop_name):

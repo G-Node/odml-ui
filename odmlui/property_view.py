@@ -166,8 +166,6 @@ class PropertyView(TerminologyPopupTreeView):
                 new_text == "<multi>":
             return
 
-        cmd = None
-
         # if we edit another attribute (e.g. unit), set this
         # for all values of this property.
         if first_row_of_multi and column_name == "pseudo_values":
@@ -198,12 +196,18 @@ class PropertyView(TerminologyPopupTreeView):
 
                 prop = prop.pseudo_values[0]
 
-            cmd = commands.ChangeValue(object=prop,
-                                       attr=column_name,
-                                       new_value=new_text)
+            cmd = commands.ChangeValue(object=prop, attr=column_name, new_value=new_text)
 
         if cmd:
             self.execute(cmd)
+
+    @staticmethod
+    def _value_filter(prop):
+        values = []
+        for val in prop.values:
+            if val is not None and val != "":
+                values.append(val)
+        return values
 
     def get_popup_menu_items(self):
         model, _, obj = self.popup_data
@@ -220,16 +224,14 @@ class PropertyView(TerminologyPopupTreeView):
             if hasattr(obj, "_property"):
                 prop = obj._property
 
-            value_filter = lambda prop: [val for val in
-                                         prop.values if val.values is not None and
-                                         val.values != ""]
             for item in self.create_popup_menu_items("Add Value", "Empty Value", prop,
-                                                     self.add_value, value_filter,
+                                                     self.add_value, self._value_filter,
                                                      lambda val: val.values,
                                                      stock="odml-add-Value"):
                 menu_items.append(item)
+
             for item in self.create_popup_menu_items("Set Value", "Empty Value", prop,
-                                                     self.set_value, value_filter,
+                                                     self.set_value, self._value_filter,
                                                      lambda val: val.values):
                 if item.get_submenu() is None:
                     continue  # don't want a sole Set Value item

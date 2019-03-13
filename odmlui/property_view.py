@@ -272,25 +272,38 @@ class PropertyView(TerminologyPopupTreeView):
 
     def set_value(self, _, prop_value_pair):
         """
-        popup menu action: set value
+        Set the content of a Value. In context this means,
+        that the content if an existing Value is replaced by a Terminology Value
+        via the popup menu option.
+
+        :param prop_value_pair: prop ... property
+                                val ... string containing added value
         """
         (prop, val) = prop_value_pair
+
         _, _, obj = self.popup_data
-        if val is None:
-            val = value_model.Value(prop)
-        else:
-            val = val.clone()
+        if not isinstance(obj, value_model.Value):
+            raise TypeError("Expected %s" % type(value_model.Value))
 
-        if obj is prop:
-            obj = prop.values[0]
+        if not prop == obj.parent:
+            raise ValueError("Property '%s' is not the parent of '%s'" % (prop, obj))
 
-        prop = obj._property
+        # To enable undo redo for this we need a bit of trickery
+        new_prop = prop.clone(keep_id=True)
+        create_pseudo_values([new_prop])
+        if new_prop.pseudo_values[obj.index].pseudo_values != obj.pseudo_values:
+            raise ValueError("Cannot find replacement value")
 
-        # first append, then remove to keep the constraint that a property
-        # will always hold at least one value
-        cmd = commands.Multiple(cmds=[commands.AppendValue(obj=prop, val=val),
-                                      commands.DeleteObject(obj=obj)])
+        # Update the value in the new property
+        new_prop.pseudo_values[obj.index].pseudo_values = val
+
+        # Lets replace the old property with the new and updated one
+        cmd = commands.ReplaceObject(obj=prop, repl=new_prop)
         self.execute(cmd)
+
+        # Reset the view to make sure the changes are properly displayed.
+        self.select_object(new_prop)
+        self.reset_value_view(None)
 
     def add_value(self, _, obj_value_pair):
         """

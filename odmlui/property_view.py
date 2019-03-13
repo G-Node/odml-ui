@@ -218,8 +218,8 @@ class PropertyView(TerminologyPopupTreeView):
             prop = obj
 
             # we care about the properties only
-            if hasattr(obj, "_property"):
-                prop = obj._property
+            if isinstance(obj, value_model.Value):
+                prop = obj.parent
 
             for item in self.create_popup_menu_items("Add Value", "Empty Value", prop,
                                                      self.add_value, self._value_filter,

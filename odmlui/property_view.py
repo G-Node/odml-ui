@@ -335,6 +335,7 @@ class PropertyView(TerminologyPopupTreeView):
             name = self.get_new_obj_name(obj.properties, prefix=prefix)
             prop = prop.clone()
             prop.name = name
+            create_pseudo_values([prop])
 
         cmd = commands.AppendValue(obj=obj, val=prop)
         self.execute(cmd)

@@ -6,8 +6,6 @@ import odml.dtypes as dtypes
 from odml import DType
 from odml.property import BaseProperty
 
-from odmlui.treemodel.nodes import Property as TreeModelProperty
-
 import gtk
 
 from . import commands

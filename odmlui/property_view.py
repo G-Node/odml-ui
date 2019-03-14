@@ -150,21 +150,24 @@ class PropertyView(TerminologyPopupTreeView):
         """
         prop = tree_iter._obj
 
-        # are we editing the first_row of a <multi> value?
+        is_value_column = column_name == "pseudo_values"
+
+        # Are we editing the first_row of a <multi> value?
         first_row = not tree_iter.parent
         first_row_of_multi = first_row and tree_iter.has_child
 
-        if not first_row and column_name != "pseudo_values":
-            return
-        # Do not replace multiple values with pseudo_value placeholder text.
-        if first_row_of_multi and column_name == "pseudo_values" and \
-                new_text == "<multi>":
+        # Do not edit any column other than 'value' on a multi_value row
+        if not first_row and not is_value_column:
             return
 
-        # if we edit another attribute (e.g. unit), set this
+        # Do not replace multiple values with pseudo_value placeholder text.
+        if first_row_of_multi and is_value_column and new_text == "<multi>":
+            return
+
+        # If we edit another attribute (e.g. unit), set this
         # for all values of this property.
-        if first_row_of_multi and column_name == "pseudo_values":
-            # editing multiple values of a property at once
+        if first_row_of_multi and is_value_column:
+            # Editing multiple values of a property at once
             cmds = []
             for value in prop.pseudo_values:
                 cmds.append(commands.ChangeValue(
@@ -175,17 +178,16 @@ class PropertyView(TerminologyPopupTreeView):
             cmd = commands.Multiple(cmds=cmds)
 
         else:
-            # first row edit event for the property, so switch to appropriate object
+            # First row edit event for the property, so switch to appropriate object
             #  - Only if the 'value' column is edited, edit the pseudo-value object.
             #  - Else, edit the property object
-            if column_name == 'pseudo_values' and first_row:
-                column_name = [column_name, "value"]  # backup the value attribute too
-                # If the list of pseudovalues was empty, we need to initialize a new
+            if first_row and is_value_column:
+                column_name = [column_name, "value"]
+                # If the list of pseudo_values was empty, we need to initialize a new
                 # empty PseudoValue and add it properly to enable undo.
                 if not prop.pseudo_values:
                     val = value_model.Value(prop)
-                    cmd = commands.AppendValue(obj=prop.pseudo_values,
-                                               attr=column_name,
+                    cmd = commands.AppendValue(obj=prop.pseudo_values, attr=column_name,
                                                val=val)
                     self.execute(cmd)
 

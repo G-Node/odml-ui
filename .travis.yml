@@ -22,12 +22,6 @@ matrix:
       language: generic
       env: OSXENV=3.5 CONDA=Y CONDAPY=3.5
 
-  include:
-    - os: linux
-      python: "2.7_with_system_site_packages"
-      sudo: required
-      env: CONDA=N
-
     - os: linux
       python: "2.7"
       sudo: required
@@ -41,6 +35,12 @@ matrix:
       env:
         - CONDA=Y
         - CONDAPY=3.5
+
+  include:
+    - os: linux
+      python: "2.7_with_system_site_packages"
+      sudo: required
+      env: CONDA=N
 
 #    Keep only one osx branch active for now
 #    since currently osx builds on travis

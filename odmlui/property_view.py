@@ -1,3 +1,8 @@
+"""
+The 'property_view' module provides a class to display and edit odml.Properties
+and their attributes and Values.
+"""
+
 import pygtkcompat
 
 import odml
@@ -24,7 +29,7 @@ pygtkcompat.enable_gtk(version='3.0')
 
 class PropertyView(TerminologyPopupTreeView):
     """
-    The Main treeview for editing properties and their value-attributes
+    The main TreeView for editing Properties and their value-attributes
     """
     _section = None
 
@@ -75,10 +80,10 @@ class PropertyView(TerminologyPopupTreeView):
     @staticmethod
     def dtype_renderer(_, cell_combobox, tree_model, tree_iter, data):
         """
-            Defines a custom cell renderer function, which is executed for
-            every cell of the column, and sets the DType value from the underlying model.
+        Defines a custom cell renderer function, which is executed for
+        every cell of the column, and sets the DType value from the underlying model.
 
-            Argument 'Data': Here, it defines the column number in the Tree View.
+        Argument 'Data': Here it defines the column number in the Tree View.
         """
 
         cell_data = tree_model.get(tree_iter, data)[0]
@@ -86,19 +91,34 @@ class PropertyView(TerminologyPopupTreeView):
 
     @property
     def section(self):
+        """
+        :return: The odml.Section that is the parent of the current PropertyView.
+        """
         return self._section
 
     @section.setter
     def section(self, section):
+        """
+        Update the parent odml.Section of the current PropertyView and
+        update the underlying model accordingly.
+
+        :param section: odml.Section
+        """
         if self._section is section and self.model:
             return
+
         self._section = section
+
         if self.model:
             self.model.destroy()
+
         self.model = property_model.PropertyModel(section)
 
     @property
     def model(self):
+        """
+        :return: The current model of the PropertyView.
+        """
         return self._treeview.get_model()
 
     @model.setter
@@ -106,6 +126,11 @@ class PropertyView(TerminologyPopupTreeView):
         self._treeview.set_model(new_value)
 
     def on_selection_change(self, tree_selection):
+        """
+        Updates the view model if a different object is selected.
+
+        :param tree_selection: gtk.TreeSelection
+        """
         (model, tree_iter) = tree_selection.get_selected()
         if not tree_iter:
             return
@@ -118,7 +143,11 @@ class PropertyView(TerminologyPopupTreeView):
             tree_selection.get_tree_view().expand_row(model.get_path(tree_iter), False)
 
     def on_property_select(self, prop):
-        """called when a different property is selected"""
+        """
+        Called when a Property is selected.
+
+        The actual method is set on the class at the point of usage.
+        """
         pass
 
     @staticmethod
@@ -144,9 +173,13 @@ class PropertyView(TerminologyPopupTreeView):
 
     def on_object_edit(self, tree_iter, column_name, new_text):
         """
-        called upon an edit event of the list view
+        Called upon an edit event of Properties and Values in the list view
+        and updates the underlying model Property correspondingly.
 
-        updates the underlying model property that corresponds to the edited cell
+        :param tree_iter: Iterator object of the currently edited cell
+        :param column_name: Column name of the currently edited cell
+        :param new_text: String that should replace the value of the
+                         currently edited cell
         """
         prop = tree_iter._obj
 
@@ -211,17 +244,27 @@ class PropertyView(TerminologyPopupTreeView):
         return values
 
     def get_popup_menu_items(self):
+        """
+        Creates and populates the popup menu of the PropertyView.
+
+        The menu provides access to Property and Value specific functions.
+        - Add a new empty or Terminology Value to a Property
+        - Set a Value to empty or to a Terminology Value
+        - Open a Value with odml datatype 'Text' in a TextEditor window.
+        - Reset a manipulated Terminology Property back to its Terminology state.
+
+        :return: gtk.Menu populated with Value and Property specific gtk.MenuItems
+        """
         model, _, obj = self.popup_data
         menu_items = self.create_popup_menu_items("Add Property", "Empty Property",
                                                   model.section, self.add_property,
                                                   lambda sec: sec.properties,
                                                   lambda prop: prop.name,
                                                   stock="odml-add-Property")
-        # can also add value
         if obj is not None:
             prop = obj
 
-            # we care about the properties only
+            # We are working exclusively with Properties
             if isinstance(obj, value_model.Value):
                 prop = obj.parent
 
@@ -235,7 +278,8 @@ class PropertyView(TerminologyPopupTreeView):
                                                      self.set_value, self._value_filter,
                                                      lambda curr_val: curr_val):
                 if item.get_submenu() is None:
-                    continue  # don't want a sole Set Value item
+                    # We don't want a single Set Value item
+                    continue
                 menu_items.append(item)
 
             val = obj
@@ -256,18 +300,22 @@ class PropertyView(TerminologyPopupTreeView):
                                                             self.reset_property, obj))
             else:
                 menu_items.append(self.create_popup_menu_del_item(obj))
+
         return menu_items
 
     def edit_text(self, _, val):
         """
-        popup menu action: edit text in larger window
+        Opens a TextEditor window containing the provided value.
         """
         t_edit = text_editor.TextEditor(val, "value")
         t_edit.execute = self.execute
 
     def reset_property(self, _, prop):
         """
-        popup menu action: reset property
+        *reset_property* replaces a provided Property with its
+        equivalent from a terminology linked in the parent of the Property.
+
+        :param prop: odml.Property to be replaced by its terminology equivalent.
         """
         dst = prop.get_merged_equivalent().clone()
         create_pseudo_values([dst])
@@ -283,8 +331,9 @@ class PropertyView(TerminologyPopupTreeView):
         that the content if an existing Value is replaced by a Terminology Value
         via the popup menu option.
 
-        :param prop_value_pair: prop ... property
-                                val ... string containing added value
+        :param prop_value_pair: Tuple containing *prop*, an odml.Property,
+                                and *val* a String to replace the content of
+                                the value object passed via a popup event.
         """
         (prop, val) = prop_value_pair
 
@@ -316,7 +365,8 @@ class PropertyView(TerminologyPopupTreeView):
         """
         Add a value to a selected Property
 
-        :param obj_value_pair: obj ... property, val ... string containing added value
+        :param obj_value_pair: Tuple containing *obj*, an odml.Property,
+                               and *val* a string containing the new value.
         """
         (obj, val) = obj_value_pair
         new_val = value_model.Value(obj)
@@ -334,9 +384,10 @@ class PropertyView(TerminologyPopupTreeView):
 
     def add_property(self, _, obj_prop_pair):
         """
-        popup menu action: add property
+        Add a Property to a selected Section.
 
-        add a property to the active section
+        :param obj_prop_pair: Tuple containing *obj*, an odml.Section,
+                              and *prop*, either None or the new odml.Property.
         """
         (obj, prop) = obj_prop_pair
         if prop is None:
@@ -375,10 +426,18 @@ class PropertyView(TerminologyPopupTreeView):
         # Always select the Property when resetting the view
         self.select_object(prop)
 
-    # Maybe define a generic Combo Box column creator?
     def create_odml_types_col(self, col_id, name, prop_name):
+        """
+        Create and return an odML 'dtype' specific gtk.TreeViewColumn
 
-        # Get all the members of odml.DType, which are not callable and are not `private`.
+        :param col_id: column ID
+        :param name: String containing the column name to be displayed.
+        :param prop_name: name of the odML Property attribute
+
+        :return: gtk.TreeViewColumn
+        """
+
+        # Get all the members of odml.DType, which are not callable and are not 'private'.
         dtypes_list = [x for x in dir(DType) if not callable(getattr(DType, x)) and
                        not x.startswith('__')]
         dtypes_combo_list = gtk.ListStore(str)

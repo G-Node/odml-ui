@@ -411,7 +411,7 @@ class PropertyView(TerminologyPopupTreeView):
         Reset the view if the value model has changed e.g. after an undo or a redo.
         """
         obj = self.get_selected_object()
-        if obj is None or (not hasattr(obj, "parent") and obj.parent):
+        if obj is None or not hasattr(obj, "parent") or not obj.parent:
             return
 
         prop = obj

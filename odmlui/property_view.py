@@ -1,3 +1,8 @@
+"""
+The 'property_view' module provides a class to display and edit odml.Properties
+and their attributes and Values.
+"""
+
 import pygtkcompat
 
 import odml
@@ -5,8 +10,6 @@ import odml.dtypes as dtypes
 
 from odml import DType
 from odml.property import BaseProperty
-
-from odmlui.treemodel.nodes import Property as TreeModelProperty
 
 import gtk
 
@@ -23,30 +26,24 @@ from .dnd.text import TextDrag, TextDrop, TextGenericDropForPropertyTV
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-COL_KEY = 0
-COL_VALUE = 1
-
 
 class PropertyView(TerminologyPopupTreeView):
     """
-    The Main treeview for editing properties and their value-attributes
+    The main TreeView for editing Properties and their value-attributes
     """
     _section = None
 
     def __init__(self, registry):
-
         super(PropertyView, self).__init__()
         curr_view = self._treeview
 
-        for name, (col_id, propname) in property_model.COL_MAPPER.sort_iteritems():
+        for name, (col_id, prop_name) in property_model.COL_MAPPER.sort_iteritems():
             if name == "Type":
-                combo_col = self.create_odml_types_col(col_id, name, propname)
+                combo_col = self.create_odml_types_col(col_id, name, prop_name)
                 curr_view.append_column(combo_col)
             else:
-                renderer, column = self.add_column(
-                    name=name,
-                    edit_func=self.on_edited,
-                    col_id=col_id, data=propname)
+                _, column = self.add_column(name=name, edit_func=self.on_edited,
+                                            col_id=col_id, data=prop_name)
                 if name == "Value":
                     curr_view.set_expander_column(column)
 
@@ -56,10 +53,9 @@ class PropertyView(TerminologyPopupTreeView):
 
         # set up our drag provider
         drager = DragProvider(self._treeview)
-        _exec = lambda cmd: self.execute(cmd)
-        v_drop = ValueDrop(exec_func=_exec)
-        p_drop = PropertyDrop(exec_func=_exec)
-        s_drop = SectionDrop(exec_func=_exec)
+        v_drop = ValueDrop(exec_func=self.execute)
+        p_drop = PropertyDrop(exec_func=self.execute)
+        s_drop = SectionDrop(exec_func=self.execute)
         for target in [
                 OdmlDrag(mime="odml/property-ref", inst=BaseProperty),
                 TextDrag(mime="odml/property", inst=BaseProperty),
@@ -67,27 +63,27 @@ class PropertyView(TerminologyPopupTreeView):
                 TextDrag(mime="odml/value", inst=value_model.Value),
                 TextDrag(mime="TEXT"),
                 OdmlDrop(mime="odml/value-ref", target=v_drop,
-                         registry=registry, exec_func=_exec),
+                         registry=registry, exec_func=self.execute),
                 OdmlDrop(mime="odml/property-ref", target=p_drop,
-                         registry=registry, exec_func=_exec),
+                         registry=registry, exec_func=self.execute),
                 OdmlDrop(mime="odml/section-ref", target=s_drop,
-                         registry=registry, exec_func=_exec),
+                         registry=registry, exec_func=self.execute),
                 TextDrop(mime="odml/value", target=v_drop),
                 TextDrop(mime="odml/property", target=p_drop),
                 TextDrop(mime="odml/section", target=s_drop),
-                TextGenericDropForPropertyTV(exec_func=_exec), ]:
+                TextGenericDropForPropertyTV(exec_func=self.execute), ]:
 
             drager.append(target)
-        drager.execute = _exec
+        drager.execute = self.execute
         drager.connect()
 
-    def dtype_renderer_function(self, tv_column, cell_combobox,
-                                tree_model, tree_iter, data):
+    @staticmethod
+    def dtype_renderer(_, cell_combobox, tree_model, tree_iter, data):
         """
-            Defines a custom cell renderer function, which is executed for
-            every cell of the column, and sets the DType value from the underlying model.
+        Defines a custom cell renderer function, which is executed for
+        every cell of the column, and sets the DType value from the underlying model.
 
-            Argument 'Data': Here, it defines the column number in the Tree View.
+        Argument 'Data': Here it defines the column number in the Tree View.
         """
 
         cell_data = tree_model.get(tree_iter, data)[0]
@@ -95,19 +91,34 @@ class PropertyView(TerminologyPopupTreeView):
 
     @property
     def section(self):
+        """
+        :return: The odml.Section that is the parent of the current PropertyView.
+        """
         return self._section
 
     @section.setter
     def section(self, section):
+        """
+        Update the parent odml.Section of the current PropertyView and
+        update the underlying model accordingly.
+
+        :param section: odml.Section
+        """
         if self._section is section and self.model:
             return
+
         self._section = section
+
         if self.model:
             self.model.destroy()
+
         self.model = property_model.PropertyModel(section)
 
     @property
     def model(self):
+        """
+        :return: The current model of the PropertyView.
+        """
         return self._treeview.get_model()
 
     @model.setter
@@ -115,6 +126,11 @@ class PropertyView(TerminologyPopupTreeView):
         self._treeview.set_model(new_value)
 
     def on_selection_change(self, tree_selection):
+        """
+        Updates the view model if a different object is selected.
+
+        :param tree_selection: gtk.TreeSelection
+        """
         (model, tree_iter) = tree_selection.get_selected()
         if not tree_iter:
             return
@@ -127,46 +143,64 @@ class PropertyView(TerminologyPopupTreeView):
             tree_selection.get_tree_view().expand_row(model.get_path(tree_iter), False)
 
     def on_property_select(self, prop):
-        """called when a different property is selected"""
+        """
+        Called when a Property is selected.
+
+        The actual method is set on the class at the point of usage.
+        """
         pass
 
-    def on_get_tooltip(self, model, path, iter, tooltip):
+    @staticmethod
+    def on_get_tooltip(model, tree_iter, tooltip):
         """
-        set the tooltip text, if the gui queries for it
+        If the GUI is queried for a tooltip on a Property,
+        set any existing validation errors as tooltip text.
+
+        This method is currently inactivated in TreeView.init
+        until the pseudo_value display can be resolved.
+
+        :return: True if the tooltip text is set, False otherwise
         """
-        obj = model.get_object(iter)
+        obj = model.get_object(tree_iter)
         doc = obj.document
         if doc and hasattr(doc, "validation_result"):
             errors = doc.validation_result[obj]
-            if len(errors) > 0:
+            if errors:
                 tooltip.set_text("\n".join([e.msg for e in errors]))
                 return True
 
+        return False
+
     def on_object_edit(self, tree_iter, column_name, new_text):
         """
-        called upon an edit event of the list view
+        Called upon an edit event of Properties and Values in the list view
+        and updates the underlying model Property correspondingly.
 
-        updates the underlying model property that corresponds to the edited cell
+        :param tree_iter: Iterator object of the currently edited cell
+        :param column_name: Column name of the currently edited cell
+        :param new_text: String that should replace the value of the
+                         currently edited cell
         """
         prop = tree_iter._obj
 
-        # are we editing the first_row of a <multi> value?
+        is_value_column = column_name == "pseudo_values"
+
+        # Are we editing the first_row of a <multi> value?
         first_row = not tree_iter.parent
         first_row_of_multi = first_row and tree_iter.has_child
 
-        if not first_row and column_name != "pseudo_values":
+        # Do not edit any column other than 'value' on a multi_value row
+        if not first_row and not is_value_column:
             return
+
         # Do not replace multiple values with pseudo_value placeholder text.
-        if first_row_of_multi and column_name == "pseudo_values" and \
-                new_text == "<multi>":
+        if first_row_of_multi and is_value_column and new_text == "<multi>":
             return
 
-        cmd = None
-
-        # if we edit another attribute (e.g. unit), set this
+        # If we edit another attribute (e.g. unit), set this
         # for all values of this property.
-        if first_row_of_multi and column_name == "pseudo_values":
-            # editing multiple values of a property at once
+        if first_row_of_multi and is_value_column:
+            # Editing multiple values of a property at once
             cmds = []
             for value in prop.pseudo_values:
                 cmds.append(commands.ChangeValue(
@@ -177,57 +211,75 @@ class PropertyView(TerminologyPopupTreeView):
             cmd = commands.Multiple(cmds=cmds)
 
         else:
-            # first row edit event for the property, so switch to appropriate object
+            # First row edit event for the property, so switch to appropriate object
             #  - Only if the 'value' column is edited, edit the pseudo-value object.
             #  - Else, edit the property object
-            if column_name == 'pseudo_values' and first_row:
-                column_name = [column_name, "value"]  # backup the value attribute too
-                # If the list of pseudovalues was empty, we need to initialize a new
+            if first_row and is_value_column:
+                column_name = [column_name, "value"]
+                # If the list of pseudo_values was empty, we need to initialize a new
                 # empty PseudoValue and add it properly to enable undo.
                 if not prop.pseudo_values:
                     val = value_model.Value(prop)
-                    cmd = commands.AppendValue(obj=prop.pseudo_values,
-                                               attr=column_name,
+                    cmd = commands.AppendValue(obj=prop.pseudo_values, attr=column_name,
                                                val=val)
                     self.execute(cmd)
 
                 prop = prop.pseudo_values[0]
 
-            cmd = commands.ChangeValue(object=prop,
-                                       attr=column_name,
-                                       new_value=new_text)
+            cmd = commands.ChangeValue(object=prop, attr=column_name, new_value=new_text)
 
         if cmd:
             self.execute(cmd)
 
+        # Always reset the view when changes have occurred
+        # to ensure no GTK view out of sync horror happening.
+        self.reset_value_view(None)
+
+    @staticmethod
+    def _value_filter(prop):
+        values = []
+        for val in prop.values:
+            if val is not None and val != "":
+                values.append(val)
+        return values
+
     def get_popup_menu_items(self):
-        model, path, obj = self.popup_data
+        """
+        Creates and populates the popup menu of the PropertyView.
+
+        The menu provides access to Property and Value specific functions.
+        - Add a new empty or Terminology Value to a Property
+        - Set a Value to empty or to a Terminology Value
+        - Open a Value with odml datatype 'Text' in a TextEditor window.
+        - Reset a manipulated Terminology Property back to its Terminology state.
+
+        :return: gtk.Menu populated with Value and Property specific gtk.MenuItems
+        """
+        model, _, obj = self.popup_data
         menu_items = self.create_popup_menu_items("Add Property", "Empty Property",
                                                   model.section, self.add_property,
                                                   lambda sec: sec.properties,
                                                   lambda prop: prop.name,
                                                   stock="odml-add-Property")
-        # can also add value
         if obj is not None:
             prop = obj
 
-            # we care about the properties only
-            if hasattr(obj, "_property"):
-                prop = obj._property
+            # We are working exclusively with Properties
+            if isinstance(obj, value_model.Value):
+                prop = obj.parent
 
-            value_filter = lambda prop: [val for val in
-                                         prop.values if val.values is not None and
-                                         val.values != ""]
             for item in self.create_popup_menu_items("Add Value", "Empty Value", prop,
-                                                     self.add_value, value_filter,
-                                                     lambda val: val.values,
+                                                     self.add_value, self._value_filter,
+                                                     lambda curr_val: curr_val,
                                                      stock="odml-add-Value"):
                 menu_items.append(item)
+
             for item in self.create_popup_menu_items("Set Value", "Empty Value", prop,
-                                                     self.set_value, value_filter,
-                                                     lambda val: val.values):
+                                                     self.set_value, self._value_filter,
+                                                     lambda curr_val: curr_val):
                 if item.get_submenu() is None:
-                    continue  # don't want a sole Set Value item
+                    # We don't want a single Set Value item
+                    continue
                 menu_items.append(item)
 
             val = obj
@@ -248,73 +300,94 @@ class PropertyView(TerminologyPopupTreeView):
                                                             self.reset_property, obj))
             else:
                 menu_items.append(self.create_popup_menu_del_item(obj))
+
         return menu_items
 
-    def edit_text(self, widget, val):
+    def edit_text(self, _, val):
         """
-        popup menu action: edit text in larger window
+        Opens a TextEditor window containing the provided value.
         """
         t_edit = text_editor.TextEditor(val, "value")
         t_edit.execute = self.execute
 
-    def reset_property(self, widget, prop):
+    def reset_property(self, _, prop):
         """
-        popup menu action: reset property
+        *reset_property* replaces a provided Property with its
+        equivalent from a terminology linked in the parent of the Property.
+
+        :param prop: odml.Property to be replaced by its terminology equivalent.
         """
         dst = prop.get_merged_equivalent().clone()
+        create_pseudo_values([dst])
         cmd = commands.ReplaceObject(obj=prop, repl=dst)
         self.execute(cmd)
 
-    def set_value(self, widget, prop_value_pair):
+        # Reset the view to make sure the changes are properly displayed.
+        self.reset_value_view(None)
+
+    def set_value(self, _, prop_value_pair):
         """
-        popup menu action: set value
+        Set the content of a Value. In context this means,
+        that the content if an existing Value is replaced by a Terminology Value
+        via the popup menu option.
+
+        :param prop_value_pair: Tuple containing *prop*, an odml.Property,
+                                and *val* a String to replace the content of
+                                the value object passed via a popup event.
         """
         (prop, val) = prop_value_pair
-        model, path, obj = self.popup_data
-        if val is None:
-            val = value_model.Value(prop)
-        else:
-            val = val.clone()
 
-        if obj is prop:
-            obj = prop.values[0]
+        _, _, obj = self.popup_data
+        if not isinstance(obj, value_model.Value):
+            raise TypeError("Expected %s" % type(value_model.Value))
 
-        prop = obj._property
+        if not prop == obj.parent:
+            raise ValueError("Property '%s' is not the parent of '%s'" % (prop, obj))
 
-        # first append, then remove to keep the constraint that a property
-        # will always hold at least one value
-        cmd = commands.Multiple(cmds=[commands.AppendValue(obj=prop, val=val),
-                                      commands.DeleteObject(obj=obj)])
+        # To enable undo redo for this we need a bit of trickery
+        new_prop = prop.clone(keep_id=True)
+        create_pseudo_values([new_prop])
+        if new_prop.pseudo_values[obj.index].pseudo_values != obj.pseudo_values:
+            raise ValueError("Cannot find replacement value")
+
+        # Update the value in the new property
+        new_prop.pseudo_values[obj.index].pseudo_values = val
+
+        # Lets replace the old property with the new and updated one
+        cmd = commands.ReplaceObject(obj=prop, repl=new_prop)
         self.execute(cmd)
 
-    def add_value(self, widget, obj_value_pair):
-        """
-        popup menu action: add value
+        # Reset the view to make sure the changes are properly displayed.
+        self.select_object(new_prop)
+        self.reset_value_view(None)
 
-        add a value to the selected property
+    def add_value(self, _, obj_value_pair):
+        """
+        Add a value to a selected Property
+
+        :param obj_value_pair: Tuple containing *obj*, an odml.Property,
+                               and *val* a string containing the new value.
         """
         (obj, val) = obj_value_pair
-        if val is None:
-            val = value_model.Value(obj)
-        else:
-            val = val.clone()
+        new_val = value_model.Value(obj)
 
-        cmd = commands.AppendValue(obj=obj.pseudo_values, val=val)
+        # Add new empty PseudoValue to the Properties PseudoValue list
+        cmd = commands.AppendValue(obj=obj.pseudo_values, val=new_val)
         self.execute(cmd)
 
-        # Reset model if the Value changes from "normal" to MultiValue.
-        if self.model and len(obj.values) > 1:
-            self.model.destroy()
-            self.model = property_model.PropertyModel(obj.parent)
+        # Update the empty new PseudoValue with the actual value.
+        if val:
+            new_val.pseudo_values = val
 
-        # Reselect updated object to update view.
-        self.select_object(obj)
+        # Reset the view to make sure the changes are properly displayed.
+        self.reset_value_view(None)
 
-    def add_property(self, widget, obj_prop_pair):
+    def add_property(self, _, obj_prop_pair):
         """
-        popup menu action: add property
+        Add a Property to a selected Section.
 
-        add a property to the active section
+        :param obj_prop_pair: Tuple containing *obj*, an odml.Section,
+                              and *prop*, either None or the new odml.Property.
         """
         (obj, prop) = obj_prop_pair
         if prop is None:
@@ -328,28 +401,43 @@ class PropertyView(TerminologyPopupTreeView):
             name = self.get_new_obj_name(obj.properties, prefix=prefix)
             prop = prop.clone()
             prop.name = name
+            create_pseudo_values([prop])
 
         cmd = commands.AppendValue(obj=obj, val=prop)
         self.execute(cmd)
 
-    def reset_value_view(self, widget):
+    def reset_value_view(self, _):
         """
         Reset the view if the value model has changed e.g. after an undo or a redo.
         """
         obj = self.get_selected_object()
-        if obj is None or not isinstance(obj, TreeModelProperty):
+        if obj is None or not hasattr(obj, "parent") or not obj.parent:
             return
 
+        prop = obj
+        sec = obj.parent
+        if isinstance(obj, value_model.Value):
+            sec = obj.parent.parent
+            prop = obj.parent
+
         self.model.destroy()
-        self.model = property_model.PropertyModel(obj.parent)
+        self.model = property_model.PropertyModel(sec)
 
-        # Reselect updated object to update view.
-        self.select_object(obj)
+        # Always select the Property when resetting the view
+        self.select_object(prop)
 
-    # Maybe define a generic Combo Box column creator?
-    def create_odml_types_col(self, col_id, name, propname):
+    def create_odml_types_col(self, col_id, name, prop_name):
+        """
+        Create and return an odML 'dtype' specific gtk.TreeViewColumn
 
-        # Get all the members of odml.DType, which are not callable and are not `private`.
+        :param col_id: column ID
+        :param name: String containing the column name to be displayed.
+        :param prop_name: name of the odML Property attribute
+
+        :return: gtk.TreeViewColumn
+        """
+
+        # Get all the members of odml.DType, which are not callable and are not 'private'.
         dtypes_list = [x for x in dir(DType) if not callable(getattr(DType, x)) and
                        not x.startswith('__')]
         dtypes_combo_list = gtk.ListStore(str)
@@ -361,11 +449,11 @@ class PropertyView(TerminologyPopupTreeView):
         combo_renderer.set_property("text-column", 0)
         combo_renderer.set_property("model", dtypes_combo_list)
         combo_renderer.set_property("editable", True)
-        combo_renderer.connect("edited", self.on_edited, propname)
+        combo_renderer.connect("edited", self.on_edited, prop_name)
 
         combo_col = gtk.TreeViewColumn(name, combo_renderer)
         combo_col.set_min_width(40)
         combo_col.set_resizable(True)
-        combo_col.set_cell_data_func(combo_renderer, self.dtype_renderer_function, col_id)
+        combo_col.set_cell_data_func(combo_renderer, self.dtype_renderer, col_id)
 
         return combo_col

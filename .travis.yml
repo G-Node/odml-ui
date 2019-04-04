@@ -16,16 +16,7 @@ matrix:
 
     - os: osx
       language: generic
-      env: OSXENV=2.7 CONDA=N
-    - os: osx
-      language: generic
-      env: OSXENV=3.5 CONDA=N
-    - os: osx
-      language: generic
       env: OSXENV=2.7 CONDA=Y CONDAPY=2.7
-    - os: osx
-      language: generic
-      env: OSXENV=3.5 CONDA=Y CONDAPY=3.5
     - os: osx
       language: generic
       env: OSXENV=3.6 CONDA=Y CONDAPY=3.6
@@ -60,16 +51,7 @@ matrix:
 
     - os: osx
       language: generic
-      env: OSXENV=2.7 CONDA=N
-    - os: osx
-      language: generic
-      env: OSXENV=3.5 CONDA=N
-    - os: osx
-      language: generic
       env: OSXENV=2.7 CONDA=Y CONDAPY=2.7
-    - os: osx
-      language: generic
-      env: OSXENV=3.5 CONDA=Y CONDAPY=3.5
     - os: osx
       language: generic
       env: OSXENV=3.6 CONDA=Y CONDAPY=3.6

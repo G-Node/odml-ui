@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/G-Node/odml-ui.svg?branch=master)](https://travis-ci.org/G-Node/odml-ui)
+[![PyPI version](https://img.shields.io/pypi/v/odml-ui.svg)](https://pypi.org/project/odML-UI/)
+
+
 # odML Editor
 
 The odML-Editor is a standalone GUI application used for working with the odML Documents. 

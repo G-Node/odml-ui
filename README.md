@@ -108,7 +108,7 @@ For Python 2 (Python 3)
 #### Dependencies
 
 * [PyGObject for Windows](
-   https://sourceforge.net/projects/pygobjectwin32/files>) (tested with 3.24.1rev1)
+   https://sourceforge.net/projects/pygobjectwin32/files) (tested with 3.24.1rev1)
 * Python 2.7+
 * odml v1.4+ `(pip install odml)`
 

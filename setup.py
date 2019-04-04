@@ -30,7 +30,7 @@ class PackageNotFoundError(Exception):
 
 # Check required non-python dependencies for native install,
 # Anaconda and virtualenv environments.
-README = "README.rst"
+README = "README.md"
 dep_str = "Non-Python dependency missing, please check the %s file." % README
 try:
     import gi

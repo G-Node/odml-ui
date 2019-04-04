@@ -5,11 +5,6 @@ language: python
 
 matrix:
   allow_failures:
-    - os: linux
-      python: "3.5"
-      sudo: required
-      env: CONDA=N
-
     - os: osx
       language: generic
       env: OSXENV=2.7 CONDA=N
@@ -39,6 +34,14 @@ matrix:
   include:
     - os: linux
       python: "2.7_with_system_site_packages"
+      sudo: required
+      env: CONDA=N
+    - os: linux
+      python: "3.5"
+      sudo: required
+      env: CONDA=N
+    - os: linux
+      python: "3.6"
       sudo: required
       env: CONDA=N
 
@@ -80,6 +83,4 @@ script:
   - which python
   # Make sure dependency tests run before the test bulk.
   - python -m unittest test.test_dependencies.TestDependencies
-# Leave deactivated until the required python-odml package is available
-#  - python setup.py test
-  - python -m unittest discover test
+  - python setup.py test

@@ -5,13 +5,15 @@
   "CONTACT": "dev@g-node.org",
   "HOMEPAGE": "https://github.com/G-Node/odml-ui",
   "CLASSIFIERS": [
-    "Programming Language :: Python :: 2",
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: BSD License",
     "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
     "Topic :: Scientific/Engineering",
     "Intended Audience :: Science/Research",
-    "Intended Audience :: End Users/Desktop"
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: BSD License"
   ],
   "ODMLTABLES_VERSION": "1.0.0"
 }

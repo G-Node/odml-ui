@@ -9,32 +9,17 @@ matrix:
       python: "3.5"
       sudo: required
       env: CONDA=N
-
-    - os: osx
-      language: generic
-      env: OSXENV=2.7 CONDA=N
-
-    - os: osx
-      language: generic
-      env: OSXENV=3.5 CONDA=N CONDAPY=3.5
-
-    - os: osx
-      language: generic
-      env: OSXENV=3.5 CONDA=Y CONDAPY=3.5
-
     - os: linux
-      python: "2.7"
+      python: "3.6"
       sudo: required
-      env:
-        - CONDA=Y
-        - CONDAPY=2.7
+      env: CONDA=N
 
-    - os: linux
-      python: "3.5"
-      sudo: required
-      env:
-        - CONDA=Y
-        - CONDAPY=3.5
+    - os: osx
+      language: generic
+      env: OSXENV=2.7 CONDA=Y CONDAPY=2.7
+    - os: osx
+      language: generic
+      env: OSXENV=3.6 CONDA=Y CONDAPY=3.6
 
   include:
     - os: linux
@@ -42,25 +27,34 @@ matrix:
       sudo: required
       env: CONDA=N
 
-#    Keep only one osx branch active for now
-#    since currently osx builds on travis
-#    are frequently stalled or indefinitely delayed.
-#    - os: osx
-#      language: generic
-#      env:
-#        - OSXENV=2.7
-#        - CONDA=Y
-#        - CONDAPY=2.7
-#    - os: osx
-#      language: generic
-#      env:
-#        - OSXENV=2.7
-#        - CONDA=N
-#    - os: osx
-#      language: generic
-#      env:
-#        - OSXENV=3.5
-#        - CONDA=N
+    - os: linux
+      python: "3.5"
+      sudo: required
+      env: CONDA=N
+    - os: linux
+      python: "3.6"
+      sudo: required
+      env: CONDA=N
+
+    - os: linux
+      python: "2.7"
+      sudo: required
+      env: CONDA=Y CONDAPY=2.7
+    - os: linux
+      python: "3.5"
+      sudo: required
+      env: CONDA=Y CONDAPY=3.5
+    - os: linux
+      python: "3.6"
+      sudo: required
+      env: CONDA=Y CONDAPY=3.6
+
+    - os: osx
+      language: generic
+      env: OSXENV=2.7 CONDA=Y CONDAPY=2.7
+    - os: osx
+      language: generic
+      env: OSXENV=3.6 CONDA=Y CONDAPY=3.6
 
 
 before_install:
@@ -80,6 +74,4 @@ script:
   - which python
   # Make sure dependency tests run before the test bulk.
   - python -m unittest test.test_dependencies.TestDependencies
-# Leave deactivated until the required python-odml package is available
-#  - python setup.py test
-  - python -m unittest discover test
+  - python setup.py test

@@ -132,7 +132,7 @@ C:\Users\userName\Anacaonda\envs\nameOfEnv\
 #### Windows Warning
 
 Windows of odml-ui cannot be moved (only maximized) - movement or resize of the windows
-results crash of application.
+crashes the application.
 
 
 # Installation from source

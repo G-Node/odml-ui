@@ -7,7 +7,7 @@ import odml.validation
 
 from odml.tools.odmlparser import ODMLReader, ODMLWriter
 from odml.tools.parser_utils import InvalidVersionException
-from odml.tools.version_converter import VersionConverter
+from odml.tools.converters.version_converter import VersionConverter
 
 import gtk
 

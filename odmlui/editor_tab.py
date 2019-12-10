@@ -5,9 +5,8 @@ import pygtkcompat
 import odml
 import odml.validation
 
-from odml.tools.odmlparser import ODMLReader, ODMLWriter
 from odml.tools.parser_utils import InvalidVersionException
-from odml.tools.version_converter import VersionConverter
+from odml.tools.converters.version_converter import VersionConverter
 
 import gtk
 
@@ -58,9 +57,8 @@ class EditorTab(object):
         self.file_uri = uri
         file_path = uri_to_path(uri)
         parser = get_parser_for_uri(file_path)
-        odml_reader = ODMLReader(parser=parser)
         try:
-            self.document = odml_reader.from_file(file_path)
+            self.document = odml.load(file_path, parser)
         except InvalidVersionException as inver:
             _, curr_file = os.path.split(file_path)
             err_header = "Cannot open file '%s'." % curr_file
@@ -181,7 +179,6 @@ class EditorTab(object):
         if not parser:
             parser = get_parser_for_uri(uri)
 
-        odml_writer = ODMLWriter(parser=parser)
         file_path = uri_to_path(uri)
         ext = get_extension(file_path)
 
@@ -189,7 +186,7 @@ class EditorTab(object):
             file_path += ".%s" % parser.lower()
 
         try:
-            odml_writer.write_file(self.document, file_path)
+            odml.save(self.document, file_path, parser)
         except Exception as exc:
             self.window._info_bar.show_info("Save failed: %s" % exc)
             return

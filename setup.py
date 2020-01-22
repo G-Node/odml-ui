@@ -77,6 +77,7 @@ setup(
     include_package_data=True,
     data_files=data_files,
     long_description=description_text,
+    long_description_content_type="text/markdown",
     classifiers=CLASSIFIERS,
     license="BSD",
     entry_points={"gui_scripts": ["odmlui = odmlui.__main__:run []"]}

@@ -1,6 +1,9 @@
-import cgi
-
 import pygtkcompat
+
+try:  # Python 3
+    from html import escape as html_escape
+except ImportError:  # Python 2
+    from cgi import escape as html_escape
 
 from odml import format as ofmt
 
@@ -71,7 +74,7 @@ class AttributeView(TreeView):
             val = getattr(self._model, self._fmt.map(curr_attr))
             if not isinstance(val, list):
                 if val is not None:
-                    val = cgi.escape(str(val))
+                    val = html_escape(str(val))
 
                 # Exclude property attributes that are displayed in the
                 # PropertyView window.

@@ -13,6 +13,26 @@ matrix:
       python: "3.6"
       sudo: required
       env: CONDA=N
+    - os: linux
+      python: "3.7"
+      dist: xenial
+      sudo: required
+      env: CONDA=N
+    - os: linux
+      python: "3.8"
+      dist: xenial
+      sudo: required
+      env: CONDA=N
+    - os: linux
+      python: "3.7"
+      dist: xenial
+      sudo: required
+      env: CONDA=Y CONDAPY=3.7
+    - os: linux
+      python: "3.8"
+      dist: xenial
+      sudo: required
+      env: CONDA=Y CONDAPY=3.8
 
     - os: osx
       language: generic
@@ -20,6 +40,12 @@ matrix:
     - os: osx
       language: generic
       env: OSXENV=3.6 CONDA=Y CONDAPY=3.6
+    - os: osx
+      language: generic
+      env: OSXENV=3.7 CONDA=Y CONDAPY=3.7
+    - os: osx
+      language: generic
+      env: OSXENV=3.8 CONDA=Y CONDAPY=3.8
 
   include:
     - os: linux
@@ -35,6 +61,16 @@ matrix:
       python: "3.6"
       sudo: required
       env: CONDA=N
+    - os: linux
+      python: "3.7"
+      dist: xenial
+      sudo: required
+      env: CONDA=N
+    - os: linux
+      python: "3.8"
+      dist: xenial
+      sudo: required
+      env: CONDA=N
 
     - os: linux
       python: "2.7"
@@ -48,6 +84,16 @@ matrix:
       python: "3.6"
       sudo: required
       env: CONDA=Y CONDAPY=3.6
+    - os: linux
+      python: "3.7"
+      dist: xenial
+      sudo: required
+      env: CONDA=Y CONDAPY=3.7
+    - os: linux
+      python: "3.8"
+      dist: xenial
+      sudo: required
+      env: CONDA=Y CONDAPY=3.8
 
     - os: osx
       language: generic
@@ -55,6 +101,12 @@ matrix:
     - os: osx
       language: generic
       env: OSXENV=3.6 CONDA=Y CONDAPY=3.6
+    - os: osx
+      language: generic
+      env: OSXENV=3.7 CONDA=Y CONDAPY=3.7
+    - os: osx
+      language: generic
+      env: OSXENV=3.8 CONDA=Y CONDAPY=3.8
 
 
 before_install:

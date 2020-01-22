@@ -3,17 +3,24 @@
 Used to document all changes from previous releases and collect changes 
 until the next release.
 
-# Latest changes in master
+# Version 1.4.3
 
 ## Features
-- The TextEditor for editing values of dtype `text` now features
-  'Save' and 'Cancel' buttons.
+- The TextEditor for editing values of dtype `text` now features 'Save' and 'Cancel' buttons.
 
 ## Fixes
 - Fixes saving and loading of files using Windows.
-- Fixes a bug in `helpers.get_parser_for_file_type` 
-  where the file_type would default to `XML` by mistake.
+- Fixes a bug in `helpers.get_parser_for_file_type` where the file_type would default to `XML` by mistake.
 - Various TextEditor bug fixes. See #146
+- With the [python-odml PR #342](https://github.com/G-Node/python-odml/pull/342) the location of the version converter has changed. The `VersionConverter` usage is updated accordingly and the python-odml `save` and `load` functions are now used instead of the more specific respective `ODMLParser` functions. This should make odml-ui more robust towards changes in the odml library.
+- Fixes that when adding a Terminology Property via the context menu in the PropertyView, the added Property was not initialized with pseudo_values, leaving these Properties broken with respect to adding actual values to them. See issue #161 for details.
+- Fixes that when using the popup menu to reset a Terminology Property to its merged default, the cloned Property replacing it was not properly initialized with pseudo_values. See issue #162 for details.
+- Fixes that when a Terminology Property provides pre-defined Values via the popup menu item 'Add Value' and 'Set Value', only empty values were able to be set. Actual values lead to a silent background error. See issue #163 for details.
+- Fixes that the gtk.view became out of sync with the underlying data model, virtually breaking the displayed treemodel rendering it unusable for the selected Property until another section was selected. See issue #164 for details.
+- The main editor now catches exceptions on undo to ensure, that the view is properly reset even if an error occurs.
+- Fixes a bug in the `helpers.get_parser_for_file_type` function where it would always return the default parser.
+- Increases the minimal info bar message display time to 10 seconds.
+- Fixes a start-up exception with Python 3.4 on Windows: the cdll.LoadLibrary passes an `ImportError` but still throws a `WindowsError`. Since `WindowsError` is a subclass of `OSError` this one is now used to catch this particular exception.
 
 
 # Version 1.4.2
@@ -38,6 +45,7 @@ are checked and modified in case the "pseudo_value" attribute is missing.
 - The PropertyView is now properly reset when the last Section is removed from a
     Document making sure there are no stale leftover Properties on display.
 - Fixes errors on 'Undo' and 'Redo' when adding or removing Values.
+
 
 # Version 1.4.1
 

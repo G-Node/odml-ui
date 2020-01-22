@@ -21,7 +21,7 @@ until the next release.
 - Fixes a bug in the `helpers.get_parser_for_file_type` function where it would always return the default parser.
 - Increases the minimal info bar message display time to 10 seconds.
 - Fixes a start-up exception with Python 3.4 on Windows: the cdll.LoadLibrary passes an `ImportError` but still throws a `WindowsError`. Since `WindowsError` is a subclass of `OSError` this one is now used to catch this particular exception.
-
+- Now uses `html.escape` instead of `cgi.escape` for all Python 3 users. See issue #172 for details.
 
 # Version 1.4.2
 

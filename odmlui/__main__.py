@@ -51,7 +51,8 @@ def run():
         from ctypes import cdll
         libc = cdll.LoadLibrary("libc.so.6")
         libc.prctl(15, 'odMLEditor', 0, 0, 0)
-    except ImportError:
+    except (ImportError, OSError):
+        # OSError catches a specific 'WindowsError' occurring in py3.4
         pass
 
     from argparse import ArgumentParser

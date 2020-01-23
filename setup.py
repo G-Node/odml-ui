@@ -52,7 +52,7 @@ packages = [
     "odmlui.treemodel"
 ]
 
-install_req = ["odml>=1.4.2"]
+install_req = ["odml>=1.4.4"]
 
 data_files = [("share/pixmaps", glob.glob(os.path.join("images", "*"))),
               ("share/odmlui", ["LICENSE"])]
@@ -77,6 +77,7 @@ setup(
     include_package_data=True,
     data_files=data_files,
     long_description=description_text,
+    long_description_content_type="text/markdown",
     classifiers=CLASSIFIERS,
     license="BSD",
     entry_points={"gui_scripts": ["odmlui = odmlui.__main__:run []"]}

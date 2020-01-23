@@ -1,5 +1,9 @@
-import cgi
 import sys
+
+try:  # Python 3
+    from html import escape as html_escape
+except ImportError:  # Python 2
+    from cgi import escape as html_escape
 
 
 class GenericIter(object):
@@ -28,7 +32,7 @@ class GenericIter(object):
     @staticmethod
     def escape(value):
         """escape html for use in marked up cellrenderers"""
-        value = cgi.escape(value) if value is not None else ''
+        value = html_escape(value) if value is not None else ''
         if value and GenericIter.is_python2:
             value = value.encode('utf-8')
         return value

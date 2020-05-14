@@ -226,6 +226,9 @@ class PropertyView(TerminologyPopupTreeView):
 
                 prop = prop.pseudo_values[0]
 
+            if first_row and column_name == "uncertainty":
+                new_text = new_text.replace(",", ".")
+
             cmd = commands.ChangeValue(object=prop, attr=column_name, new_value=new_text)
 
         if cmd:

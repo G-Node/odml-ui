@@ -22,6 +22,7 @@ from .treemodel import property_model, value_model
 from .dnd.odmldrop import OdmlDrag, OdmlDrop
 from .dnd.targets import ValueDrop, PropertyDrop, SectionDrop
 from .dnd.text import TextDrag, TextDrop, TextGenericDropForPropertyTV
+from .message_dialog import DecisionDialog
 
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
@@ -196,6 +197,16 @@ class PropertyView(TerminologyPopupTreeView):
         # Do not replace multiple values with pseudo_value placeholder text.
         if first_row_of_multi and is_value_column and new_text == "<multi>":
             return
+
+        # Assure that text is not accidentally overwritten with abbreviation
+        if is_value_column and prop.dtype == "text" and "[...]" in new_text:
+            assurance = DecisionDialog(gtk.Window(), "Text",
+                                       "Abbreviation Detected",
+                                       "Editing text without the text editor "
+                                       "overwrites the original "
+                                       "value with its abbreviated form ([...]).")
+            if not assurance.display():
+                return
 
         # If we edit another attribute (e.g. unit), set this
         # for all values of this property.

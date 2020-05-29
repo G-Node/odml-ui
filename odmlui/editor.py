@@ -429,8 +429,12 @@ class EditorWindow(gtk.Window):
         """
         page = gtk.Label()
         # welcome text
-        text = """<span size="x-large" weight="bold">Welcome to odML-Editor</span>\n\n
-                   Now go ahead and <a href="#new">create a new document</a>."""
+        text = """<span size="x-large" weight="bold">Welcome to odML-Editor</span>\n\n"""
+        # show python 2 deprecation warning
+        if not sys.version_info > (3, 0):
+            text += """<span foreground="red">DeprecationWarning: Python 2 has been deprecated.\n"""
+            text += """odML support for Python 2 will be dropped August 2020.</span>\n\n"""
+        text += """Now go ahead and <a href="#new">create a new document</a>."""
         for curr_action in self.welcome_disabled_actions:
             self.enable_action(curr_action, False)
 

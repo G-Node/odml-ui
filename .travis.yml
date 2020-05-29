@@ -6,6 +6,10 @@ language: python
 matrix:
   allow_failures:
     - os: linux
+      python: "2.7_with_system_site_packages"
+      sudo: required
+      env: CONDA=N
+    - os: linux
       python: "3.5"
       sudo: required
       env: CONDA=N
@@ -23,6 +27,10 @@ matrix:
       dist: xenial
       sudo: required
       env: CONDA=N
+    - os: linux
+      python: "2.7"
+      sudo: required
+      env: CONDA=Y CONDAPY=2.7
     - os: linux
       python: "3.7"
       dist: xenial
@@ -116,8 +124,8 @@ before_install:
 
 install:
   - if [[ "$CONDA" == "Y" ]]; then
-      export PATH="$HOME/miniconda/bin:$PATH";
-      source activate condaenv;
+    export PATH="$HOME/miniconda/bin:$PATH";
+    source activate condaenv;
     fi
   - which python
   - python setup.py install

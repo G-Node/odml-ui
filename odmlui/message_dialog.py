@@ -52,11 +52,19 @@ class DecisionDialog(gtk.MessageDialog):
     - Secondary message
     - OK and Cancel button
     """
-    def __init__(self, parent, title, message, sub_message):
-        gtk.MessageDialog.__init__(self)
-        self.parent = parent
+
+    def __init__(self, parent, title, primary_msg, secondary_msg):
+        super(DecisionDialog, self).__init__()
         self.title = title
-        self.set_property("text", message)
-        self.set_property("secondary-text", sub_message)
+        self.set_property('text', primary_msg)
+        self.set_property('secondary-text', secondary_msg)
+        self.set_transient_for(parent)
         self.add_button("Cancel", gtk.ResponseType.CANCEL)
         self.add_button("Ok", gtk.ResponseType.OK)
+
+    def display(self):
+        response = self.run()
+        self.destroy()
+        if response == gtk.ResponseType.OK:
+            return True
+        return False

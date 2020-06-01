@@ -8,6 +8,7 @@ from distutils.version import LooseVersion as CheckVer
 import pygtkcompat
 
 from odml.property import BaseProperty
+import odml.terminology as terminology
 
 import odmlui.treemodel.mixin
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
@@ -64,6 +65,7 @@ UI_INFO = \
       <separator/>
       <menuitem action='CloneTab'/>
       <menuitem action='Validate'/>
+      <menuitem action='RefreshCache'/>
     </menu>
     <menu action='HelpMenu'>
       <menuitem action='VisitHP'/>
@@ -185,7 +187,7 @@ class EditorWindow(gtk.Window):
     welcome_disabled_actions = ["Save", "SaveAs", "Undo", "Redo", "NewSection",
                                 "NewProperty", "NewValue", "Delete", "CloneTab",
                                 "Validate", "odMLTablesCompare", "odMLTablesConvert",
-                                "odMLTablesFilter", "odMLTablesMerge"]
+                                "odMLTablesFilter", "odMLTablesMerge", "RefreshCache"]
 
     def __init__(self, parent=None):
         gtk.Window.__init__(self)
@@ -943,6 +945,12 @@ class EditorWindow(gtk.Window):
                 # The event is handled and won't be passed to the window.
                 return True
         gtk.main_quit()
+
+    @gui_action("RefreshCache", tooltip="Refresh Document Terminologies Cache", label="Refresh Cache")
+    def on_refresh_cache(self, action):
+        url = self.current_tab.document.repository
+        if url:
+            terminology.refresh(url)
 
     @gui_action("NewSection", label="Add Section",
                 tooltip="Add a section to the current selected one",

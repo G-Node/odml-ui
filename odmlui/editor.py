@@ -14,6 +14,8 @@ import odmlui.treemodel.mixin
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
 from odmlui.treemodel import section_model, value_model
 
+import threading
+
 import gtk
 import gobject
 
@@ -950,7 +952,8 @@ class EditorWindow(gtk.Window):
     def on_refresh_cache(self, action):
         url = self.current_tab.document.repository
         if url:
-            terminology.refresh(url)
+            thread = threading.Thread(target=lambda rep_url: terminology.refresh, args=(url,))
+            thread.start()
 
     @gui_action("NewSection", label="Add Section",
                 tooltip="Add a section to the current selected one",

@@ -13,6 +13,7 @@ import pygtkcompat
 
 from odml.property import BaseProperty
 import odml.terminology as terminology
+from odml.terminology import cache_load
 
 import odmlui.treemodel.mixin
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
@@ -953,8 +954,40 @@ class EditorWindow(gtk.Window):
     @gui_action("RefreshCache", tooltip="Refresh Document Terminologies Cache", label="Refresh Cache")
     def on_refresh_cache(self, action):
         url = self.current_tab.document.repository
+
+        def update_progress_dialog(wait_dial, msg):
+            wait_dial.change(msg)
+            return False
+
+        def terminologies_refresh(url, wait_dial):
+            try:
+                cache_load(url, True)
+                term = terminology.Terminologies({})
+                term_doc = terminology.Terminologies._load(term, url)
+                file_num = str(len(term_doc.sections) + 1)
+                GLib.idle_add(update_progress_dialog, wait_dial, "Please wait, while updating " +
+                              file_num + " Documents...")
+
+                # added to ensure message is shown
+                time.sleep(0.2)
+
+                for s_ti, s_term in enumerate(term_doc.sections, 1):
+                    s_term_url = s_term.include
+                    GLib.idle_add(update_progress_dialog, wait_dial,
+                                  "Updating File " + str(s_ti) + " of " + file_num + "...")
+                    # added to ensure message is shown
+                    time.sleep(0.1)
+                    terminology.refresh(s_term_url)
+
+            except RuntimeError:
+                pass
+            finally:
+                GLib.idle_add(wait_dial.destroy)
+
         if url:
-            thread = threading.Thread(target=lambda rep_url: terminology.refresh, args=(url,))
+            wait_dial = WaitDialog(self, "Refreshing Terminology Cache", "")
+            wait_dial.show_all()
+            thread = threading.Thread(target=terminologies_refresh, daemon=True, args=(url, wait_dial))
             thread.start()
 
     @gui_action("NewSection", label="Add Section",

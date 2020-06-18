@@ -276,6 +276,17 @@ def reorder_value(prop, value, new_index):
     prop.values = new_v_list
 
 
+def reorder_property(prop, sec, prop_list, new_index):
+    """
+    Reorder a property value and its corresponding pseudo_value.
+    :param prop: odml Property augmented to fit odml-ui.
+    :param value: odmlui.treemodel.ValueModel.Value.
+    :param new_index: new position of the value.
+    """
+    old_index = prop_list.index(prop)
+    sec.remove(prop_list[old_index])
+    sec.insert(new_index if new_index < old_index else (new_index-1), prop)
+
 # create a separate global Event listeners for each class
 # and provide ModificationNotifier Capabilities
 name = "event"

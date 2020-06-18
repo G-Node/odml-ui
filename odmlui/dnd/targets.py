@@ -35,8 +35,10 @@ class GenericDrop(ActionDrop):
 class ValueDrop(GenericDrop):
     def odml_can_drop(self, action, dst, position, obj):
         """
-        can only move/copy into Properties
+        can only move/copy into same Property and not onto <multi> field
         """
+        if obj and (obj.parent != dst or position == -1):
+            return False
         if action.link:
             return False
 

@@ -231,7 +231,9 @@ class ModificationNotifier(ChangeHandlable):
         self.__fire_change("insert", obj, func)
 
     def _reorder(self, childlist, value, new_index):
-        func = lambda: reorder_value(self.parent, value, new_index)
+        func = lambda: super(ModificationNotifier, self)._reorder(childlist, new_index)
+        if hasattr(self, "pseudo_values"):
+            func = lambda: reorder_value(self.parent, value, new_index)
         return self.__fire_change("reorder", (childlist, value, new_index), func)
 
 

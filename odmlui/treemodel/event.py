@@ -230,9 +230,9 @@ class ModificationNotifier(ChangeHandlable):
         func = lambda: super(ModificationNotifier, self).insert(position, obj)
         self.__fire_change("insert", obj, func)
 
-    def _reorder(self, childlist, new_index):
-        func = lambda: super(ModificationNotifier, self)._reorder(childlist, new_index)
-        return self.__fire_change("reorder", (childlist, new_index), func)
+    def _reorder(self, childlist, value, new_index):
+        func = lambda: reorder_value(self.parent, value, new_index)
+        return self.__fire_change("reorder", (childlist, value, new_index), func)
 
 
 def remove_value(prop, pseudo):

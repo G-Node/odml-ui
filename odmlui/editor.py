@@ -38,7 +38,7 @@ from .wizard import DocumentWizard
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-gtk.gdk.threads_init()
+GObject.threads_init()
 
 UI_INFO = \
     '''

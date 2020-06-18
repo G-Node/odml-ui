@@ -5,6 +5,10 @@ import tempfile
 
 from distutils.version import LooseVersion as CheckVer
 
+import time
+import threading
+from gi.repository import GLib, GObject
+
 import pygtkcompat
 
 from odml.property import BaseProperty
@@ -13,8 +17,6 @@ import odml.terminology as terminology
 import odmlui.treemodel.mixin
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
 from odmlui.treemodel import section_model, value_model
-
-import threading
 
 import gtk
 import gobject
@@ -26,7 +28,7 @@ from .editor_tab import EditorTab
 from .helpers import uri_to_path, get_extension, get_parser_for_file_type, \
         get_parser_for_uri, get_conda_root, run_odmltables
 from .info_bar import EditorInfoBar
-from .message_dialog import DecisionDialog
+from .message_dialog import DecisionDialog, WaitDialog
 from .navigation_bar import NavigationBar
 from .property_view import PropertyView
 from .scrolled_window import ScrolledWindow

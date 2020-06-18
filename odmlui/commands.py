@@ -102,8 +102,7 @@ class ChangeValue(Command):
             # execute failed
             return
 
-        for attr in self.attr:
-            setattr(self.object, attr, self.old_value[attr])
+        setattr(self.object, self.attr[0], self.old_value[self.attr[0]])
 
 
 class AppendValue(Command):

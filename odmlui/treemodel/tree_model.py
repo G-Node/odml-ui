@@ -187,7 +187,10 @@ class TreeModel(gtk.GenericTreeModel):
 
         TODO figure out how to handle recursive removals
         """
-        self.row_deleted(old_path)
+        if hasattr(parent, "values") and len(parent.values) == 1:
+            self.row_deleted((old_path[0], (old_path[1]+1) % 2))
+        else:
+            self.row_deleted(old_path)
         iter = self.get_node_iter(parent)
 
         # We need to check if the old path is already the very root.

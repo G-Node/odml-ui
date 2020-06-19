@@ -68,3 +68,15 @@ class DecisionDialog(gtk.MessageDialog):
         if response == gtk.ResponseType.OK:
             return True
         return False
+
+
+class WaitDialog(gtk.MessageDialog):
+
+    def __init__(self, parent, primary_msg, secondary_msg):
+        super(WaitDialog, self).__init__()
+        self.set_property('text', primary_msg)
+        self.set_property('secondary-text', secondary_msg)
+        self.set_transient_for(parent)
+
+    def change(self, msg):
+        self.set_property('secondary-text', msg)

@@ -5,9 +5,15 @@ import tempfile
 
 from distutils.version import LooseVersion as CheckVer
 
+import time
+import threading
+from gi.repository import GLib, GObject
+
 import pygtkcompat
 
 from odml.property import BaseProperty
+import odml.terminology as terminology
+from odml.terminology import cache_load
 
 import odmlui.treemodel.mixin
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
@@ -23,7 +29,7 @@ from .editor_tab import EditorTab
 from .helpers import uri_to_path, get_extension, get_parser_for_file_type, \
         get_parser_for_uri, get_conda_root, run_odmltables
 from .info_bar import EditorInfoBar
-from .message_dialog import DecisionDialog
+from .message_dialog import DecisionDialog, WaitDialog
 from .navigation_bar import NavigationBar
 from .property_view import PropertyView
 from .scrolled_window import ScrolledWindow
@@ -33,7 +39,7 @@ from .wizard import DocumentWizard
 pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
 
-gtk.gdk.threads_init()
+GObject.threads_init()
 
 UI_INFO = \
     '''
@@ -64,6 +70,7 @@ UI_INFO = \
       <separator/>
       <menuitem action='CloneTab'/>
       <menuitem action='Validate'/>
+      <menuitem action='RefreshCache'/>
     </menu>
     <menu action='HelpMenu'>
       <menuitem action='VisitHP'/>
@@ -185,7 +192,7 @@ class EditorWindow(gtk.Window):
     welcome_disabled_actions = ["Save", "SaveAs", "Undo", "Redo", "NewSection",
                                 "NewProperty", "NewValue", "Delete", "CloneTab",
                                 "Validate", "odMLTablesCompare", "odMLTablesConvert",
-                                "odMLTablesFilter", "odMLTablesMerge"]
+                                "odMLTablesFilter", "odMLTablesMerge", "RefreshCache"]
 
     def __init__(self, parent=None):
         gtk.Window.__init__(self)
@@ -943,6 +950,45 @@ class EditorWindow(gtk.Window):
                 # The event is handled and won't be passed to the window.
                 return True
         gtk.main_quit()
+
+    @gui_action("RefreshCache", tooltip="Refresh Document Terminologies Cache", label="Refresh Cache")
+    def on_refresh_cache(self, action):
+        url = self.current_tab.document.repository
+
+        def update_progress_dialog(wait_dial, msg):
+            wait_dial.change(msg)
+            return False
+
+        def terminologies_refresh(url, wait_dial):
+            try:
+                cache_load(url, True)
+                term = terminology.Terminologies({})
+                term_doc = terminology.Terminologies._load(term, url)
+                file_num = str(len(term_doc.sections) + 1)
+                GLib.idle_add(update_progress_dialog, wait_dial, "Please wait, while updating " +
+                              file_num + " Documents...")
+
+                # added to ensure message is shown
+                time.sleep(0.2)
+
+                for s_ti, s_term in enumerate(term_doc.sections, 1):
+                    s_term_url = s_term.include
+                    GLib.idle_add(update_progress_dialog, wait_dial,
+                                  "Updating File " + str(s_ti) + " of " + file_num + "...")
+                    # added to ensure message is shown
+                    time.sleep(0.1)
+                    terminology.refresh(s_term_url)
+
+            except RuntimeError:
+                pass
+            finally:
+                GLib.idle_add(wait_dial.destroy)
+
+        if url:
+            wait_dial = WaitDialog(self, "Refreshing Terminology Cache", "")
+            wait_dial.show_all()
+            thread = threading.Thread(target=terminologies_refresh, daemon=True, args=(url, wait_dial))
+            thread.start()
 
     @gui_action("NewSection", label="Add Section",
                 tooltip="Add a section to the current selected one",

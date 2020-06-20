@@ -234,8 +234,8 @@ class ModificationNotifier(ChangeHandlable):
         func = lambda: super(ModificationNotifier, self)._reorder(obj, new_index)
 
         if not hasattr(self.parent, "pseudo_values"):
-            func = lambda: reorder_property(self, self.parent, value, new_index)
-            return self.__fire_change("reorder", (value, obj, new_index), func)
+            func = lambda: reorder_property(self, obj_list, new_index)
+            return self.__fire_change("reorder", (self, new_index), func)
 
         elif hasattr(self, "pseudo_values"):
             func = lambda: reorder_value(self, self.parent, new_index)
@@ -283,13 +283,15 @@ def reorder_value(value, prop, new_index):
     prop.values = new_v_list
 
 
-def reorder_property(prop, sec, prop_list, new_index):
+def reorder_property(prop, prop_list, new_index):
     """
     Reorder a property value and its corresponding pseudo_value.
     :param prop: odml Property augmented to fit odml-ui.
     :param value: odmlui.treemodel.ValueModel.Value.
     :param new_index: new position of the value.
     """
+
+    sec = prop.parent
     old_index = prop_list.index(prop)
     sec.remove(prop_list[old_index])
     sec.insert(new_index if new_index < old_index else (new_index-1), prop)

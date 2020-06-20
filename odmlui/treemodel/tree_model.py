@@ -236,7 +236,8 @@ class TreeModel(gtk.GenericTreeModel):
                 child_list = value.parent.values
                 old_index = child_list.index(getattr(value, "value"))
             else:
-                (child_list, prop, new_index) = context.val
+                (prop, new_index) = context.val
+                child_list = prop.parent.properties
                 old_index = child_list.index(prop)
             res = list(range(len(child_list)))
             res.insert(new_index, old_index)

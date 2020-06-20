@@ -238,8 +238,8 @@ class ModificationNotifier(ChangeHandlable):
             return self.__fire_change("reorder", (value, obj, new_index), func)
 
         elif hasattr(self, "pseudo_values"):
-            func = lambda: reorder_value(self.parent, value, new_index)
-            return self.__fire_change("reorder", (obj, value, new_index), func)
+            func = lambda: reorder_value(self, self.parent, new_index)
+            return self.__fire_change("reorder", (self, new_index), func)
 
         return self.__fire_change("reorder", (obj, value, new_index), func)
 
@@ -266,7 +266,7 @@ def remove_value(prop, pseudo):
     prop.values = cp_val
 
 
-def reorder_value(prop, value, new_index):
+def reorder_value(value, prop, new_index):
     """
     Reorder a property value and its corresponding pseudo_value.
     :param prop: odml Property augmented to fit odml-ui.

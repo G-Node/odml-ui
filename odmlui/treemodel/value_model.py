@@ -159,7 +159,7 @@ class Value(BaseObject, ValueNode, event.ModificationNotifier):
         return "(%d bytes)" % len(self._value)
 
     def reorder(self, new_index):
-        return self._reorder(self.parent.values, self, new_index)
+        return self._reorder(self.parent.values, new_index)
 
     def clone(self):
         obj = BaseObject.clone(self)

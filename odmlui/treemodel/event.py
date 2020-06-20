@@ -230,8 +230,8 @@ class ModificationNotifier(ChangeHandlable):
         func = lambda: super(ModificationNotifier, self).insert(position, obj)
         self.__fire_change("insert", obj, func)
 
-    def _reorder(self, obj, value, new_index):
-        func = lambda: super(ModificationNotifier, self)._reorder(obj, new_index)
+    def _reorder(self, obj_list, new_index):
+        func = lambda: super(ModificationNotifier, self)._reorder(self, new_index)
 
         if not hasattr(self.parent, "pseudo_values"):
             func = lambda: reorder_property(self, obj_list, new_index)
@@ -241,7 +241,7 @@ class ModificationNotifier(ChangeHandlable):
             func = lambda: reorder_value(self, self.parent, new_index)
             return self.__fire_change("reorder", (self, new_index), func)
 
-        return self.__fire_change("reorder", (obj, value, new_index), func)
+        return self.__fire_change("reorder", (self, new_index), func)
 
 
 def remove_value(prop, pseudo):

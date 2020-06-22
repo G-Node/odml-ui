@@ -230,9 +230,11 @@ class ModificationNotifier(ChangeHandlable):
         func = lambda: super(ModificationNotifier, self).insert(position, obj)
         self.__fire_change("insert", obj, func)
 
-    def _reorder(self, childlist, new_index):
+    def _reorder(self, childlist, value, new_index):
         func = lambda: super(ModificationNotifier, self)._reorder(childlist, new_index)
-        return self.__fire_change("reorder", (childlist, new_index), func)
+        if hasattr(self, "pseudo_values"):
+            func = lambda: reorder_value(self.parent, value, new_index)
+        return self.__fire_change("reorder", (childlist, value, new_index), func)
 
 
 def remove_value(prop, pseudo):
@@ -255,6 +257,23 @@ def remove_value(prop, pseudo):
     cp_val = prop.values
     del cp_val[pseudo._index]
     prop.values = cp_val
+
+
+def reorder_value(prop, value, new_index):
+    """
+    Reorder a property value and its corresponding pseudo_value.
+    :param prop: odml Property augmented to fit odml-ui.
+    :param value: odmlui.treemodel.ValueModel.Value.
+    :param new_index: new position of the value.
+    """
+
+    v_list = prop.values
+    old_index = value._index
+    new_order = list(range(len(v_list)))
+    new_order.insert(new_index, old_index)
+    del new_order[old_index if new_index > old_index else (old_index+1)]
+    new_v_list = [v_list[i] for i in new_order]
+    prop.values = new_v_list
 
 
 # create a separate global Event listeners for each class

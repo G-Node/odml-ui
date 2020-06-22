@@ -187,7 +187,10 @@ class TreeModel(gtk.GenericTreeModel):
 
         TODO figure out how to handle recursive removals
         """
-        self.row_deleted(old_path)
+        if hasattr(parent, "values") and len(parent.values) == 1:
+            self.row_deleted((old_path[0], (old_path[1]+1) % 2))
+        else:
+            self.row_deleted(old_path)
         iter = self.get_node_iter(parent)
 
         # We need to check if the old path is already the very root.
@@ -228,15 +231,15 @@ class TreeModel(gtk.GenericTreeModel):
         a rows_reordered call
         """
         if context.pre_change and not hasattr(context, "neworder"):
-            (childlist, new_index) = context.val
-            old_index = childlist.index(context.obj)
-            res = list(range(len(childlist)))
-            res.insert(new_index if new_index < old_index else new_index+1, old_index)
+            (child_list, value, new_index) = context.val
+            old_index = child_list.index(getattr(value, "value"))
+            res = list(range(len(child_list)))
+            res.insert(new_index, old_index)
             del res[old_index if new_index > old_index else (old_index+1)]
-            context.neworder = res
+            context.new_order = res
         if context.post_change:
             iter = self.get_node_iter(context.obj.parent)
             path = self.get_path(iter)
             if not path and context.obj.parent is not self._section:
                 return  # not our deal
-            self.rows_reordered(path, iter, context.neworder)
+            self.rows_reordered(path, iter, context.new_order)

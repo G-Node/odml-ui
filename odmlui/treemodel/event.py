@@ -280,10 +280,10 @@ def reorder_value(value, prop, new_index):
 
 def reorder(obj, obj_list, new_index):
     """
-    Reorder a property value and its corresponding pseudo_value.
-    :param prop: odml Property augmented to fit odml-ui.
-    :param value: odmlui.treemodel.ValueModel.Value.
-    :param new_index: new position of the value.
+    Reorder a property or section.
+    :param obj: odml Property or Section.
+    :param obj_list: list with parent's properties/sections.
+    :param new_index: new position of the element.
     """
 
     parent = obj.parent

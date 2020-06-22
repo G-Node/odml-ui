@@ -231,10 +231,15 @@ class TreeModel(gtk.GenericTreeModel):
         a rows_reordered call
         """
         if context.pre_change and not hasattr(context, "neworder"):
-            if not hasattr(context.val[0].parent, 'properties'):
+            if not hasattr(context.val[0].parent, 'properties') and \
+                    not hasattr(context.val[0].parent, 'author'):
                 (value, new_index) = context.val
                 child_list = value.parent.values
                 old_index = child_list.index(getattr(value, "value"))
+            elif hasattr(context.val[0].parent, 'author'):
+                (sec, new_index) = context.val
+                child_list = sec.parent.sections
+                old_index = child_list.index(sec)
             else:
                 (prop, new_index) = context.val
                 child_list = prop.parent.properties

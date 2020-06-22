@@ -234,8 +234,7 @@ class ModificationNotifier(ChangeHandlable):
         if not hasattr(self.parent, "pseudo_values"):
             func = lambda: reorder(self, obj_list, new_index)
             return self.__fire_change("reorder", (self, new_index), func)
-
-        elif hasattr(self, "pseudo_values"):
+        else:
             func = lambda: reorder_value(self, self.parent, new_index)
             return self.__fire_change("reorder", (self, new_index), func)
 

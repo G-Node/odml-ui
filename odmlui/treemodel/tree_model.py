@@ -252,6 +252,6 @@ class TreeModel(gtk.GenericTreeModel):
             if context.obj.parent is not self._section:
                 iter = self.get_node_iter(context.obj.parent)
                 path = self.get_path(iter)
-                if not path: # and context.obj.parent is not self._section:
+                if not path:
                     return  # not our deal
                 self.rows_reordered(path, iter, context.new_order)

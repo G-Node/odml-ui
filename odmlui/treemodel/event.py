@@ -232,7 +232,7 @@ class ModificationNotifier(ChangeHandlable):
 
     def _reorder(self, obj_list, new_index):
         if not hasattr(self.parent, "pseudo_values"):
-            func = lambda: reorder_property(self, obj_list, new_index)
+            func = lambda: reorder(self, obj_list, new_index)
             return self.__fire_change("reorder", (self, new_index), func)
 
         elif hasattr(self, "pseudo_values"):
@@ -279,7 +279,7 @@ def reorder_value(value, prop, new_index):
     prop.values = new_v_list
 
 
-def reorder_property(prop, prop_list, new_index):
+def reorder(obj, obj_list, new_index):
     """
     Reorder a property value and its corresponding pseudo_value.
     :param prop: odml Property augmented to fit odml-ui.
@@ -287,10 +287,10 @@ def reorder_property(prop, prop_list, new_index):
     :param new_index: new position of the value.
     """
 
-    sec = prop.parent
-    old_index = prop_list.index(prop)
-    sec.remove(prop_list[old_index])
-    sec.insert(new_index if new_index < old_index else (new_index-1), prop)
+    parent = obj.parent
+    old_index = obj_list.index(obj)
+    parent.remove(obj_list[old_index])
+    parent.insert(new_index if new_index < old_index else (new_index-1), obj)
 
 # create a separate global Event listeners for each class
 # and provide ModificationNotifier Capabilities

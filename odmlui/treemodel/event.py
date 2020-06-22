@@ -230,11 +230,13 @@ class ModificationNotifier(ChangeHandlable):
         func = lambda: super(ModificationNotifier, self).insert(position, obj)
         self.__fire_change("insert", obj, func)
 
-    def _reorder(self, childlist, value, new_index):
-        func = lambda: super(ModificationNotifier, self)._reorder(childlist, new_index)
-        if hasattr(self, "pseudo_values"):
-            func = lambda: reorder_value(self.parent, value, new_index)
-        return self.__fire_change("reorder", (childlist, value, new_index), func)
+    def _reorder(self, obj_list, new_index):
+        if not hasattr(self.parent, "pseudo_values"):
+            func = lambda: reorder(self, obj_list, new_index)
+            return self.__fire_change("reorder", (self, new_index), func)
+        else:
+            func = lambda: reorder_value(self, self.parent, new_index)
+            return self.__fire_change("reorder", (self, new_index), func)
 
 
 def remove_value(prop, pseudo):
@@ -259,7 +261,7 @@ def remove_value(prop, pseudo):
     prop.values = cp_val
 
 
-def reorder_value(prop, value, new_index):
+def reorder_value(value, prop, new_index):
     """
     Reorder a property value and its corresponding pseudo_value.
     :param prop: odml Property augmented to fit odml-ui.
@@ -275,6 +277,19 @@ def reorder_value(prop, value, new_index):
     new_v_list = [v_list[i] for i in new_order]
     prop.values = new_v_list
 
+
+def reorder(obj, obj_list, new_index):
+    """
+    Reorder a property or section.
+    :param obj: odml Property or Section.
+    :param obj_list: list with parent's properties/sections.
+    :param new_index: new position of the element.
+    """
+
+    parent = obj.parent
+    old_index = obj_list.index(obj)
+    parent.remove(obj_list[old_index])
+    parent.insert(new_index if new_index < old_index else (new_index-1), obj)
 
 # create a separate global Event listeners for each class
 # and provide ModificationNotifier Capabilities

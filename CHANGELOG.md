@@ -3,6 +3,24 @@
 Used to document all changes from previous releases and collect changes 
 until the next release.
 
+# Version 1.4.4
+
+# Requirement update
+- The release updates the python-odml library requirement to version 1.5.1.
+
+# Minor changes and updates
+- When using Python 2 a popup with a deprecation warning message is displayed. See PR #175 and issue #174 for details.
+- A warning is issued when a Property.Value of `dtype=text` would be overwritten with the abbreviated list display text by accident. See PR #175 and issue #157 for details.
+- A function is added to the "Edit" menu to refresh the terminology cache. See PR #178 and issue #118 for details.
+
+# Fixes
+- Fixes broken Properties reorder behavior. See issue PR #180 and issue #142 for details.
+- Fixes an error on multi value reorder behavior. See PR #179 and issue #141 for details.
+- Fixes an error on multi value removal. See PR #179 and issue #137 for details.
+- Fixes multi value loss when dragging it to another Property by prohibiting value transferal to another Property. See PR #179 and issue #143 for details.
+- Fixes a background AttibuteError when undoing a Propert.value change. See PR #179 and issue #138 for details.
+- Fixes system dependent automatic replacement of comma with a dot when editing a value uncertainty. See PR #175 and issue #149 for details.
+
 # Version 1.4.3
 
 ## Features

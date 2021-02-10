@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/G-Node/odml-ui.svg?branch=master)](https://travis-ci.org/G-Node/odml-ui)
+[![gh actions tests](https://github.com/G-Node/odml-ui/workflows/run-tests/badge.svg?branch=master)](https://github.com/G-Node/odml-ui/actions)
 [![PyPI version](https://img.shields.io/pypi/v/odml-ui.svg)](https://pypi.org/project/odML-UI/)
 
 
@@ -11,7 +11,7 @@ have a look at the documentation available on the [git-scm website](https://git-
 
 ## Breaking changes
 
-odML Version 1.4 introduced breaking format and API changes compared to the previous
+odML Version 1.4+ introduced breaking format and API changes compared to the previous
 versions of odML. Files saved in a previous format version can be automatically
 converted into the new format via "File - Import". The import will create a new file
 and will not overwrite the original file.
@@ -44,31 +44,31 @@ The odML-Editor makes use of the Gtk 3+ library for the GUI, and the
 `python-odml` library. The following dependencies need to be installed 
 for the odML-Editor.
 
-* Python 2.7+ or Python 3.4+
-* odml v1.4  `(pip install odml)`
+* Python 3.6+
+* odml v1.5.1+  `(pip install odml)`
+
+An installation using the conda package manager is highly recommended. Please also note, that Python 2 is no longer supported. 
 
 
 ### For Ubuntu-based distributions
 
 * `sudo apt-get install libgtk-3-0`
 * `sudo apt-get install gobject-introspection`
-* For Python 3, `sudo apt-get install python3-gi`
-* For Python 2, `sudo apt-get install python-gi`
+* `sudo apt-get install python3-gi`
 
 
 ### For Fedora-based distributions
 
 * `sudo dnf install gtk3`
 * `sudo dnf install pygobject3`
-* For Python 3, `sudo dnf install python3-gobject`
-* For Python 2, `sudo dnf install python-gobject`
+* `sudo dnf install python3-gobject`
 
 
 ### Anaconda Dependencies
 
 Anaconda environments require only the following packages before installing the odML-Editor:
 
-* Python 2.7+ or Python 3.4+.
+* Python 3.6+.
 * Install the following packages in the following order:
 
         conda install -c pkgw/label/superseded gtk3
@@ -95,10 +95,10 @@ https://conda.io/docs/user-guide/tasks/manage-environments.html#macos-linux-save
 
 ### macOS using homebrew
 
-For Python 2 (Python 3)
+For Python 3
 
-* `brew install gtk+ (gtk+3)`
-* `brew install pygobject (pygobject3)`
+* `brew install gtk+3`
+* `brew install pygobject3`
 * `brew install gnome-icon-theme`
 * `brew install gobject-introspection`
 

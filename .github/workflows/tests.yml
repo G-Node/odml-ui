@@ -1,0 +1,57 @@
+name: run-tests
+on:
+  # Run one build a month at 01:00
+  schedule:
+  - cron:  '0 0 1 * *'
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches:
+      - master
+jobs:
+  run-conda-test:
+    name: Running tests using miniconda
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: deptest-${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version }}
+          channels: conda-forge,pkgw-forge
+      - name: Show conda details
+        run: |
+          conda info
+          conda list
+          which python
+          conda --version
+      - name: Install Linux conda dependencies
+        if:  matrix.os == 'ubuntu-latest'
+        run: |
+          conda install -c pkgw/label/superseded gtk3
+          conda install -c conda-forge pygobject
+          conda install -c conda-forge gdk-pixbuf
+          conda install -c pkgw-forge adwaita-icon-theme
+      - name: Install MacOS conda dependencies
+        if:  matrix.os == 'macos-latest'
+        run: |
+          conda install -c conda-forge gtk3
+          conda install -c conda-forge pygobject
+          conda install -c conda-forge gdk-pixbuf
+          conda install -c conda-forge adwaita-icon-theme
+      - name: Install Python dependencies
+        run: |
+          python setup.py install
+          pip install pytest
+      - name: Run tests
+        run: |
+          pytest

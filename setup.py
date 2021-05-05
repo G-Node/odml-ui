@@ -34,11 +34,9 @@ README = "README.md"
 dep_str = "Non-Python dependency missing, please check the %s file." % README
 try:
     import gi
-    import pygtkcompat
-    pygtkcompat.enable()
-    pygtkcompat.enable_gtk(version="3.0")
-    import gtk
-    import gobject
+    gi.require_version("Gtk", "3.0")
+    from gi.repository import Gtk
+    from gi.repository import GObject
 except (ImportError, ValueError) as err:
     err_str = ("\n  Error: %s\n\n  %s" % (err, dep_str))
     raise PackageNotFoundError(err_str)

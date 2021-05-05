@@ -1,19 +1,13 @@
-import pygtkcompat
-
 try:  # Python 3
     from html import escape as html_escape
 except ImportError:  # Python 2
     from cgi import escape as html_escape
 
 from odml import format as ofmt
-
-import gtk
+from gi.repository import Gtk as gtk
 
 from . import commands
 from .tree_view import TreeView
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 COL_KEY = 0
 COL_VALUE = 1

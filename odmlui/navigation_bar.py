@@ -4,13 +4,7 @@
 This class provides functionality to browse from
 a currently selected model object to the document root.
 """
-
-import pygtkcompat
-
-import gtk
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
+from gi.repository import Gtk as gtk
 
 
 class NavigationBar(gtk.Label):

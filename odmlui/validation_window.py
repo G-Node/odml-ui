@@ -3,16 +3,10 @@ This module contains all classes to display validation messages
 """
 
 import sys
-
-import pygtkcompat
-
-import gtk
+from gi.repository import Gtk as gtk
 
 from .scrolled_window import ScrolledWindow
 from .tree_view import TreeView
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 COL_PATH = 0
 COL_INDEX = 1

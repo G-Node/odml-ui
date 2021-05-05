@@ -1,17 +1,11 @@
 """
 'text_editor' provides a simple TextEditor Window class.
 """
-
-import pygtkcompat
-
-import gtk
+from gi.repository import Gtk as gtk
 
 from .commands import ChangeValue
 from .scrolled_window import ScrolledWindow
 from .treemodel.value_model import Value
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 
 class TextEditor(gtk.Window):

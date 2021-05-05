@@ -7,9 +7,9 @@ from distutils.version import LooseVersion as CheckVer
 
 import time
 import threading
-from gi.repository import GLib, GObject
-
-import pygtkcompat
+from gi.repository import GLib
+from gi.repository import GObject
+from gi.repository import Gtk as gtk
 
 from odml.property import BaseProperty
 import odml.terminology as terminology
@@ -18,9 +18,6 @@ from odml.terminology import cache_load
 import odmlui.treemodel.mixin
 from odmlui.info import AUTHOR, CONTACT, COPYRIGHT, HOMEPAGE, VERSION, ODMLTABLES_VERSION
 from odmlui.treemodel import section_model, value_model
-
-import gtk
-import gobject
 
 from .attribute_view import AttributeView
 from .chooser_dialog import OdmlChooserDialog
@@ -35,9 +32,6 @@ from .property_view import PropertyView
 from .scrolled_window import ScrolledWindow
 from .section_view import SectionView
 from .wizard import DocumentWizard
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 GObject.threads_init()
 
@@ -234,7 +228,7 @@ class EditorWindow(gtk.Window):
 
         try:
             mergeid = merge.add_ui_from_string(UI_INFO)
-        except gobject.GError as msg:
+        except GObject.GError as msg:
             print("building menus failed: %s" % msg)
         menu_bar = merge.get_widget("/MenuBar")
         menu_bar.show()
@@ -1243,7 +1237,7 @@ def register_stock_icons():
 
             factory.add(icon_name, icon_set)
 
-        except gobject.GError as error:
+        except GObject.GError as error:
             print('[Warning] Failed to load icon', icon_name, error)
 
 

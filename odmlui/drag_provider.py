@@ -1,11 +1,7 @@
-import pygtkcompat
-import gtk
+from gi.repository import Gtk as gtk
 
 from .dnd.drag import DragTarget
 from .dnd.drop import DropTarget
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 
 class DragProvider(object):

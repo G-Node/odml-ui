@@ -1,12 +1,7 @@
 """
 'chooser_dialog' contains odML specific file chooser widget classes.
 """
-
-import pygtkcompat
-import gtk
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
+from gi.repository import Gtk as gtk
 
 
 class ChooserDialog(gtk.FileChooserDialog):

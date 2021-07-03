@@ -1,17 +1,13 @@
 #!/usr/bin/env python
 import os
-
-import pygtkcompat
-
-import gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk as gtk
 
 import odmlui
 
 from .editor import register_stock_icons, EditorWindow
 from .helpers import path_to_uri
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 
 def main(filenames=None, debug=False):

@@ -8,20 +8,15 @@ import datetime
 
 from collections import OrderedDict
 
-import pygtkcompat
-
 import odml
 import odml.terminology as terminology
 
-import gtk
+from gi.repository import Gtk as gtk
 
 from .helpers import handle_property_import, get_username
 from .treemodel.section_model import SectionModel
 from .section_view import SectionView
 from .scrolled_window import ScrolledWindow
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 
 class Table(object):

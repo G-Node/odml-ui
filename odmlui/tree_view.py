@@ -1,12 +1,6 @@
 import heapq
-import pygtkcompat
-
-import gtk
-
+from gi.repository import Gtk as gtk
 from . import commands
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 
 class TreeView(object):

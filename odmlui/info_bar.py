@@ -1,13 +1,8 @@
 """
 The 'info_bar' module provides a class for the app specific message bar.
 """
-
-import pygtkcompat
-import glib
-import gtk
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
+from gi.repository import Gtk as gtk
+from gi.repository import GLib as glib
 
 
 class EditorInfoBar(gtk.InfoBar):

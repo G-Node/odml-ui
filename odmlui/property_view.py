@@ -2,16 +2,13 @@
 The 'property_view' module provides a class to display and edit odml.Properties
 and their attributes and Values.
 """
-
-import pygtkcompat
+from gi.repository import Gtk as gtk
 
 import odml
 import odml.dtypes as dtypes
 
 from odml import DType
 from odml.property import BaseProperty
-
-import gtk
 
 from . import commands
 from . import text_editor
@@ -23,9 +20,6 @@ from .dnd.odmldrop import OdmlDrag, OdmlDrop
 from .dnd.targets import ValueDrop, PropertyDrop, SectionDrop
 from .dnd.text import TextDrag, TextDrop, TextGenericDropForPropertyTV
 from .message_dialog import DecisionDialog
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
 
 
 class PropertyView(TerminologyPopupTreeView):
